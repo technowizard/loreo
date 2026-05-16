@@ -1,0 +1,63 @@
+{
+  "brandPanel": {
+    "firstTagline": "Your reading list,",
+    "secondTagline": "beautifully organized",
+    "keyFeatures": [
+      "Save articles from anywhere",
+      "Read without distractions",
+      "Never lose a link again"
+    ]
+  },
+  "login": {
+    "title": "Welcome back",
+    "description": "Sign in to your account to continue",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Login",
+    "forgotPassword": "Forgot Password",
+    "signUp": "Create one",
+    "signIn": "Sign in",
+    "dontHaveAccount": "Don't have an account?"
+  },
+  "register": {
+    "title": "Create your account",
+    "description": "Start building your personal reading library",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "submit": "Create account",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign in"
+  },
+  "home": {
+    "welcome": "Welcome to Loreo",
+    "onboardingDescription": "Add your first article to start building your reading queue",
+    "readyToCatchUp": "Ready to catch up on your saved articles?",
+    "quickAdd": {
+      "title": "Quick Add",
+      "placeholder": "Paste URL here...",
+      "save": "Save",
+      "success": "Link saved"
+    },
+    "onboardingProgress": {
+      "title": "Getting started",
+      "addFirstArticle": "Add your first article",
+      "saveThreeArticles": "Save three articles",
+      "readFirstOne": "Read your first article",
+      "stepsCompleted": "{{completed}} of {{total}} steps completed",
+      "pasteUrlOrImport": "Paste a URL above, or",
+      "importFromCsv": "import from CSV",
+      "unlocksReadingFilters": "Unlocks reading filters and suggestions",
+      "openAnyArticleAndStartReading": "Open any article and start reading"
+    },
+    "suggestions": "Suggestions",
+    "quickReads": "Quick reads",
+    "longReads": "Long reads",
+    "thisWeek": "This week",
+    "mustRead": "Must read",
+    "recentlySaved": "Recently saved"
+  }
+}

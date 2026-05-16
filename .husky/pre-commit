@@ -1,0 +1,1 @@
+NODE_OPTIONS='--import tsx' pnpm lint-staged

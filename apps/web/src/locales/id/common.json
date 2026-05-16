@@ -1,0 +1,26 @@
+{
+  "login": {
+    "title": "Welcome back",
+    "description": "Sign in to your account to continue",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Login",
+    "forgotPassword": "Forgot Password",
+    "signUp": "Create one",
+    "signIn": "Sign In",
+    "dontHaveAccount": "Don't have an account?"
+  },
+  "register": {
+    "title": "Create your account",
+    "description": "Start building your personal reading library",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "submit": "Create account",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign In"
+  }
+}

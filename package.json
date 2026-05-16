@@ -1,0 +1,43 @@
+{
+  "name": "loreo",
+  "private": true,
+  "scripts": {
+    "dev": "docker compose up",
+    "dev:local": "pnpm --parallel -r dev",
+    "dev:web": "pnpm --filter web dev",
+    "dev:server": "pnpm --filter server dev",
+    "build": "pnpm -r build",
+    "build:web": "pnpm --filter web build",
+    "build:server": "pnpm --filter server build",
+    "test": "pnpm -r test",
+    "test:web": "pnpm --filter web test",
+    "test:server": "pnpm --filter server test",
+    "lint": "oxlint && oxfmt --check",
+    "lint:fix": "oxlint --fix && oxfmt --write",
+    "typecheck": "pnpm -r typecheck",
+    "db:push": "pnpm --filter server db:push",
+    "db:migrate": "pnpm --filter server db:migrate",
+    "db:studio": "pnpm --filter server db:studio",
+    "prepare": "husky",
+    "commit": "cz"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.0.0",
+    "@fdhl/oxlint-config": "catalog:",
+    "@loreo/config": "workspace:*",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "oxfmt": "^0.42.0",
+    "oxlint": "^1.57.0",
+    "tsx": "^4.21.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "packageManager": "pnpm@10.28.0"
+}

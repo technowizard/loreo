@@ -1,0 +1,229 @@
+import { FileArrowUpIcon, FileIcon, InfoIcon, LightbulbIcon, XIcon } from '@phosphor-icons/react';
+import { useCallback, useRef, useState } from 'react';
+import { toast } from 'sonner';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+
+import { useUploadCSV } from '@/features/import-articles/api/upload-csv';
+
+import { useImportArticles } from '../hooks/use-import-articles';
+
+import { formatFileSize } from '@/lib/utils';
+
+interface UploadFromCsvProps {
+  onUploadComplete?: () => void;
+}
+
+export function UploadFromCsv({ onUploadComplete }: UploadFromCsvProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDragActive, setIsDragActive] = useState(false);
+
+  const { onSelectedFileChange, onUploadSuccess, resetUploadedFile, uploadedFile } =
+    useImportArticles();
+
+  const uploadCSVMutation = useUploadCSV({
+    mutationConfig: {
+      onMutate: () => {
+        toast.loading('Uploading CSV...', {
+          position: 'top-center',
+          richColors: true
+        });
+      },
+      onSuccess: (data) => {
+        toast.dismiss(); // clear loading
+
+        if (data.result) {
+          onUploadSuccess(data.result);
+        }
+      }
+    }
+  });
+
+  const handleFileSelect = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+
+      if (!file) {
+        return;
+      }
+
+      // Reset input value to allow selecting the same file again
+      event.target.value = '';
+
+      onSelectedFileChange(file);
+      uploadCSVMutation.mutate(file);
+      onUploadComplete?.();
+    },
+    [onSelectedFileChange, onUploadComplete, uploadCSVMutation]
+  );
+
+  const handleButtonClick = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleClearFile = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation();
+      resetUploadedFile();
+    },
+    [resetUploadedFile]
+  );
+
+  const handleDragEnter = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDragActive(true);
+  }, []);
+
+  const handleDragLeave = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDragActive(false);
+  }, []);
+
+  const handleDragOver = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+  }, []);
+
+  const handleDrop = useCallback(
+    (event: React.DragEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
+      setIsDragActive(false);
+
+      const files = event.dataTransfer.files;
+
+      if (files.length > 0) {
+        const file = files[0]!;
+
+        if (file.name.endsWith('.csv')) {
+          onSelectedFileChange(file);
+          uploadCSVMutation.mutate(file);
+          onUploadComplete?.();
+        }
+      }
+    },
+    [onSelectedFileChange, onUploadComplete, uploadCSVMutation]
+  );
+
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        handleButtonClick();
+      }
+    },
+    [handleButtonClick]
+  );
+
+  const formattedSize = formatFileSize(uploadedFile.size);
+
+  return (
+    <div className="flex w-full flex-col gap-6">
+      <div
+        aria-describedby="csv-tips"
+        aria-label="Drop zone for CSV file upload. Press Enter or Space to open file picker."
+        className="group border-border hover:border-primary/50 hover:bg-accent/50 focus-visible:ring-ring dark:hover:bg-accent/30 relative flex cursor-pointer flex-col items-center gap-3 rounded-xl border-2 border-dashed px-6 py-12 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+        onClick={handleButtonClick}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+        onKeyDown={handleKeyDown}
+        role="button"
+        tabIndex={0}
+      >
+        <input
+          accept=".csv"
+          aria-label="Select CSV file to upload"
+          className="sr-only"
+          onChange={handleFileSelect}
+          ref={fileInputRef}
+          type="file"
+        />
+
+        {uploadedFile.name ? (
+          // Selected file state
+          <div className="flex flex-col items-center gap-3 text-center">
+            <div className="bg-primary/10 border-primary/20 flex h-16 w-16 items-center justify-center rounded-full border transition-transform group-hover:scale-105">
+              <FileIcon className="text-primary h-8 w-8" />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-foreground max-w-70 truncate font-medium">
+                {uploadedFile.name}
+              </span>
+              <Button
+                aria-label="Clear selected file"
+                className="h-6 w-6 rounded-full p-0"
+                onClick={handleClearFile}
+                size="sm"
+                variant="ghost"
+              >
+                <XIcon className="h-3 w-3" />
+              </Button>
+            </div>
+            <p className="text-muted-foreground text-sm">{formattedSize} • Click to change file</p>
+          </div>
+        ) : (
+          // Default state
+          <div className="flex flex-col items-center gap-3 text-center">
+            <div className="bg-primary/10 border-primary/20 flex h-16 w-16 items-center justify-center rounded-full border transition-transform group-hover:scale-105">
+              <FileArrowUpIcon className="text-primary h-8 w-8" />
+            </div>
+            <h2 className="text-lg font-semibold">
+              {isDragActive ? 'Drop your CSV file here' : 'Drag and drop your CSV file here'}
+            </h2>
+            <p className="text-muted-foreground text-sm">Supports .csv files up to 10MB</p>
+            <Button className="mt-2" size="default">
+              Select File
+            </Button>
+          </div>
+        )}
+      </div>
+
+      {uploadedFile.name ? (
+        <Alert className="p-6" variant="success">
+          <InfoIcon />
+          <AlertTitle className="text-lg font-bold">What happens next?</AlertTitle>
+          <AlertDescription>
+            <ul className="list-inside list-disc space-y-2 text-sm">
+              <li>We&apos;ll scan the file to help you map URLs, titles, and tags</li>
+              <li>Articles will be added to your library in the background</li>
+              <li>Large imports might take a while to complete content fetching</li>
+            </ul>
+          </AlertDescription>
+        </Alert>
+      ) : (
+        <Alert className="p-6" variant="info">
+          <LightbulbIcon />
+          <AlertTitle className="text-lg font-bold">Quick Tips for Successful Import</AlertTitle>
+          <AlertDescription>
+            <ul className="list-inside list-disc space-y-2 text-sm">
+              <li>
+                Ensure your CSV file has a column named{' '}
+                <code className="bg-muted border-border rounded border px-1.5 py-0.5 font-mono text-xs">
+                  url
+                </code>{' '}
+                for the article links
+              </li>
+              <li>
+                Optional columns like{' '}
+                <code className="bg-muted border-border rounded border px-1.5 py-0.5 font-mono text-xs">
+                  title
+                </code>{' '}
+                and{' '}
+                <code className="bg-muted border-border rounded border px-1.5 py-0.5 font-mono text-xs">
+                  tags
+                </code>{' '}
+                (comma-separated) are also supported
+              </li>
+              <li>We support standard CSV formats, including exports from Pocket</li>
+            </ul>
+          </AlertDescription>
+        </Alert>
+      )}
+    </div>
+  );
+}

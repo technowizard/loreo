@@ -1,0 +1,90 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": [],
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "none",
+  "sortImports": {
+    "customGroups": [
+      {
+        "groupName": "./components",
+        "elementNamePattern": ["**/components"]
+      },
+      {
+        "groupName": "./config",
+        "elementNamePattern": ["**/config", "**/config/**"]
+      },
+      {
+        "groupName": "./db",
+        "elementNamePattern": ["**/db", "**/db/**"]
+      },
+      {
+        "groupName": "./features",
+        "elementNamePattern": [
+          "**/features",
+          "**/features/**/api/**",
+          "**/features/**/components/**",
+          "**/features/**/constants/**",
+          "**/features/**/hooks/**"
+        ]
+      },
+      {
+        "groupName": "./hooks",
+        "elementNamePattern": ["**/hooks", "**/hooks/**"]
+      },
+      {
+        "groupName": "./lib",
+        "elementNamePattern": ["**/lib", "**/lib/**"]
+      },
+      {
+        "groupName": "./middlewares",
+        "elementNamePattern": ["**/middlewares", "**/middlewares/**"]
+      },
+      {
+        "groupName": "./pages",
+        "elementNamePattern": ["**/pages", "**/pages/**"]
+      },
+      {
+        "groupName": "./repositories",
+        "elementNamePattern": ["**/repositories", "**/repositories/**"]
+      },
+      {
+        "groupName": "./routes",
+        "elementNamePattern": ["**/routes", "**/routes/**"]
+      },
+      {
+        "groupName": "./services",
+        "elementNamePattern": ["**/services", "**/services/**"]
+      },
+      {
+        "groupName": "./stores",
+        "elementNamePattern": ["**/stores", "**/stores/**"]
+      },
+      {
+        "groupName": "./types",
+        "elementNamePattern": ["**/types", "**/types/**"]
+      }
+    ],
+    "groups": [
+      "builtin",
+      "external",
+      "internal",
+      "./components",
+      "./config",
+      "./db",
+      "./features",
+      "./hooks",
+      "./lib",
+      "./middlewares",
+      "./pages",
+      "./repositories",
+      "./routes",
+      "./services",
+      "./stores",
+      "./types",
+      "parent",
+      "sibling",
+      "index"
+    ]
+  }
+}

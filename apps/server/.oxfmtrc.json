@@ -1,0 +1,54 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": [],
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "none",
+  "sortImports": {
+    "customGroups": [
+      {
+        "groupName": "./config",
+        "elementNamePattern": ["**/config", "**/config/**"]
+      },
+      {
+        "groupName": "./db",
+        "elementNamePattern": ["**/db", "**/db/**"]
+      },
+      {
+        "groupName": "./lib",
+        "elementNamePattern": ["**/lib", "**/lib/**"]
+      },
+      {
+        "groupName": "./middlewares",
+        "elementNamePattern": ["**/middlewares", "**/middlewares/**"]
+      },
+      {
+        "groupName": "./repositories",
+        "elementNamePattern": ["**/repositories", "**/repositories/**"]
+      },
+      {
+        "groupName": "./routes",
+        "elementNamePattern": ["**/routes", "**/routes/**"]
+      },
+      {
+        "groupName": "./services",
+        "elementNamePattern": ["**/services", "**/services/**"]
+      }
+    ],
+    "groups": [
+      "builtin",
+      "external",
+      "internal",
+      "./config",
+      "./db",
+      "./lib",
+      "./middlewares",
+      "./repositories",
+      "./routes",
+      "./services",
+      "parent",
+      "sibling",
+      "index"
+    ]
+  }
+}
