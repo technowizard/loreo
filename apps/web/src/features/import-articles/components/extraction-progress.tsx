@@ -106,7 +106,9 @@ export function ExtractionProgress(props: ExtractionProgressProps) {
         </Card>
       </div>
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold sm:text-lg">Processing Queue</h2>
+        <h2 className="text-sm font-semibold sm:text-lg">
+          {t('import.extraction.processingQueue')}
+        </h2>
         <div>
           <Select
             disabled={isFetchingNextPage}

@@ -467,8 +467,27 @@ const phaseEightKeys = [
   'import.extraction.failedLoadMore'
 ] as const;
 
+const phaseNineKeys = [
+  'common.loading',
+  'nav.moreActionsAria',
+  'import.extraction.processingQueue',
+  'import.wizard.stepsAria',
+  'import.wizard.stepLabel',
+  'reader.highlights.viewInPanel',
+  'reader.highlights.closeOptionsAria',
+  'reader.highlights.changeColorAria',
+  'reader.highlights.changeColorTitle'
+] as const;
+
 describe('common locale phase 8 coverage', () => {
   it.each(phaseEightKeys)('defines %s in English and Indonesian locales', (key) => {
+    expect(getValue(enCommon, key)).toEqual(expect.any(String));
+    expect(getValue(idCommon, key)).toEqual(expect.any(String));
+  });
+});
+
+describe('common locale phase 9 coverage', () => {
+  it.each(phaseNineKeys)('defines %s in English and Indonesian locales', (key) => {
     expect(getValue(enCommon, key)).toEqual(expect.any(String));
     expect(getValue(idCommon, key)).toEqual(expect.any(String));
   });

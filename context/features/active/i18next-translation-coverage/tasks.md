@@ -74,9 +74,9 @@
 
 ## Phase 9: Verification and Regression Pass
 
-- [ ] Search for remaining hardcoded user-facing English strings.
-- [ ] Check for missing i18next keys.
-- [ ] Run typecheck.
-- [ ] Run lint.
-- [ ] Run biome/format check.
-- [ ] Record verification evidence in `review.md`.
+- [x] Search for remaining hardcoded user-facing English strings.
+- [x] Check for missing i18next keys.
+- [x] Run typecheck.
+- [x] Run lint.
+- [x] Run biome/format check.
+- [x] Record verification evidence in `review.md`.

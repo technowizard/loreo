@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { ColorOption } from './types';
 import type { Highlight } from '@/types/highlights';
@@ -73,6 +74,7 @@ export function useHighlighter({
   onRemove,
   onUpdate
 }: UseHighlighterProps) {
+  const { t } = useTranslation('common');
   const [popoverState, setPopoverState] = useState<HighlightPopoverState>({
     editingHighlight: null,
     selectedRange: null,
@@ -365,7 +367,7 @@ export function useHighlighter({
         />
 
         <div
-          aria-label="Close highlight options"
+          aria-label={t('reader.highlights.closeOptionsAria')}
           onClick={hideFloatingUI}
           style={{
             alignItems: 'center',
@@ -377,7 +379,7 @@ export function useHighlighter({
             lineHeight: '16px'
           }}
         >
-          Close
+          {t('common.dialog.close')}
         </div>
       </div>
     );
@@ -425,7 +427,7 @@ export function useHighlighter({
         <div style={{ display: 'flex', gap: '6px' }}>
           {colors.map(({ color, value, label }) => (
             <button
-              aria-label={`Change to ${label}`}
+              aria-label={t('reader.highlights.changeColorAria', { label })}
               key={value}
               onClick={(e) => {
                 e.preventDefault();
@@ -447,7 +449,7 @@ export function useHighlighter({
                 transition: 'border-color 0.15s ease',
                 width: '24px'
               }}
-              title={`Change to ${label}`}
+              title={t('reader.highlights.changeColorTitle', { label })}
             />
           ))}
         </div>
@@ -461,7 +463,7 @@ export function useHighlighter({
         />
 
         <button
-          aria-label="Remove highlight"
+          aria-label={t('reader.notes.removeHighlight')}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();

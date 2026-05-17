@@ -1,4 +1,5 @@
 import { SquareHalfIcon, TrashIcon } from '@phosphor-icons/react';
+import { useTranslation } from 'react-i18next';
 
 import { useHighlights } from '../../hooks/use-highlights';
 
@@ -31,6 +32,7 @@ export function ManageHighlight({
   updateHighlight
 }: ManageHighlightProps) {
   const { selectedHighlightId, toggleShowHighlights } = useHighlights();
+  const { t } = useTranslation('common');
 
   return (
     <div className="flex min-w-40 flex-col items-center gap-2">
@@ -73,7 +75,9 @@ export function ManageHighlight({
               }}
             >
               <SquareHalfIcon className="size-6" />
-              <div className="text-foreground text-sm font-semibold">View in panel</div>
+              <div className="text-foreground text-sm font-semibold">
+                {t('reader.highlights.viewInPanel')}
+              </div>
             </button>
             <button
               className="hover:bg-secondary flex w-full items-center gap-2 rounded-4xl p-2"
@@ -84,7 +88,9 @@ export function ManageHighlight({
               }}
             >
               <TrashIcon className="size-6" />
-              <div className="text-foreground text-sm font-semibold">Remove highlight</div>
+              <div className="text-foreground text-sm font-semibold">
+                {t('reader.notes.removeHighlight')}
+              </div>
             </button>
           </div>
         )}

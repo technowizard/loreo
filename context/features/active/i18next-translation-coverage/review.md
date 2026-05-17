@@ -204,3 +204,24 @@
 
 - `id/common.json` still mirrors English values; it needs a later Indonesian copy pass.
 - Reader navigation drawer copy (Back, Reader Settings, Theme, Font Size, Line Spacing, Text Alignment, Font Family, Sans Serif, Unfavorite/Favorite) remains untranslated — deferred because labels double as state values in theme-config.
+
+## Phase 9: Verification and Regression Pass
+
+### Completed
+
+- Scanned `apps/web/src` for remaining hardcoded user-facing English strings using explorer subagent.
+- Found and translated 13 remaining strings across 7 files: extraction progress heading, wizard step indicator text/aria, highlight tooltip/options/colors, manage-highlight buttons, toggle-favorite aria, mobile-header-nav aria, and spinner aria.
+- Added 9 new locale keys (`common.loading`, `nav.moreActionsAria`, `import.extraction.processingQueue`, `import.wizard.stepsAria`, `import.wizard.stepLabel`, `reader.highlights.viewInPanel`, `reader.highlights.closeOptionsAria`, `reader.highlights.changeColorAria`, `reader.highlights.changeColorTitle`) to both English and Indonesian locales.
+- Reused existing keys (`articles.card.actions.toggleFavorite`, `reader.notes.removeHighlight`, `common.dialog.close`) for aria-labels and tooltips that already had corresponding locale values.
+- Confirmed `__root.tsx` brand name `title: 'Loreo'` should remain hardcoded as brand.
+
+### Verification
+
+- GREEN: `bun test src/locales/common.test.ts` passed: 383 tests, 766 assertions.
+- Typecheck: `bun run typecheck` passed.
+- Touched-file lint/format: `pnpm exec oxlint ... && pnpm exec oxfmt --check ...` passed.
+
+### Remaining Risks
+
+- `id/common.json` still mirrors English values; it needs a later Indonesian copy pass.
+- Reader navigation drawer copy (including all aria-labels) remains untranslated and deferred.

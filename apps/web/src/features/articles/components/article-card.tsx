@@ -532,7 +532,7 @@ function ListCardCompact({
 
             <div className="-mr-2 -mt-1 flex shrink-0 items-center">
               <Button
-                aria-label="Toggle favorite"
+                aria-label={t('articles.card.actions.toggleFavorite')}
                 className="relative size-9 after:absolute after:-inset-1 after:content-['']"
                 onClick={(e) => {
                   e.stopPropagation();

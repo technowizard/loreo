@@ -20,7 +20,8 @@
     },
     "dialog": {
       "close": "Close"
-    }
+    },
+    "loading": "Loading"
   },
   "login": {
     "title": "Welcome back",
@@ -84,7 +85,8 @@
   },
   "nav": {
     "home": "Home",
-    "articles": "Articles"
+    "articles": "Articles",
+    "moreActionsAria": "More actions"
   },
   "userMenu": {
     "fallbackName": "User",
@@ -460,7 +462,11 @@
     },
     "highlights": {
       "title": "Highlights",
-      "description": "Your highlights on this article"
+      "description": "Your highlights on this article",
+      "viewInPanel": "View in panel",
+      "closeOptionsAria": "Close highlight options",
+      "changeColorAria": "Change to {{label}}",
+      "changeColorTitle": "Change to {{label}}"
     },
     "notes": {
       "highlightColor": "Highlight color",
@@ -603,7 +609,9 @@
       "stepReviewDescription": "Review your data before importing",
       "errorUploadRequired": "Please upload a CSV file first",
       "errorMapRequired": "Please map all required fields",
-      "errorNoData": "No data to import"
+      "errorNoData": "No data to import",
+      "stepsAria": "Steps",
+      "stepLabel": "Step {{current}}"
     },
     "progress": {
       "completeTitle": "Import Complete!",
@@ -678,7 +686,8 @@
       "loadMore": "Load more",
       "noResults": "No extraction results found",
       "viewArticle": "View",
-      "failedLoadMore": "Failed to load more items"
+      "failedLoadMore": "Failed to load more items",
+      "processingQueue": "Processing Queue"
     }
   }
 }
