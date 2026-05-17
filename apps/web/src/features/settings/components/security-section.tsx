@@ -1,5 +1,6 @@
 import { SpinnerIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import { Field, FieldLabel } from '@/components/ui/field';
@@ -18,6 +19,7 @@ const emptyForm = {
 };
 
 export function SecuritySection() {
+  const { t } = useTranslation('common');
   const notifyError = useNotificationsStore.useError();
   const notifySuccess = useNotificationsStore.useSuccess();
   const [formData, setFormData] = useState(emptyForm);
@@ -29,7 +31,7 @@ export function SecuritySection() {
       onError: (error) => notifyError(error.message),
       onSuccess: () => {
         setFormData(emptyForm);
-        notifySuccess('Password updated');
+        notifySuccess(t('settings.security.toasts.passwordUpdated'));
       }
     }
   });
@@ -41,36 +43,36 @@ export function SecuritySection() {
 
   return (
     <SettingsSection
-      description="Update your password to keep your account secure"
-      title="Security"
+      description={t('settings.security.description')}
+      title={t('settings.security.title')}
     >
       <form className="space-y-4" onSubmit={handleSubmit}>
         <Field>
-          <FieldLabel>Current Password</FieldLabel>
+          <FieldLabel>{t('settings.security.currentPasswordLabel')}</FieldLabel>
           <PasswordInput
             onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
-            placeholder="Enter current password"
+            placeholder={t('settings.security.currentPasswordPlaceholder')}
             required
             value={formData.currentPassword}
           />
         </Field>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field>
-            <FieldLabel>New Password</FieldLabel>
+            <FieldLabel>{t('settings.security.newPasswordLabel')}</FieldLabel>
             <PasswordInput
               minLength={8}
               onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
-              placeholder="Enter new password"
+              placeholder={t('settings.security.newPasswordPlaceholder')}
               required
               value={formData.newPassword}
             />
           </Field>
           <Field>
-            <FieldLabel>Confirm New Password</FieldLabel>
+            <FieldLabel>{t('settings.security.confirmPasswordLabel')}</FieldLabel>
             <PasswordInput
               minLength={8}
               onChange={(e) => setFormData({ ...formData, confirmNewPassword: e.target.value })}
-              placeholder="Confirm new password"
+              placeholder={t('settings.security.confirmPasswordPlaceholder')}
               required
               value={formData.confirmNewPassword}
             />
@@ -78,11 +80,11 @@ export function SecuritySection() {
         </div>
         <div className="flex items-center justify-between pt-2">
           <span className="text-muted-foreground text-xs">
-            Password must be at least 8 characters
+            {t('settings.security.validationHint')}
           </span>
           <Button disabled={!hasChanges || updatePassword.isPending} size="sm" type="submit">
             {updatePassword.isPending && <SpinnerIcon className="mr-2 animate-spin" size={16} />}
-            Update Password
+            {t('settings.security.updatePassword')}
           </Button>
         </div>
       </form>

@@ -41,12 +41,12 @@
 
 ## Phase 5: Settings
 
-- [ ] Translate settings page shell.
-- [ ] Translate account section.
-- [ ] Translate security section.
-- [ ] Translate reader preferences section.
-- [ ] Translate data/import settings section.
-- [ ] Verify settings flows.
+- [x] Translate settings page shell.
+- [x] Translate account section.
+- [x] Translate security section.
+- [x] Translate reader preferences section.
+- [x] Translate data/import settings section.
+- [x] Verify settings flows.
 
 ## Phase 6: Tags Management
 

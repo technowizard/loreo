@@ -99,3 +99,27 @@
 
 - `id/common.json` still mirrors English values; it needs a later Indonesian copy pass.
 - Reader navigation drawer copy remains untranslated and is deferred to a later phase.
+
+## Phase 5: Settings
+
+### Completed
+
+- Added phase 5 locale coverage tests for settings page, account, security, reader preferences, and data sections.
+- Added matching `settings.*` keys to English and Indonesian common locales.
+- Replaced settings page shell title/description with i18next lookups.
+- Replaced account section copy (avatar, name, email fields, save/cancel/confirm buttons, toast messages).
+- Replaced security section copy (password fields, validation hint, password update button, toast).
+- Replaced reader preferences section copy (section title/description, theme labels/tooltip/cards, typography/font/line-spacing field labels, preview toggle, font-family tab labels, text alignment cards, reset preferences block).
+- Replaced data section copy (section title/description, import card copy, session card title/date, status badges, progress labels, extracted/failed counts, delete/view-details buttons).
+
+### Verification
+
+- RED: `bun test src/locales/common.test.ts` failed before phase 5 locale keys were added.
+- GREEN: `bun test src/locales/common.test.ts` passed: 174 tests, 348 assertions.
+- Typecheck: `bun run typecheck` passed.
+- Touched-file lint/format: `pnpm exec oxlint ... && pnpm exec oxfmt --check ...` passed for the phase 5 touched files after formatting.
+
+### Remaining Risks
+
+- `id/common.json` still mirrors English values; it needs a later Indonesian copy pass.
+- Reader navigation drawer copy remains untranslated and deferred.

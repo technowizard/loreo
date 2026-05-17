@@ -133,6 +133,72 @@ const phaseFourKeys = [
   'reader.progress.end'
 ] as const;
 
+const phaseFiveKeys = [
+  'settings.page.title',
+  'settings.page.description',
+  'settings.account.title',
+  'settings.account.description',
+  'settings.account.changeAvatar',
+  'settings.account.avatarHint',
+  'settings.account.nameLabel',
+  'settings.account.namePlaceholder',
+  'settings.account.save',
+  'settings.account.emailLabel',
+  'settings.account.emailPlaceholder',
+  'settings.account.saveEmail',
+  'settings.account.confirmPasswordLabel',
+  'settings.account.passwordPlaceholder',
+  'settings.account.confirm',
+  'settings.account.cancel',
+  'settings.account.toasts.avatarUpdated',
+  'settings.account.toasts.nameUpdated',
+  'settings.account.toasts.emailUpdated',
+  'settings.security.title',
+  'settings.security.description',
+  'settings.security.currentPasswordLabel',
+  'settings.security.currentPasswordPlaceholder',
+  'settings.security.newPasswordLabel',
+  'settings.security.newPasswordPlaceholder',
+  'settings.security.confirmPasswordLabel',
+  'settings.security.confirmPasswordPlaceholder',
+  'settings.security.validationHint',
+  'settings.security.updatePassword',
+  'settings.security.toasts.passwordUpdated',
+  'settings.readerPreferences.title',
+  'settings.readerPreferences.description',
+  'settings.readerPreferences.themeLabel',
+  'settings.readerPreferences.themeTooltip',
+  'settings.readerPreferences.typographyLabel',
+  'settings.readerPreferences.fontSizeLabel',
+  'settings.readerPreferences.lineSpacingLabel',
+  'settings.readerPreferences.fontFamilyLabel',
+  'settings.readerPreferences.showPreview',
+  'settings.readerPreferences.hidePreview',
+  'settings.readerPreferences.textAlignmentLabel',
+  'settings.readerPreferences.textAlignment.default.title',
+  'settings.readerPreferences.textAlignment.default.description',
+  'settings.readerPreferences.textAlignment.justify.title',
+  'settings.readerPreferences.textAlignment.justify.description',
+  'settings.readerPreferences.resetPreferences.title',
+  'settings.readerPreferences.resetPreferences.description',
+  'settings.readerPreferences.resetToDefault',
+  'settings.data.title',
+  'settings.data.description',
+  'settings.data.importCard.cardTitle',
+  'settings.data.importCard.cardDescription',
+  'settings.data.importCard.button',
+  'settings.data.importCard.title',
+  'settings.data.updated',
+  'settings.data.recentImports',
+  'settings.data.statusCompleted',
+  'settings.data.statusInProgress',
+  'settings.data.progress',
+  'settings.data.counts.extracted',
+  'settings.data.counts.failed',
+  'settings.data.delete',
+  'settings.data.viewDetails'
+] as const;
+
 function getValue(source: unknown, key: string) {
   return key.split('.').reduce<unknown>((value, segment) => {
     if (value && typeof value === 'object' && segment in value) {
@@ -166,6 +232,13 @@ describe('common locale phase 3 coverage', () => {
 
 describe('common locale phase 4 coverage', () => {
   it.each(phaseFourKeys)('defines %s in English and Indonesian locales', (key) => {
+    expect(getValue(enCommon, key)).toEqual(expect.any(String));
+    expect(getValue(idCommon, key)).toEqual(expect.any(String));
+  });
+});
+
+describe('common locale phase 5 coverage', () => {
+  it.each(phaseFiveKeys)('defines %s in English and Indonesian locales', (key) => {
     expect(getValue(enCommon, key)).toEqual(expect.any(String));
     expect(getValue(idCommon, key)).toEqual(expect.any(String));
   });

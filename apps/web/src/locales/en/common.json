@@ -199,6 +199,97 @@
       "saving": "Saving..."
     }
   },
+  "settings": {
+    "page": {
+      "title": "Settings",
+      "description": "Manage your account and customize your reading experience"
+    },
+    "account": {
+      "title": "Account",
+      "description": "Your personal information and profile details",
+      "changeAvatar": "Change Avatar",
+      "avatarHint": "JPG or PNG. Max 2MB.",
+      "nameLabel": "Name",
+      "namePlaceholder": "Enter your name",
+      "save": "Save",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "saveEmail": "Save Email",
+      "confirmPasswordLabel": "Confirm with your current password",
+      "passwordPlaceholder": "Enter current password",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "toasts": {
+        "avatarUpdated": "Avatar updated",
+        "nameUpdated": "Name updated",
+        "emailUpdated": "Email updated"
+      }
+    },
+    "security": {
+      "title": "Security",
+      "description": "Update your password to keep your account secure",
+      "currentPasswordLabel": "Current Password",
+      "currentPasswordPlaceholder": "Enter current password",
+      "newPasswordLabel": "New Password",
+      "newPasswordPlaceholder": "Enter new password",
+      "confirmPasswordLabel": "Confirm New Password",
+      "confirmPasswordPlaceholder": "Confirm new password",
+      "validationHint": "Password must be at least 8 characters",
+      "updatePassword": "Update Password",
+      "toasts": {
+        "passwordUpdated": "Password updated"
+      }
+    },
+    "readerPreferences": {
+      "title": "Reader Preferences",
+      "description": "Customize how articles look when you read them",
+      "themeLabel": "Theme",
+      "themeTooltip": "Applies to both the app interface and article reader",
+      "typographyLabel": "Typography",
+      "fontSizeLabel": "Font Size",
+      "lineSpacingLabel": "Line Spacing",
+      "fontFamilyLabel": "Font Family",
+      "showPreview": "Show Preview",
+      "hidePreview": "Hide Preview",
+      "textAlignmentLabel": "Text Alignment",
+      "textAlignment": {
+        "default": {
+          "title": "Default",
+          "description": "Text lines up on the left side"
+        },
+        "justify": {
+          "title": "Justify",
+          "description": "Text spreads evenly across the width"
+        }
+      },
+      "resetPreferences": {
+        "title": "Reset Preferences",
+        "description": "Restore all reader settings to their default values"
+      },
+      "resetToDefault": "Reset to Default"
+    },
+    "data": {
+      "title": "Data",
+      "description": "Import articles and manage your reading data",
+      "importCard": {
+        "cardTitle": "Import Articles",
+        "cardDescription": "Import articles from a CSV file to quickly build your reading list",
+        "button": "Import from CSV",
+        "title": "Import from CSV · {{date}}"
+      },
+      "updated": "Updated {{date}}",
+      "recentImports": "Recent Imports",
+      "statusCompleted": "Completed",
+      "statusInProgress": "In Progress",
+      "progress": "Progress",
+      "counts": {
+        "extracted": "{{count}} extracted",
+        "failed": "{{count}} failed"
+      },
+      "delete": "Delete",
+      "viewDetails": "View Details"
+    }
+  },
   "reader": {
     "whatsNext": "What's next?",
     "actions": {
