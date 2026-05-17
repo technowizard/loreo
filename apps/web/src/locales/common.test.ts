@@ -112,6 +112,27 @@ const phaseThreeKeys = [
   'articles.toasts.tagsUpdated'
 ] as const;
 
+const phaseFourKeys = [
+  'reader.whatsNext',
+  'reader.actions.favorite',
+  'reader.actions.favorited',
+  'reader.actions.archiveAndMarkRead',
+  'reader.actions.copyLink',
+  'reader.actions.linkCopied',
+  'reader.actions.upNext',
+  'reader.actions.markedAsFavorite',
+  'reader.actions.removedFromFavorites',
+  'reader.actions.archivedAndMarkedRead',
+  'reader.actions.linkUpdated',
+  'reader.resume.title',
+  'reader.resume.position',
+  'reader.resume.continue',
+  'reader.progress.read',
+  'reader.progress.left',
+  'reader.progress.top',
+  'reader.progress.end'
+] as const;
+
 function getValue(source: unknown, key: string) {
   return key.split('.').reduce<unknown>((value, segment) => {
     if (value && typeof value === 'object' && segment in value) {
@@ -138,6 +159,13 @@ describe('common locale phase 2 coverage', () => {
 
 describe('common locale phase 3 coverage', () => {
   it.each(phaseThreeKeys)('defines %s in English and Indonesian locales', (key) => {
+    expect(getValue(enCommon, key)).toEqual(expect.any(String));
+    expect(getValue(idCommon, key)).toEqual(expect.any(String));
+  });
+});
+
+describe('common locale phase 4 coverage', () => {
+  it.each(phaseFourKeys)('defines %s in English and Indonesian locales', (key) => {
     expect(getValue(enCommon, key)).toEqual(expect.any(String));
     expect(getValue(idCommon, key)).toEqual(expect.any(String));
   });

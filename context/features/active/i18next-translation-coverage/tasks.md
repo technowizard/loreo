@@ -33,11 +33,11 @@
 
 ## Phase 4: Article Reader Experience
 
-- [ ] Translate reader actions and mutation toasts.
-- [ ] Translate resume banner.
-- [ ] Translate floating progress indicator.
-- [ ] Translate article reader metadata.
-- [ ] Verify article reader flows.
+- [x] Translate reader actions and mutation toasts.
+- [x] Translate resume banner.
+- [x] Translate floating progress indicator.
+- [x] Translate article reader metadata.
+- [x] Verify article reader flows.
 
 ## Phase 5: Settings
 

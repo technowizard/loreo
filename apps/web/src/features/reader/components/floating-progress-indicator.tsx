@@ -1,5 +1,6 @@
 import { BookOpenIcon, CaretDownIcon, CaretUpIcon } from '@phosphor-icons/react';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/lib/utils';
 
@@ -16,6 +17,7 @@ export default function FloatingProgressIndicator({
   progress,
   readingTime
 }: FloatingProgressIndicatorProps) {
+  const { t } = useTranslation('common');
   const [isExpanded, setIsExpanded] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [shouldShowIndicator, setShouldShowIndicator] = useState(true);
@@ -114,10 +116,14 @@ export default function FloatingProgressIndicator({
             <div className="mb-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <BookOpenIcon className="text-gray-600" size={16} />
-                <span className="text-sm font-medium text-gray-900">{progressPercent}% read</span>
+                <span className="text-sm font-medium text-gray-900">
+                  {t('reader.progress.read', { progress: progressPercent })}
+                </span>
               </div>
               {estimatedTimeLeft && (
-                <span className="text-xs text-gray-500">~{estimatedTimeLeft}m left</span>
+                <span className="text-xs text-gray-500">
+                  {t('reader.progress.left', { minutes: estimatedTimeLeft })}
+                </span>
               )}
             </div>
 
@@ -154,7 +160,7 @@ export default function FloatingProgressIndicator({
                 }}
               >
                 <CaretUpIcon size={14} />
-                Top
+                {t('reader.progress.top')}
               </button>
               <button
                 className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
@@ -165,7 +171,7 @@ export default function FloatingProgressIndicator({
                 }}
               >
                 <CaretDownIcon size={14} />
-                End
+                {t('reader.progress.end')}
               </button>
             </div>
           </div>

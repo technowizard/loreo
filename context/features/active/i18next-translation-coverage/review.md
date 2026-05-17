@@ -77,3 +77,25 @@
 - `id/common.json` still mirrors English values; needs Indonesian copy pass.
 - Article card `PRIORITY_OPTIONS` constant uses `labelKey` references translated inside components.
 - Some dynamic filter titles in `articles.tsx` (e.g., "Group: {{name}}", "Tag: {{name}}") remain hardcoded and use runtime data.
+
+## Phase 4: Article Reader Experience
+
+### Completed
+
+- Added phase 4 locale coverage tests for reader actions, resume banner, and progress indicator keys.
+- Added matching `reader.*` keys for article reader actions, resume banner, and progress indicator copy to English and Indonesian common locales.
+- Replaced hardcoded article reader page action labels and mutation status messages with i18next lookups.
+- Replaced resume-position banner copy with i18next lookups.
+- Replaced floating progress indicator copy with i18next lookups.
+
+### Verification
+
+- RED: `bun test src/locales/common.test.ts` failed before phase 4 reader keys were added.
+- GREEN: `bun test src/locales/common.test.ts` passed: 111 tests, 222 assertions.
+- Typecheck: `bun run typecheck` passed.
+- Touched-file lint/format: `pnpm exec oxlint ... && pnpm exec oxfmt --check ...` passed for the phase 4 touched reader files after formatting.
+
+### Remaining Risks
+
+- `id/common.json` still mirrors English values; it needs a later Indonesian copy pass.
+- Reader navigation drawer copy remains untranslated and is deferred to a later phase.

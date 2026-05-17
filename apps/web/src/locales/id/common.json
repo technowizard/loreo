@@ -198,5 +198,131 @@
       "save": "Save Tags",
       "saving": "Saving..."
     }
+  },
+  "reader": {
+    "whatsNext": "What's next?",
+    "actions": {
+      "favorite": "Favorite",
+      "favorited": "Favorited",
+      "archiveAndMarkRead": "Archive & Mark Read",
+      "copyLink": "Copy Link",
+      "linkCopied": "Link Copied",
+      "upNext": "Up next",
+      "markedAsFavorite": "Marked as favorite",
+      "removedFromFavorites": "Removed from favorites",
+      "archivedAndMarkedRead": "Archived and marked as read",
+      "linkUpdated": "Link updated"
+    },
+    "resume": {
+      "title": "Resume reading",
+      "position": "You were at {{progress}}%",
+      "continue": "Continue"
+    },
+    "progress": {
+      "read": "{{progress}}% read",
+      "left": "~{{minutes}}m left",
+      "top": "Top",
+      "end": "End"
+    },
+    "nav": {
+      "backToArticles": "Go back to articles",
+      "back": "Back",
+      "openInNewTab": "Open article in new tab",
+      "viewHighlights": "View highlights",
+      "openSettings": "Open reader settings"
+    },
+    "settings": {
+      "title": "Reader Settings",
+      "theme": "Theme",
+      "setSystemTheme": "Set system theme",
+      "setLightTheme": "Set light theme",
+      "setSepiaTheme": "Set sepia theme",
+      "setDarkTheme": "Set dark theme",
+      "fontSize": "Font Size",
+      "decreaseFontSize": "Decrease font size",
+      "increaseFontSize": "Increase font size",
+      "lineSpacing": "Line Spacing",
+      "decreaseLineSpacing": "Decrease line spacing",
+      "increaseLineSpacing": "Increase line spacing",
+      "textAlignment": "Text Alignment",
+      "defaultTextAlignment": "Set default text alignment",
+      "justifiedTextAlignment": "Set justified text alignment",
+      "fontFamily": "Font Family",
+      "moreOptions": "More options",
+      "unfavorite": "Unfavorite",
+      "favorite": "Favorite",
+      "unarchive": "Unarchive",
+      "archive": "Archive",
+      "editTags": "Edit Tags",
+      "deleteArticle": "Delete article"
+    },
+    "fontCategories": {
+      "sansSerif": "Sans Serif",
+      "serif": "Serif",
+      "legible": "Legible"
+    },
+    "fontSizes": {
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large",
+      "extraLarge": "Extra Large",
+      "huge": "Huge"
+    },
+    "lineSpacing": {
+      "compact": "Compact",
+      "normal": "Normal",
+      "relaxed": "Relaxed",
+      "loose": "Loose"
+    },
+    "fontFamilies": {
+      "default": {
+        "label": "Hanken Grotesk (Default)",
+        "description": "Clean, modern, highly readable"
+      },
+      "inter": {
+        "label": "Inter",
+        "description": "Clear font, easy on eyes"
+      },
+      "plexSans": {
+        "label": "IBM Plex Sans",
+        "description": "Balanced font with human, technical feel"
+      },
+      "publicSans": {
+        "label": "Public Sans",
+        "description": "Calm, neutral font"
+      },
+      "lora": {
+        "label": "Lora",
+        "description": "Warm font for long reading"
+      },
+      "literata": {
+        "label": "Literata",
+        "description": "Book-style font for long reading"
+      },
+      "spectral": {
+        "label": "Spectral",
+        "description": "Modern font suited for long reading"
+      },
+      "alegreya": {
+        "label": "Alegreya",
+        "description": "Lively font with a classic feel"
+      },
+      "atkinson": {
+        "label": "Atkinson Hyperlegible",
+        "description": "Designed for readability"
+      },
+      "lexendDeca": {
+        "label": "Lexend Deca",
+        "description": "Smooth font, supports relaxed reading"
+      },
+      "dyslexic": {
+        "label": "Open Dyslexic",
+        "description": "Dyslexia-friendly font"
+      },
+      "comicNeue": {
+        "label": "Comic Neue",
+        "description": "Casual, handwritten-style font"
+      }
+    }
   }
 }
