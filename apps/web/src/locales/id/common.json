@@ -68,12 +68,49 @@
     "recentlySaved": "Recently saved",
     "pasteUrlToSaveFirstArticle": "Paste a URL to save your first article"
   },
+  "nav": {
+    "home": "Home",
+    "articles": "Articles"
+  },
+  "userMenu": {
+    "fallbackName": "User",
+    "switchTheme": "Switch theme",
+    "settings": "Settings",
+    "logOut": "Log out",
+    "themes": {
+      "system": "System",
+      "light": "Light",
+      "sepia": "Sepia",
+      "dark": "Dark"
+    }
+  },
   "routes": {
+    "home": {
+      "metaTitle": "Home | Loreo"
+    },
     "login": {
       "metaTitle": "Login | Loreo"
     },
     "register": {
       "metaTitle": "Register | Loreo"
+    },
+    "articles": {
+      "metaTitle": "Articles | Loreo"
+    },
+    "articleReader": {
+      "fallbackMetaTitle": "Loreo"
+    },
+    "settings": {
+      "metaTitle": "Settings | Loreo"
+    },
+    "manageTags": {
+      "metaTitle": "Manage Tags | Loreo"
+    },
+    "importArticles": {
+      "metaTitle": "Import Articles | Loreo"
+    },
+    "importProgress": {
+      "metaTitle": "Import Progress | Loreo"
     }
   }
 }

@@ -17,10 +17,10 @@
 
 ## Phase 2: Navigation, Layout, and Route Metadata
 
-- [ ] Translate header navigation labels.
-- [ ] Translate user menu and theme labels.
-- [ ] Translate route metadata titles.
-- [ ] Verify protected layout renders translated labels.
+- [x] Translate header navigation labels.
+- [x] Translate user menu and theme labels.
+- [x] Translate route metadata titles.
+- [x] Verify protected layout renders translated labels.
 
 ## Phase 3: Articles List Experience
 

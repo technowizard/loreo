@@ -1,5 +1,6 @@
 import { BookmarksIcon, HouseIcon, UserIcon } from '@phosphor-icons/react';
 import { Link, useLocation } from '@tanstack/react-router';
+import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/lib/utils';
 
@@ -7,6 +8,7 @@ import { UserMenu } from '../common/user-menu';
 
 export function Header() {
   const { pathname } = useLocation();
+  const { t } = useTranslation('common');
 
   return (
     <header className="bg-background/80 dark:bg-card border-border sticky top-0 z-50 hidden border-b backdrop-blur-md md:block">
@@ -29,7 +31,7 @@ export function Header() {
                   )}
                 >
                   <HouseIcon className="size-5" weight={pathname === '/' ? 'fill' : 'regular'} />
-                  <span className="font-medium">Home</span>
+                  <span className="font-medium">{t('nav.home')}</span>
                 </div>
               </Link>
               <Link to="/articles">
@@ -44,7 +46,7 @@ export function Header() {
                     className="size-5"
                     weight={pathname === '/articles' ? 'fill' : 'regular'}
                   />
-                  <span className="font-medium">Articles</span>
+                  <span className="font-medium">{t('nav.articles')}</span>
                 </div>
               </Link>
             </nav>
