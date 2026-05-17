@@ -24,12 +24,12 @@
 
 ## Phase 3: Articles List Experience
 
-- [ ] Translate article page toasts.
-- [ ] Translate toolbar and filter sidebar copy.
-- [ ] Translate empty states.
-- [ ] Translate article cards and action menus.
-- [ ] Translate add/edit article dialogs.
-- [ ] Verify article list flows.
+- [x] Translate article page toasts.
+- [x] Translate toolbar and filter sidebar copy.
+- [x] Translate empty states.
+- [x] Translate article cards and action menus.
+- [x] Translate add/edit article dialogs.
+- [x] Verify article list flows.
 
 ## Phase 4: Article Reader Experience
 

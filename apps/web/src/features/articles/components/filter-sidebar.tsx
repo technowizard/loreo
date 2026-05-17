@@ -8,6 +8,7 @@ import {
   TagIcon
 } from '@phosphor-icons/react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -40,11 +41,12 @@ const Filter = memo(function Filter({
   onFilterClick,
   onNavigateToTagManagement
 }: FilterProps) {
+  const { t } = useTranslation('common');
   return (
     <div className="flex flex-col gap-4">
       <SidebarTitle className="inline-flex items-center gap-2">
         <BookmarksIcon weight="bold" />
-        Articles
+        {t('articles.filters.articles')}
       </SidebarTitle>
       <SidebarSection>
         {filterConfig.status.map((filter) => (
@@ -60,7 +62,7 @@ const Filter = memo(function Filter({
 
       <SidebarTitle className="inline-flex items-center gap-2">
         <FlagIcon weight="bold" />
-        Priority
+        {t('articles.filters.priority')}
       </SidebarTitle>
       <SidebarSection>
         {filterConfig.priority.map((filter) => (
@@ -76,7 +78,7 @@ const Filter = memo(function Filter({
 
       <SidebarTitle className="inline-flex items-center gap-2">
         <ClockIcon weight="bold" />
-        Reading Length
+        {t('articles.filters.readingLength')}
       </SidebarTitle>
       <SidebarSection>
         {filterConfig.readLength.map((filter) => (
@@ -92,7 +94,7 @@ const Filter = memo(function Filter({
 
       <SidebarTitle className="inline-flex items-center gap-2">
         <ArrowsDownUpIcon weight="bold" />
-        Sort By
+        {t('articles.filters.sortBy')}
       </SidebarTitle>
       <SidebarSection>
         {filterConfig.sort.map((filter) => (
@@ -109,10 +111,10 @@ const Filter = memo(function Filter({
       <div className="inline-flex items-center justify-between">
         <SidebarTitle className="inline-flex items-center gap-2">
           <TagIcon weight="bold" />
-          Tags
+          {t('articles.filters.tags')}
         </SidebarTitle>
         <Button
-          aria-label="Manage tags"
+          aria-label={t('articles.filters.manageTagsAria')}
           onClick={onNavigateToTagManagement}
           size="icon"
           variant="ghost"
@@ -138,7 +140,7 @@ const Filter = memo(function Filter({
                     <span className="font-medium">{group.name}</span>
                   </SidebarItem>
 
-                  <Button aria-label="Toggle group" variant="ghost">
+                  <Button aria-label={t('articles.filters.toggleGroupAria')} variant="ghost">
                     <CaretDownIcon
                       className="transition-transform group-data-[state=open]/collapsible:rotate-180"
                       size={16}

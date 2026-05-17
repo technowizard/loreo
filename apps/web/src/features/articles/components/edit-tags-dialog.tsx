@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -21,7 +22,7 @@ import {
 import { TagInput } from '@/components/ui/tag-input';
 
 import { useUpdateTags } from '@/features/articles/api/update-tags';
-import { useCreateTag, type CreateTagBody } from '@/features/tags/api/create-tag';
+import { type CreateTagBody, useCreateTag } from '@/features/tags/api/create-tag';
 import { useGetTagGroups } from '@/features/tags/api/get-tag-groups';
 import { useGetTags } from '@/features/tags/api/get-tags';
 
@@ -39,7 +40,7 @@ interface EditTagsDialogProps {
 function EditTagsDialog({ initialTags, linkId, onOpenChange, open }: EditTagsDialogProps) {
   const [pendingTags, setPendingTags] = useState<Tag[]>(initialTags);
   const pendingCreatedTagRef = useRef<Tag | null>(null);
-
+  const { t } = useTranslation('common');
   const { isMobile } = useMediaQuery();
 
   const tagsQuery = useGetTags();
@@ -48,13 +49,13 @@ function EditTagsDialog({ initialTags, linkId, onOpenChange, open }: EditTagsDia
   const updateTagsMutation = useUpdateTags({
     mutationConfig: {
       onError: () => {
-        toast.error('Failed to update tags', {
+        toast.error(t('articles.toasts.failedUpdateTags'), {
           position: 'top-center',
           richColors: true
         });
       },
       onSuccess: () => {
-        toast.success('Tags updated', {
+        toast.success(t('articles.toasts.tagsUpdated'), {
           position: 'top-center',
           richColors: true
         });
@@ -135,7 +136,7 @@ function EditTagsDialog({ initialTags, linkId, onOpenChange, open }: EditTagsDia
           handleSave();
         }}
       >
-        {isSaving ? 'Saving...' : 'Save Tags'}
+        {isSaving ? t('articles.editTags.saving') : t('articles.editTags.save')}
       </Button>
     </>
   );
@@ -145,8 +146,8 @@ function EditTagsDialog({ initialTags, linkId, onOpenChange, open }: EditTagsDia
       <Sheet onOpenChange={onOpenChange} open={open}>
         <SheetContent onClick={(e) => e.stopPropagation()} side="bottom">
           <SheetHeader>
-            <SheetTitle>Edit Tags</SheetTitle>
-            <SheetDescription>Add or remove tags for this article.</SheetDescription>
+            <SheetTitle>{t('articles.editTags.title')}</SheetTitle>
+            <SheetDescription>{t('articles.editTags.description')}</SheetDescription>
           </SheetHeader>
           <div className="px-4 py-2">{content}</div>
           <SheetFooter className="px-4 pb-4">{footer}</SheetFooter>
@@ -159,8 +160,8 @@ function EditTagsDialog({ initialTags, linkId, onOpenChange, open }: EditTagsDia
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent onClick={(e) => e.stopPropagation()}>
         <DialogHeader>
-          <DialogTitle>Edit Tags</DialogTitle>
-          <DialogDescription>Add or remove tags for this article.</DialogDescription>
+          <DialogTitle>{t('articles.editTags.title')}</DialogTitle>
+          <DialogDescription>{t('articles.editTags.description')}</DialogDescription>
         </DialogHeader>
         {content}
         <DialogFooter>{footer}</DialogFooter>

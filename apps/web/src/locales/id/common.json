@@ -112,5 +112,91 @@
     "importProgress": {
       "metaTitle": "Import Progress | Loreo"
     }
+  },
+  "articles": {
+    "toasts": {
+      "updating": "Updating...",
+      "linkUpdated": "Link updated",
+      "deletingLink": "Deleting link",
+      "linkDeleted": "Link deleted",
+      "reprocessing": "Requesting for reprocessing...",
+      "queuedForReprocessing": "Link queued for reprocessing",
+      "linkSaved": "Link saved",
+      "failedCreateTag": "Failed to create tag",
+      "tagCreated": "Tag \"{{name}}\" created",
+      "failedUpdateTags": "Failed to update tags",
+      "tagsUpdated": "Tags updated"
+    },
+    "toolbar": {
+      "searchPlaceholder": "Search articles...",
+      "searchAria": "Search articles",
+      "clearSearchAria": "Clear search",
+      "filterSheetTitle": "Filter Articles",
+      "filterSheetDescription": "Choose a filter to organize your articles",
+      "saveArticle": "Save article",
+      "saveArticleAria": "Save article"
+    },
+    "filters": {
+      "articles": "Articles",
+      "priority": "Priority",
+      "readingLength": "Reading Length",
+      "sortBy": "Sort By",
+      "tags": "Tags",
+      "manageTagsAria": "Manage tags",
+      "toggleGroupAria": "Toggle group"
+    },
+    "empty": {
+      "noResultsTitle": "No articles found",
+      "noResultsDescription": "Try adjusting your search terms or browse all articles.",
+      "clearSearch": "Clear Search",
+      "noFavoritesTitle": "No favorite articles yet",
+      "noFavoritesDescription": "Start adding articles to your favorites to see them here.",
+      "browseArticles": "Browse articles",
+      "noArchivedTitle": "No archived articles",
+      "noArchivedDescription": "Articles you archive will appear here and be kept forever.",
+      "noHighlightsTitle": "No highlighted articles",
+      "noHighlightsDescription": "Articles you highlight will appear here and be kept forever.",
+      "emptyLibraryTitle": "Your reading list is empty",
+      "emptyLibraryDescription": "Save your first article and start building your personal reading sanctuary.",
+      "saveFirstArticle": "Save your first article",
+      "gettingStartedTips": "Getting Started Tips",
+      "tip1": "Click \"Save Article\" to save any article using its link",
+      "tip2": "Use the search bar to find articles in your library",
+      "tip3": "Mark articles as favorites to easily access your best reads",
+      "tip4": "Customize your reading experience in the settings"
+    },
+    "card": {
+      "priority": {
+        "none": "No Priority",
+        "lowPriority": "Low Priority",
+        "thisWeek": "This Week",
+        "mustRead": "Must Read"
+      },
+      "actions": {
+        "more": "More actions",
+        "favorite": "Favorite this article",
+        "toggleFavorite": "Toggle favorite",
+        "editTags": "Edit Tags",
+        "refresh": "Refresh",
+        "archive": "Archive",
+        "unarchive": "Unarchive",
+        "delete": "Delete article"
+      },
+      "moreCount": "+{{count}} more"
+    },
+    "dialog": {
+      "saveLaterTitle": "Save article for later",
+      "saveLaterDescription": "Enter the URL of an article you'd like to read later. We'll automatically extract the content for offline reading.",
+      "urlLabel": "Article URL",
+      "urlPlaceholder": "https://example.com/article",
+      "tagsLabel": "Tags (optional)",
+      "submit": "Save Article"
+    },
+    "editTags": {
+      "title": "Edit Tags",
+      "description": "Add or remove tags for this article.",
+      "save": "Save Tags",
+      "saving": "Saving..."
+    }
   }
 }

@@ -2,11 +2,12 @@ import {
   ArchiveIcon,
   BookOpenIcon,
   HighlighterIcon,
+  MagnifyingGlassIcon,
   PlusIcon,
   StarIcon
 } from '@phosphor-icons/react';
-import { MagnifyingGlassIcon } from '@phosphor-icons/react';
 import { motion, useReducedMotion } from 'motion/react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 
@@ -18,44 +19,44 @@ interface EmptyStateProps {
 
 export function EmptyState({ filter, hasSearch, onAddArticle }: EmptyStateProps) {
   const shouldReduceMotion = useReducedMotion();
+  const { t } = useTranslation('common');
 
   const getEmptyStateContent = () => {
     if (hasSearch) {
       return {
-        action: 'Clear Search',
-        description: 'Try adjusting your search terms or browse all articles.',
+        action: t('articles.empty.clearSearch'),
+        description: t('articles.empty.noResultsDescription'),
         icon: MagnifyingGlassIcon,
-        title: 'No articles found'
+        title: t('articles.empty.noResultsTitle')
       };
     }
 
     switch (filter) {
       case 'favorites':
         return {
-          action: 'Browse articles',
-          description: 'Start adding articles to your favorites to see them here.',
+          action: t('articles.empty.browseArticles'),
+          description: t('articles.empty.noFavoritesDescription'),
           icon: StarIcon,
-          title: 'No favorite articles yet'
+          title: t('articles.empty.noFavoritesTitle')
         };
       case 'archived':
         return {
-          description: 'Articles you archive will appear here and be kept forever.',
+          description: t('articles.empty.noArchivedDescription'),
           icon: ArchiveIcon,
-          title: 'No archived articles'
+          title: t('articles.empty.noArchivedTitle')
         };
       case 'highlights':
         return {
-          description: 'Articles you highlight will appear here and be kept forever.',
+          description: t('articles.empty.noHighlightsDescription'),
           icon: HighlighterIcon,
-          title: 'No highlighted articles'
+          title: t('articles.empty.noHighlightsTitle')
         };
       default:
         return {
-          action: 'Save your first article',
-          description:
-            'Save your first article and start building your personal reading sanctuary.',
+          action: t('articles.empty.saveFirstArticle'),
+          description: t('articles.empty.emptyLibraryDescription'),
           icon: BookOpenIcon,
-          title: 'Your reading list is empty'
+          title: t('articles.empty.emptyLibraryTitle')
         };
     }
   };
@@ -119,40 +120,32 @@ export function EmptyState({ filter, hasSearch, onAddArticle }: EmptyStateProps)
           transition={{ delay: 0.4, duration: 0.5 }}
         >
           <h3 className="text-muted-foreground mb-3 text-sm font-medium tracking-wider uppercase">
-            Getting Started Tips
+            {t('articles.empty.gettingStartedTips')}
           </h3>
           <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
             <div className="flex items-start space-x-3">
               <div className="bg-primary-100 mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
                 <span className="text-primary text-xs font-bold">1</span>
               </div>
-              <p className="text-muted-foreground">
-                Click &quot;Save Article&quot; to save any article using its link
-              </p>
+              <p className="text-muted-foreground">{t('articles.empty.tip1')}</p>
             </div>
             <div className="flex items-start space-x-3">
               <div className="bg-primary-100 mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
                 <span className="text-primary text-xs font-bold">2</span>
               </div>
-              <p className="text-muted-foreground">
-                Use the search bar to find articles in your library
-              </p>
+              <p className="text-muted-foreground">{t('articles.empty.tip2')}</p>
             </div>
             <div className="flex items-start space-x-3">
               <div className="bg-primary-100 mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
                 <span className="text-primary text-xs font-bold">3</span>
               </div>
-              <p className="text-muted-foreground">
-                Mark articles as favorites to easily access your best reads
-              </p>
+              <p className="text-muted-foreground">{t('articles.empty.tip3')}</p>
             </div>
             <div className="flex items-start space-x-3">
               <div className="bg-primary-100 mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
                 <span className="text-primary text-xs font-bold">4</span>
               </div>
-              <p className="text-muted-foreground">
-                Customize your reading experience in the settings
-              </p>
+              <p className="text-muted-foreground">{t('articles.empty.tip4')}</p>
             </div>
           </div>
         </motion.div>

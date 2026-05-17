@@ -1,5 +1,6 @@
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { Skeleton } from '@/components/ui/skeleton';
@@ -44,6 +45,7 @@ function ArticleListSkeleton() {
 function ArticlesPage() {
   const { isDesktop, isMobile, isTablet } = useMediaQuery();
   const notifySuccess = useNotificationsStore.useSuccess();
+  const { t } = useTranslation('common');
 
   const navigate = useNavigate();
   const searchParams = useSearch({ strict: false }) as {
@@ -129,13 +131,13 @@ function ArticlesPage() {
   const updateLinkMutation = useUpdateLink({
     mutationConfig: {
       onMutate: () =>
-        toast.loading('Updating...', {
+        toast.loading(t('articles.toasts.updating'), {
           position: 'top-right',
           richColors: true
         }),
       onSuccess: () => {
         toast.dismiss();
-        notifySuccess('Link updated');
+        notifySuccess(t('articles.toasts.linkUpdated'));
       }
     }
   });
@@ -143,13 +145,13 @@ function ArticlesPage() {
   const deleteLinkMutation = useDeleteLink({
     mutationConfig: {
       onMutate: () =>
-        toast.loading('Deleting link', {
+        toast.loading(t('articles.toasts.deletingLink'), {
           position: 'top-right',
           richColors: true
         }),
       onSuccess: () => {
         toast.dismiss();
-        notifySuccess('Link deleted');
+        notifySuccess(t('articles.toasts.linkDeleted'));
       }
     }
   });
@@ -157,13 +159,13 @@ function ArticlesPage() {
   const refetchLinkMutation = useRefetchLink({
     mutationConfig: {
       onMutate: () =>
-        toast.loading('Requesting for reprocessing...', {
+        toast.loading(t('articles.toasts.reprocessing'), {
           position: 'top-right',
           richColors: true
         }),
       onSuccess: () => {
         toast.dismiss();
-        notifySuccess('Link queued for reprocessing');
+        notifySuccess(t('articles.toasts.queuedForReprocessing'));
       }
     }
   });

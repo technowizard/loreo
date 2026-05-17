@@ -1,4 +1,5 @@
 import { PlusIcon } from '@phosphor-icons/react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -46,11 +47,15 @@ export function AddArticleDialog({
   tags
 }: Props) {
   const position = isMobile ? 'top-center' : 'top-right';
+  const { t } = useTranslation('common');
 
   const createLinkMutation = useCreateLink({
     mutationConfig: {
       onSuccess: () => {
-        toast.success('Link saved', { position, richColors: true });
+        toast.success(t('articles.toasts.linkSaved'), {
+          position,
+          richColors: true
+        });
         onReset();
       }
     }
@@ -59,21 +64,27 @@ export function AddArticleDialog({
   const createTagMutation = useCreateTag({
     mutationConfig: {
       onError: (error) => {
-        toast.error('Failed to create tag', {
+        toast.error(t('articles.toasts.failedCreateTag'), {
           description: error.message,
           position,
           richColors: true
         });
       },
       onSuccess: (response) => {
-        toast.success(`Tag "${response.result?.name}" created`, { position, richColors: true });
+        toast.success(t('articles.toasts.tagCreated', { name: response.result?.name }), {
+          position,
+          richColors: true
+        });
       }
     }
   });
 
   const handleCreateTag = async (tagName: string, groupId: string) => {
     try {
-      const response = await createTagMutation.mutateAsync({ groupId, name: tagName });
+      const response = await createTagMutation.mutateAsync({
+        groupId,
+        name: tagName
+      });
       const newTag = response.result;
       if (newTag) {
         const currentTags = formData.tags || [];
@@ -81,8 +92,11 @@ export function AddArticleDialog({
           onFormChange('tags', [...currentTags, newTag]);
         }
       }
-    } catch (error) {
-      toast.error(`Failed to create tag: ${error}`, { position, richColors: true });
+    } catch {
+      toast.error(t('articles.toasts.failedCreateTag'), {
+        position,
+        richColors: true
+      });
     }
   };
 
@@ -112,25 +126,22 @@ export function AddArticleDialog({
     <Dialog onOpenChange={onClose} open={open}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Save article for later</DialogTitle>
-          <DialogDescription>
-            Enter the URL of an article you&apos;d like to read later. We&apos;ll automatically
-            extract the content for offline reading.
-          </DialogDescription>
+          <DialogTitle>{t('articles.dialog.saveLaterTitle')}</DialogTitle>
+          <DialogDescription>{t('articles.dialog.saveLaterDescription')}</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-2">
-            <Label htmlFor="url">Article URL</Label>
+            <Label htmlFor="url">{t('articles.dialog.urlLabel')}</Label>
             <Input
               name="url"
               onChange={(e) => onFormChange('url', e.target.value)}
-              placeholder="https://example.com/article"
+              placeholder={t('articles.dialog.urlPlaceholder')}
               required
               type="url"
               value={formData.url}
             />
             <Label className="mt-2" htmlFor="tags">
-              Tags (optional)
+              {t('articles.dialog.tagsLabel')}
             </Label>
             <TagInput
               availableTags={tags}
@@ -141,7 +152,7 @@ export function AddArticleDialog({
             />
             <Button className="mt-2 w-full" type="submit">
               <PlusIcon className="size-4" weight="bold" />
-              Save Article
+              {t('articles.dialog.submit')}
             </Button>
           </div>
         </form>

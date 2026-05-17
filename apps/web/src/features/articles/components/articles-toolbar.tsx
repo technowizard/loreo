@@ -6,6 +6,7 @@ import {
   SquaresFourIcon,
   XIcon
 } from '@phosphor-icons/react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -56,6 +57,7 @@ export function ArticlesToolbar({
   searchQuery,
   setOpenFilterModal
 }: Props) {
+  const { t } = useTranslation('common');
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') onSearchClear();
   };
@@ -74,17 +76,17 @@ export function ArticlesToolbar({
           <div className="relative flex w-full items-center">
             <MagnifyingGlassIcon className="text-muted-foreground pointer-events-none absolute left-3 size-4" />
             <Input
-              aria-label="Search articles"
+              aria-label={t('articles.toolbar.searchAria')}
               className="bg-white pr-10 pl-10"
               onChange={(e) => onSearchChange(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Search articles..."
+              placeholder={t('articles.toolbar.searchPlaceholder')}
               type="text"
               value={searchQuery}
             />
             {searchQuery && (
               <button
-                aria-label="Clear search"
+                aria-label={t('articles.toolbar.clearSearchAria')}
                 className="absolute right-3"
                 onClick={onSearchClear}
                 type="button"
@@ -105,8 +107,10 @@ export function ArticlesToolbar({
               />
               <SheetContent className="overflow-scroll overscroll-contain" side="left">
                 <SheetHeader>
-                  <SheetTitle>Filter Articles</SheetTitle>
-                  <SheetDescription>Choose a filter to organize your articles</SheetDescription>
+                  <SheetTitle>{t('articles.toolbar.filterSheetTitle')}</SheetTitle>
+                  <SheetDescription>
+                    {t('articles.toolbar.filterSheetDescription')}
+                  </SheetDescription>
                 </SheetHeader>
                 <Sidebar className="flex flex-col gap-y-4 px-4">
                   <Filter {...filterContentProps} />
@@ -130,21 +134,26 @@ export function ArticlesToolbar({
           </Tabs>
 
           <Button
-            aria-label="Save article"
+            aria-label={t('articles.toolbar.saveArticleAria')}
             className="group hidden sm:flex"
             onClick={onAddArticle}
             size="lg"
           >
             <PlusIcon className="size-4 transition-transform duration-200 motion-safe:group-hover:rotate-90" />
-            <span>Save article</span>
+            <span>{t('articles.toolbar.saveArticle')}</span>
           </Button>
         </div>
       </div>
 
       <div className="flex flex-col space-y-4 sm:hidden">
-        <Button aria-label="Save article" className="group" onClick={onAddArticle} size="lg">
+        <Button
+          aria-label={t('articles.toolbar.saveArticleAria')}
+          className="group"
+          onClick={onAddArticle}
+          size="lg"
+        >
           <PlusIcon className="size-4 transition-transform duration-200 motion-safe:group-hover:rotate-90" />
-          <span>Save article</span>
+          <span>{t('articles.toolbar.saveArticle')}</span>
         </Button>
       </div>
     </div>

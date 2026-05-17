@@ -50,3 +50,30 @@
 
 - `id/common.json` still mirrors English values; it needs a later Indonesian copy pass.
 - Phase 2 only covers route metadata identified in the protected layout/navigation scope; later phases may add more route/page metadata keys.
+
+## Phase 3: Articles List Experience
+
+### Completed
+
+- Added phase 3 locale coverage tests for 66 articles-related keys (toasts, toolbar, filters, empty states, card actions, dialogs).
+- Added matching `articles.*` keys to English and Indonesian common locales.
+- Replaced hardcoded article page toasts with `useTranslation('common')` lookups.
+- Replaced hardcoded toolbar search, filter sheet, and save article strings.
+- Replaced hardcoded filter sidebar section titles and aria-labels.
+- Replaced hardcoded empty state titles, descriptions, and action labels.
+- Replaced hardcoded article card priority badges, dropdown menu actions, and "+ more" counts.
+- Replaced hardcoded add-article dialog copy and toast messages.
+- Replaced hardcoded edit-tags dialog copy and toast messages.
+
+### Verification
+
+- RED: `bun test src/locales/common.test.ts` failed before phase 3 locale keys were added: all 66 phase 3 keys were undefined.
+- GREEN: `bun test src/locales/common.test.ts` passed: 93 tests, 186 assertions.
+- Typecheck: `bun run typecheck` passed.
+- Touched-file lint/format: `pnpm exec oxlint ... && pnpm exec oxfmt --check ...` passed for phase 3 touched files after formatting.
+
+### Remaining Risks
+
+- `id/common.json` still mirrors English values; needs Indonesian copy pass.
+- Article card `PRIORITY_OPTIONS` constant uses `labelKey` references translated inside components.
+- Some dynamic filter titles in `articles.tsx` (e.g., "Group: {{name}}", "Tag: {{name}}") remain hardcoded and use runtime data.

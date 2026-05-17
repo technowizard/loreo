@@ -13,6 +13,7 @@ import {
   TrashIcon
 } from '@phosphor-icons/react';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -53,22 +54,22 @@ const DEFAULT_TAG_COLOR = '#6B7280';
 const PRIORITY_OPTIONS = [
   {
     color: '#2563EB',
-    label: 'No Priority',
+    labelKey: 'articles.card.priority.none',
     value: 'none'
   },
   {
     color: '#15803D',
-    label: 'Low Priority',
+    labelKey: 'articles.card.priority.lowPriority',
     value: 'low-priority'
   },
   {
     color: '#D97706',
-    label: 'This Week',
+    labelKey: 'articles.card.priority.thisWeek',
     value: 'this-week'
   },
   {
     color: '#C53030',
-    label: 'Must Read',
+    labelKey: 'articles.card.priority.mustRead',
     value: 'must-read'
   }
 ] as const;
@@ -136,12 +137,13 @@ function ArticleDropdownMenu({
   link,
   onEditTagsOpen
 }: ArticleDropdownMenuProps) {
+  const { t } = useTranslation('common');
   const { id, isArchived, priority } = link;
 
   return (
     <DropdownMenuContent align="end">
       <DropdownMenuGroup>
-        <DropdownMenuLabel>Priority</DropdownMenuLabel>
+        <DropdownMenuLabel>{t('articles.filters.priority')}</DropdownMenuLabel>
         {PRIORITY_OPTIONS.map((option) => (
           <DropdownMenuItem
             className="h-11 sm:h-8"
@@ -166,7 +168,7 @@ function ArticleDropdownMenu({
                 weight={priority === option.value ? 'fill' : 'bold'}
               />
             )}
-            {option.label}
+            {t(option.labelKey)}
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
@@ -180,7 +182,7 @@ function ArticleDropdownMenu({
           }}
         >
           <TagIcon size={16} />
-          Edit Tags
+          {t('articles.card.actions.editTags')}
         </DropdownMenuItem>
         <DropdownMenuItem
           className="h-11 sm:h-8"
@@ -190,7 +192,7 @@ function ArticleDropdownMenu({
           }}
         >
           <ArrowsClockwiseIcon size={16} />
-          Refresh
+          {t('articles.card.actions.refresh')}
         </DropdownMenuItem>
         <DropdownMenuItem
           className="h-11 sm:h-8"
@@ -200,7 +202,7 @@ function ArticleDropdownMenu({
           }}
         >
           <ArchiveIcon size={16} />
-          {isArchived ? 'Unarchive' : 'Archive'}
+          {isArchived ? t('articles.card.actions.unarchive') : t('articles.card.actions.archive')}
         </DropdownMenuItem>
         <DropdownMenuItem
           className="h-11 sm:h-8"
@@ -211,7 +213,7 @@ function ArticleDropdownMenu({
           variant="destructive"
         >
           <TrashIcon size={16} />
-          Delete article
+          {t('articles.card.actions.delete')}
         </DropdownMenuItem>
       </DropdownMenuGroup>
     </DropdownMenuContent>
@@ -225,6 +227,7 @@ function GridCard({
   link,
   tagGroups
 }: ArticleCardProps) {
+  const { t } = useTranslation('common');
   const {
     coverImage,
     excerpt,
@@ -248,7 +251,7 @@ function GridCard({
     <div className="group bg-card hover:bg-accent/30 relative flex flex-col overflow-hidden rounded-4xl border transition-colors">
       <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
         <Button
-          aria-label="Favorite this article"
+          aria-label={t('articles.card.actions.favorite')}
           className="bg-background/80 rounded-full border backdrop-blur-sm"
           onClick={(e) => {
             e.stopPropagation();
@@ -271,7 +274,7 @@ function GridCard({
           <DropdownMenuTrigger
             render={
               <Button
-                aria-label="More actions"
+                aria-label={t('articles.card.actions.more')}
                 className="bg-background/80 rounded-full border backdrop-blur-sm"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -342,7 +345,7 @@ function GridCard({
                   variant="success"
                 >
                   <ClockIcon weight="fill" />
-                  Low Priority
+                  {t('articles.card.priority.lowPriority')}
                 </Badge>
               )}
               {priority === 'this-week' && (
@@ -351,7 +354,7 @@ function GridCard({
                   variant="warning"
                 >
                   <ClockIcon weight="fill" />
-                  This Week
+                  {t('articles.card.priority.thisWeek')}
                 </Badge>
               )}
               {priority === 'must-read' && (
@@ -360,7 +363,7 @@ function GridCard({
                   variant="danger"
                 >
                   <FlameIcon weight="fill" />
-                  Must Read
+                  {t('articles.card.priority.mustRead')}
                 </Badge>
               )}
             </div>
@@ -448,7 +451,9 @@ function GridCard({
                   return <Tag key={tag.name} tag={getDisplayTag(tag, tagColorByGroupId)} />;
                 })}
                 {tags.length > 1 && (
-                  <span className="text-muted-foreground text-sm">+{tags.length - 1} more</span>
+                  <span className="text-muted-foreground text-sm">
+                    {t('articles.card.moreCount', { count: tags.length - 1 })}
+                  </span>
                 )}
               </div>
             )}
@@ -472,6 +477,7 @@ function ListCardCompact({
   link,
   tagGroups
 }: ArticleCardProps) {
+  const { t } = useTranslation('common');
   const {
     coverImage,
     excerpt,
@@ -547,7 +553,7 @@ function ListCardCompact({
                   <DropdownMenuTrigger
                     render={
                       <Button
-                        aria-label="More actions"
+                        aria-label={t('articles.card.actions.more')}
                         className="relative size-9 after:absolute after:-inset-1 after:content-['']"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -691,6 +697,7 @@ function ListCardDesktop({
   link,
   tagGroups
 }: ArticleCardProps) {
+  const { t } = useTranslation('common');
   const {
     coverImage,
     excerpt,
@@ -718,7 +725,7 @@ function ListCardDesktop({
             <DropdownMenuTrigger
               render={
                 <Button
-                  aria-label="More actions"
+                  aria-label={t('articles.card.actions.more')}
                   className="bg-card absolute top-2 right-2 z-10 size-7 border p-1 transition-all duration-200 md:hidden"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -814,7 +821,9 @@ function ListCardDesktop({
                     return <Tag key={tag.name} tag={getDisplayTag(tag, tagColorByGroupId)} />;
                   })}
                   {tags.length > 3 && (
-                    <span className="text-sm text-zinc-600">+{tags.length - 3} more</span>
+                    <span className="text-sm text-zinc-600">
+                      {t('articles.card.moreCount', { count: tags.length - 3 })}
+                    </span>
                   )}
                 </div>
               )}
@@ -890,7 +899,7 @@ function ListCardDesktop({
                 <DropdownMenuTrigger
                   render={
                     <Button
-                      aria-label="More actions"
+                      aria-label={t('articles.card.actions.more')}
                       className="bg-background border-border size-9 rounded-full border p-4 transition-all duration-200"
                       onClick={(e) => {
                         e.stopPropagation();
