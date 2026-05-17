@@ -1,9 +1,10 @@
 import { Dialog as SheetPrimitive } from '@base-ui/react/dialog';
 import { XIcon } from '@phosphor-icons/react';
-import * as React from 'react';
+import type * as React from 'react';
 
 import { Button } from '@/components/ui/button';
 
+import i18n from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 
 function Sheet({ ...props }: SheetPrimitive.Root.Props) {
@@ -66,7 +67,7 @@ function SheetContent({
             render={<Button variant="ghost" className="absolute top-3 right-3" size="icon-sm" />}
           >
             <XIcon />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">{i18n.t('common.dialog.close')}</span>
           </SheetPrimitive.Close>
         )}
       </SheetPrimitive.Popup>

@@ -1,5 +1,6 @@
 import { useParams } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { NoteCard } from '@/features/reader/components/note-card';
 import { useHighlights } from '@/features/reader/hooks/use-highlights';
@@ -22,8 +23,8 @@ function ReaderLayout({
   onUpdateHighlight,
   onRemoveHighlight
 }: ReaderLayoutProps) {
+  const { t } = useTranslation('common');
   const id = useParams({ from: '/_protected/articles/$id' }).id;
-
   const { selectedHighlightId, setSelectedHighlightId, showHighlights, toggleShowHighlights } =
     useHighlights();
 
@@ -45,8 +46,8 @@ function ReaderLayout({
       >
         <SheetContent overlay={false}>
           <SheetHeader>
-            <SheetTitle>Highlights</SheetTitle>
-            <SheetDescription>Your highlights on this article</SheetDescription>
+            <SheetTitle>{t('reader.highlights.title')}</SheetTitle>
+            <SheetDescription>{t('reader.highlights.description')}</SheetDescription>
           </SheetHeader>
           <div className="space-y-4 overflow-y-auto p-4">
             {highlights.map((highlight) => (

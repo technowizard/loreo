@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { useDebounce } from '@/hooks/use-debounce';
@@ -39,6 +40,7 @@ const TAG_TOAST_OPTIONS = {
 const TAG_ERROR_TOAST_OPTIONS = { position: 'top-center' } as const;
 
 export function useTagsActions() {
+  const { t } = useTranslation('common');
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
@@ -75,60 +77,60 @@ export function useTagsActions() {
 
   const createTagGroupMutation = useCreateTagGroup({
     mutationConfig: {
-      onMutate: () => toast.loading('Creating...', TAG_TOAST_OPTIONS),
+      onMutate: () => toast.loading(t('tags.toasts.creating'), TAG_TOAST_OPTIONS),
       onSuccess: () => {
         toast.dismiss();
-        toast.success('Group created', TAG_TOAST_OPTIONS);
+        toast.success(t('tags.toasts.groupCreated'), TAG_TOAST_OPTIONS);
       }
     }
   });
 
   const updateTagGroupMutation = useUpdateTagGroup({
     mutationConfig: {
-      onMutate: () => toast.loading('Updating...', TAG_TOAST_OPTIONS),
+      onMutate: () => toast.loading(t('tags.toasts.updating'), TAG_TOAST_OPTIONS),
       onSuccess: () => {
         toast.dismiss();
-        toast.success('Group updated', TAG_TOAST_OPTIONS);
+        toast.success(t('tags.toasts.groupUpdated'), TAG_TOAST_OPTIONS);
       }
     }
   });
 
   const deleteTagGroupMutation = useDeleteTagGroup({
     mutationConfig: {
-      onMutate: () => toast.loading('Deleting...', TAG_TOAST_OPTIONS),
+      onMutate: () => toast.loading(t('tags.toasts.deleting'), TAG_TOAST_OPTIONS),
       onSuccess: () => {
         toast.dismiss();
-        toast.success('Group deleted', TAG_TOAST_OPTIONS);
+        toast.success(t('tags.toasts.groupDeleted'), TAG_TOAST_OPTIONS);
       }
     }
   });
 
   const createTagMutation = useCreateTag({
     mutationConfig: {
-      onMutate: () => toast.loading('Creating...', TAG_TOAST_OPTIONS),
+      onMutate: () => toast.loading(t('tags.toasts.creating'), TAG_TOAST_OPTIONS),
       onSuccess: () => {
         toast.dismiss();
-        toast.success('Tag created', TAG_TOAST_OPTIONS);
+        toast.success(t('tags.toasts.tagCreated'), TAG_TOAST_OPTIONS);
       }
     }
   });
 
   const updateTagMutation = useUpdateTag({
     mutationConfig: {
-      onMutate: () => toast.loading('Updating...', TAG_TOAST_OPTIONS),
+      onMutate: () => toast.loading(t('tags.toasts.updating'), TAG_TOAST_OPTIONS),
       onSuccess: () => {
         toast.dismiss();
-        toast.success('Tag updated', TAG_TOAST_OPTIONS);
+        toast.success(t('tags.toasts.tagUpdated'), TAG_TOAST_OPTIONS);
       }
     }
   });
 
   const deleteTagMutation = useDeleteTag({
     mutationConfig: {
-      onMutate: () => toast.loading('Deleting...', TAG_TOAST_OPTIONS),
+      onMutate: () => toast.loading(t('tags.toasts.deleting'), TAG_TOAST_OPTIONS),
       onSuccess: () => {
         toast.dismiss();
-        toast.success('Tag deleted', TAG_TOAST_OPTIONS);
+        toast.success(t('tags.toasts.tagDeleted'), TAG_TOAST_OPTIONS);
       }
     }
   });
@@ -175,7 +177,7 @@ export function useTagsActions() {
     setTagGroupErrors(errors);
 
     if (hasFormErrors(errors)) {
-      toast.error('Please fix validation errors');
+      toast.error(t('tags.toasts.fixValidation'));
       return;
     }
 
@@ -197,7 +199,11 @@ export function useTagsActions() {
       }
       setIsTagGroupDialogOpen(false);
     } catch {
-      toast.error(`Failed to ${tagGroupMode === 'edit' ? 'update' : 'create'} group`);
+      toast.error(
+        tagGroupMode === 'edit'
+          ? t('tags.toasts.failedUpdateGroup')
+          : t('tags.toasts.failedCreateGroup')
+      );
     } finally {
       setIsSavingGroup(false);
     }
@@ -223,7 +229,7 @@ export function useTagsActions() {
     setTagErrors(errors);
 
     if (hasFormErrors(errors)) {
-      toast.error('Please fix validation errors');
+      toast.error(t('tags.toasts.fixValidation'));
       return;
     }
     if (!selectedTagGroup) return;
@@ -244,7 +250,9 @@ export function useTagsActions() {
       }
       setIsTagDialogOpen(false);
     } catch {
-      toast.error(`Failed to ${selectedTag ? 'update' : 'create'} tag`);
+      toast.error(
+        selectedTag ? t('tags.toasts.failedUpdateTag') : t('tags.toasts.failedCreateTag')
+      );
     } finally {
       setIsSavingTag(false);
     }
@@ -275,7 +283,7 @@ export function useTagsActions() {
       }
       setIsDeleteDialogOpen(false);
     } catch {
-      toast.error(`Failed to delete ${deleteTarget.type}`);
+      toast.error(t('tags.toasts.failedDeleteType', { type: deleteTarget.type }));
     } finally {
       setIsDeleting(false);
     }
@@ -297,9 +305,12 @@ export function useTagsActions() {
         tagIds: selectedTagIdsToArray(selectedTagIds)
       });
       clearSelection();
-      toast.success(`${result.result.deletedTags} tag(s) deleted`, TAG_TOAST_OPTIONS);
+      toast.success(
+        t('tags.toasts.tagsDeleted', { count: result.result.deletedTags }),
+        TAG_TOAST_OPTIONS
+      );
     } catch {
-      toast.error('Failed to delete tags', TAG_ERROR_TOAST_OPTIONS);
+      toast.error(t('tags.toasts.failedDeleteTags'), TAG_ERROR_TOAST_OPTIONS);
     }
   };
 
@@ -321,31 +332,34 @@ export function useTagsActions() {
           tagId: moveTagsDialog.tag.id,
           targetGroupId: moveDestinationGroupId
         });
-        toast.success('Tag moved successfully', TAG_TOAST_OPTIONS);
+        toast.success(t('tags.toasts.tagMoved'), TAG_TOAST_OPTIONS);
       } else if (moveTagsDialog.mode === 'bulk') {
         const result = await moveBatchTagsMutation.mutateAsync({
           tagIds: moveTagsDialog.tagIds,
           toGroupId: moveDestinationGroupId
         });
         clearSelection();
-        toast.success(`${result.result.movedTags} tag(s) moved`, TAG_TOAST_OPTIONS);
+        toast.success(
+          t('tags.toasts.tagsMoved', { count: result.result.movedTags }),
+          TAG_TOAST_OPTIONS
+        );
       } else if (moveTagsDialog.mode === 'group') {
         const result = await moveBatchTagsMutation.mutateAsync({
           fromGroupId: moveTagsDialog.fromGroupId,
           toGroupId: moveDestinationGroupId
         });
-        toast.success(`${result.result.movedTags} tag(s) moved`, TAG_TOAST_OPTIONS);
+        toast.success(
+          t('tags.toasts.tagsMoved', { count: result.result.movedTags }),
+          TAG_TOAST_OPTIONS
+        );
       }
       closeMoveDialog();
     } catch (error: unknown) {
       const status = (error as { response?: { status: number } })?.response?.status;
       if (status === 409) {
-        toast.error(
-          'A tag with the same name already exists in the target group',
-          TAG_TOAST_OPTIONS
-        );
+        toast.error(t('tags.toasts.nameConflict'), TAG_TOAST_OPTIONS);
       } else {
-        toast.error('Failed to move tag(s)', TAG_ERROR_TOAST_OPTIONS);
+        toast.error(t('tags.toasts.failedMoveTags'), TAG_ERROR_TOAST_OPTIONS);
       }
     }
   };

@@ -8,6 +8,20 @@
       "Never lose a link again"
     ]
   },
+  "common": {
+    "error": {
+      "label": "Error",
+      "title": "Something went wrong",
+      "retry": "Try again"
+    },
+    "notFound": {
+      "title": "Page not found",
+      "goBack": "go back"
+    },
+    "dialog": {
+      "close": "Close"
+    }
+  },
   "login": {
     "title": "Welcome back",
     "description": "Sign in to your account to continue",
@@ -85,6 +99,20 @@
     }
   },
   "routes": {
+    "common": {
+      "error": {
+        "label": "error",
+        "title": "Something went wrong",
+        "retry": "Try again"
+      },
+      "notFound": {
+        "title": "Page not found",
+        "goBack": "go back"
+      },
+      "dialog": {
+        "close": "Close"
+      }
+    },
     "home": {
       "metaTitle": "Home | Loreo"
     },
@@ -378,6 +406,42 @@
       "moreCount": "+{{count}} more",
       "manageTags": "Manage tags \u2192",
       "addFirstTag": "Add First Tag"
+    },
+    "tagInput": {
+      "searchPlaceholder": "Search tags...",
+      "createIn": "Create \"{{input}}\" in:",
+      "noTagsMatching": "No tags matching \"{{input}}\" in {{group}}",
+      "noTagsIn": "No tags in {{group}}",
+      "noTagsAvailable": "No tags available",
+      "noMatchingTags": "No matching tags",
+      "maxTagsReached": "Maximum number of tags reached ({{maxTags}})",
+      "tagCount_one": "{{count}} tag",
+      "tagCount_other": "{{count}} tags"
+    },
+    "toasts": {
+      "creating": "Creating...",
+      "groupCreated": "Group created",
+      "updating": "Updating...",
+      "groupUpdated": "Group updated",
+      "deleting": "Deleting...",
+      "groupDeleted": "Group deleted",
+      "tagCreated": "Tag created",
+      "tagUpdated": "Tag updated",
+      "tagDeleted": "Tag deleted",
+      "fixValidation": "Please fix validation errors",
+      "failedUpdateGroup": "Failed to update group",
+      "failedCreateGroup": "Failed to create group",
+      "failedUpdateTag": "Failed to update tag",
+      "failedCreateTag": "Failed to create tag",
+      "failedDeleteType": "Failed to delete {{type}}",
+      "tagsDeleted_one": "{{count}} tag deleted",
+      "tagsDeleted_other": "{{count}} tags deleted",
+      "failedDeleteTags": "Failed to delete tags",
+      "tagMoved": "Tag moved successfully",
+      "tagsMoved_one": "{{count}} tag moved",
+      "tagsMoved_other": "{{count}} tags moved",
+      "nameConflict": "A tag with the same name already exists in the target group",
+      "failedMoveTags": "Failed to move tag(s)"
     }
   },
   "reader": {
@@ -393,6 +457,19 @@
       "removedFromFavorites": "Removed from favorites",
       "archivedAndMarkedRead": "Archived and marked as read",
       "linkUpdated": "Link updated"
+    },
+    "highlights": {
+      "title": "Highlights",
+      "description": "Your highlights on this article"
+    },
+    "notes": {
+      "highlightColor": "Highlight color",
+      "editNote": "Edit note",
+      "addNote": "Add note",
+      "addYourThoughts": "Add your thoughts",
+      "deleteNote": "Delete note",
+      "save": "Save",
+      "removeHighlight": "Remove highlight"
     },
     "resume": {
       "title": "Resume reading",
@@ -600,7 +677,8 @@
       "badgePending": "Pending",
       "loadMore": "Load more",
       "noResults": "No extraction results found",
-      "viewArticle": "View"
+      "viewArticle": "View",
+      "failedLoadMore": "Failed to load more items"
     }
   }
 }

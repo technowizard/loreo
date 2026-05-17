@@ -67,10 +67,10 @@
 
 ## Phase 8: Shared UI, Validation, and Toast Cleanup
 
-- [ ] Scan shared components for remaining visible English copy.
-- [ ] Translate shared static notifications.
-- [ ] Translate user-facing validation messages.
-- [ ] Confirm internal-only strings remain untouched.
+- [x] Scan shared components for remaining visible English copy.
+- [x] Translate shared static notifications.
+- [x] Translate user-facing validation messages.
+- [x] Confirm internal-only strings remain untouched.
 
 ## Phase 9: Verification and Regression Pass
 

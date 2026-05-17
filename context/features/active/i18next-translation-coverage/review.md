@@ -177,3 +177,30 @@
 - `id/common.json` still mirrors English values; it needs a later Indonesian copy pass.
 - Some aria labels and tooltips on extraction progress page remain as inline static text.
 - Demo import-progress component content uses locale keys but is not functionally wired to real import state.
+
+## Phase 8: Shared UI, Validation, and Toast Cleanup
+
+### Completed
+
+- Added phase 8 locale coverage tests for 49 keys across `common.*`, `reader.highlights.*`, `reader.notes.*`, `tags.tagInput.*`, `tags.toasts.*`, and `import.extraction.failedLoadMore`.
+- Added matching `common.*` (error/notFound/dialog close), `reader.highlights.*`, `reader.notes.*`, `tags.tagInput.*`, `tags.toasts.*`, and `import.extraction.failedLoadMore` keys to English and Indonesian common locales.
+- Translated `components/common/error.tsx` (error label, title, retry button).
+- Translated `components/common/not-found.tsx` (404 page title, go back link).
+- Translated `components/layouts/reader.tsx` (highlights sheet title/description).
+- Translated `components/ui/dialog.tsx` and `components/ui/sheet.tsx` (sr-only Close labels).
+- Translated `components/ui/tag-input.tsx` (search placeholder, create-in text, tag count with plural, no-tags states, max-tags message).
+- Translated `features/reader/components/note-card.tsx` (highlight color, edit/add/delete note, save, add your thoughts, remove highlight).
+- Translated `features/tags/hooks/use-tags-actions.ts` (all toast strings: creating/updating/deleting group and tag CRUD toasts, validation errors, move confirmations, name conflicts).
+- Translated `features/import-articles/api/get-links-from-session.ts` (failed-to-load-more toast).
+
+### Verification
+
+- RED: 6 phase 8 locale tests failed before `common.*`, `common.notFound.*`, and `common.dialog.close` keys were added to locale JSON (the other 43 passed immediately).
+- GREEN: `bun test src/locales/common.test.ts` passed: 374 tests, 748 assertions.
+- Typecheck: `bun run typecheck` passed (fixed missing `children` destructuring in reader.tsx).
+- Touched-file lint/format: `pnpm exec oxlint ... && pnpm exec oxfmt --check ...` passed.
+
+### Remaining Risks
+
+- `id/common.json` still mirrors English values; it needs a later Indonesian copy pass.
+- Reader navigation drawer copy (Back, Reader Settings, Theme, Font Size, Line Spacing, Text Alignment, Font Family, Sans Serif, Unfavorite/Favorite) remains untranslated — deferred because labels double as state values in theme-config.
