@@ -11,6 +11,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { useTheme } from 'next-themes';
 import { type ReactElement, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useGetUser } from '@/features/auth/api/get-user';
 import { useLogout } from '@/features/auth/api/logout';
@@ -39,10 +40,10 @@ interface UserMenuProps {
 }
 
 const themes = [
-  { icon: MonitorIcon, label: 'System', value: 'system' },
-  { icon: SunIcon, label: 'Light', value: 'light' },
-  { icon: SunIcon, label: 'Sepia', value: 'sepia-theme' },
-  { icon: MoonIcon, label: 'Dark', value: 'dark' }
+  { icon: MonitorIcon, labelKey: 'userMenu.themes.system', value: 'system' },
+  { icon: SunIcon, labelKey: 'userMenu.themes.light', value: 'light' },
+  { icon: SunIcon, labelKey: 'userMenu.themes.sepia', value: 'sepia-theme' },
+  { icon: MoonIcon, labelKey: 'userMenu.themes.dark', value: 'dark' }
 ] as const;
 
 function getInitials(name: string): string {
@@ -55,6 +56,7 @@ function getInitials(name: string): string {
 }
 
 export function UserMenu({ align = 'end', contentClassName, trigger }: UserMenuProps) {
+  const { t } = useTranslation('common');
   const { data: user } = useGetUser();
   const { setTheme, theme } = useTheme();
   const navigate = useNavigate();
@@ -71,7 +73,7 @@ export function UserMenu({ align = 'end', contentClassName, trigger }: UserMenuP
 
   const handleLogout = useCallback(() => logoutMutation.mutate(undefined), [logoutMutation]);
 
-  const displayName = user?.result?.displayName ?? 'User';
+  const displayName = user?.result?.displayName ?? t('userMenu.fallbackName');
   const email = user?.result?.email ?? '';
   const avatarPreview = user?.result?.avatar ?? null;
   const initials = getInitials(displayName);
@@ -98,18 +100,18 @@ export function UserMenu({ align = 'end', contentClassName, trigger }: UserMenuP
         <DropdownMenuSub>
           <DropdownMenuSubTrigger className="h-11 sm:h-8">
             <CircleHalfIcon className="mr-2 size-4" weight="fill" />
-            Switch theme
+            {t('userMenu.switchTheme')}
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
-              {themes.map(({ icon: Icon, label, value }) => (
+              {themes.map(({ icon: Icon, labelKey, value }) => (
                 <DropdownMenuItem
                   className="h-11 sm:h-8"
                   key={value}
                   onClick={() => setTheme(value)}
                 >
                   <Icon className="mr-2 size-4" weight="bold" />
-                  {label}
+                  {t(labelKey)}
                   {theme === value && (
                     <span className="ml-4 text-xs">
                       <CheckIcon className="size-4" />
@@ -125,14 +127,14 @@ export function UserMenu({ align = 'end', contentClassName, trigger }: UserMenuP
 
         <DropdownMenuItem className="h-11 sm:h-8" onClick={() => navigate({ to: '/settings' })}>
           <GearIcon className="mr-2 size-4" />
-          Settings
+          {t('userMenu.settings')}
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 
         <DropdownMenuItem className="h-11 sm:h-8" onClick={handleLogout}>
           <SignOutIcon className="mr-2 size-4" />
-          Log out
+          {t('userMenu.logOut')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

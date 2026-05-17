@@ -1,6 +1,7 @@
 import { ArchiveIcon, CheckIcon, ClockIcon, CopyIcon, StarIcon } from '@phosphor-icons/react';
 import { Link, useParams, useRouter } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ReaderLayout from '@/components/layouts/reader';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ import { cn, formatReadingTime, getUrlName } from '@/lib/utils';
 const DEFAULT_TAG_COLOR = '#6B7280';
 
 function ArticleReaderPage() {
+  const { t } = useTranslation('common');
   const id = useParams({ from: '/_protected/articles/$id' }).id;
 
   const linkQuery = useGetLink({ linkId: id });
@@ -41,10 +43,12 @@ function ArticleReaderPage() {
     formatUpdateMessage: (body) => {
       if (body.readingProgress !== undefined || body.timeSpentReading !== undefined) return false;
       if (body.isFavorite !== undefined)
-        return body.isFavorite ? 'Marked as favorite' : 'Removed from favorites';
+        return body.isFavorite
+          ? t('reader.actions.markedAsFavorite')
+          : t('reader.actions.removedFromFavorites');
       if (body.isArchived !== undefined && body.isRead !== undefined)
-        return 'Archived and marked as read';
-      return 'Link updated';
+        return t('reader.actions.archivedAndMarkedRead');
+      return t('reader.actions.linkUpdated');
     }
   });
 
@@ -196,19 +200,19 @@ function ArticleReaderPage() {
       <hr className="mb-6" />
 
       <div className="flex flex-col space-y-4">
-        <h3 className="text-xl font-bold">What&apos;s next?</h3>
+        <h3 className="text-xl font-bold">{t('reader.whatsNext')}</h3>
         <div className="flex flex-col space-y-4">
           <Button className="flex-1" onClick={handleFavoriteArticle}>
             <StarIcon
               className={cn('size-4', article.isFavorite && 'fill-yellow-500')}
               weight={article.isFavorite ? 'fill' : 'bold'}
             />
-            {article.isFavorite ? 'Favorited' : 'Favorite'}
+            {article.isFavorite ? t('reader.actions.favorited') : t('reader.actions.favorite')}
           </Button>
           <div className="inline-flex items-center space-x-2">
             <Button className="flex-1" onClick={handleArchiveArticle} variant="outline">
               <ArchiveIcon className="size-4" />
-              Archive & Mark Read
+              {t('reader.actions.archiveAndMarkRead')}
             </Button>
 
             <Button
@@ -237,7 +241,7 @@ function ArticleReaderPage() {
                 </div>
               ) : (
                 <div className={cn('duration-200', isCopied && 'scale-0 opacity-0 blur-[2px]')}>
-                  Copy Link
+                  {t('reader.actions.copyLink')}
                 </div>
               )}
             </Button>
@@ -245,7 +249,7 @@ function ArticleReaderPage() {
         </div>
         {upcomingArticles && upcomingArticles?.length > 0 && (
           <div className="flex flex-col gap-4">
-            <h3 className="text-xl font-bold">Up next</h3>
+            <h3 className="text-xl font-bold">{t('reader.actions.upNext')}</h3>
             <div className="flex flex-col space-y-4">
               {upcomingArticles?.map((article) => (
                 <Link key={article.id} params={{ id: article.id }} to="/articles/$id">

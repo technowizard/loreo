@@ -1,5 +1,6 @@
 import { FileArrowUpIcon, FileIcon, InfoIcon, LightbulbIcon, XIcon } from '@phosphor-icons/react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -18,8 +19,8 @@ interface UploadFromCsvProps {
 }
 
 export function UploadFromCsv({ onUploadComplete }: UploadFromCsvProps) {
+  const { t } = useTranslation('common');
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isDragActive, setIsDragActive] = useState(false);
   const notifyError = useNotificationsStore.useError();
 
   const { onSelectedFileChange, onUploadSuccess, resetUploadedFile, uploadedFile } =
@@ -28,7 +29,7 @@ export function UploadFromCsv({ onUploadComplete }: UploadFromCsvProps) {
   const uploadCSVMutation = useUploadCSV({
     mutationConfig: {
       onMutate: () => {
-        toast.loading('Uploading CSV...', {
+        toast.loading(t('import.upload.toastLoading'), {
           position: 'top-center',
           richColors: true
         });
@@ -76,13 +77,11 @@ export function UploadFromCsv({ onUploadComplete }: UploadFromCsvProps) {
   const handleDragEnter = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    setIsDragActive(true);
   }, []);
 
   const handleDragLeave = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    setIsDragActive(false);
   }, []);
 
   const handleDragOver = useCallback((event: React.DragEvent) => {
@@ -94,7 +93,6 @@ export function UploadFromCsv({ onUploadComplete }: UploadFromCsvProps) {
     (event: React.DragEvent) => {
       event.preventDefault();
       event.stopPropagation();
-      setIsDragActive(false);
 
       const files = event.dataTransfer.files;
 
@@ -106,7 +104,7 @@ export function UploadFromCsv({ onUploadComplete }: UploadFromCsvProps) {
           uploadCSVMutation.mutate(file);
           onUploadComplete?.();
         } else {
-          notifyError('Please upload a CSV file.');
+          notifyError(t('import.wizard.errorUploadRequired'));
         }
       }
     },
@@ -129,7 +127,7 @@ export function UploadFromCsv({ onUploadComplete }: UploadFromCsvProps) {
     <div className="flex w-full flex-col gap-6">
       <div
         aria-describedby="csv-tips"
-        aria-label="Drop zone for CSV file upload. Press Enter or Space to open file picker."
+        aria-label={t('import.upload.dropzoneAria')}
         className="group border-border hover:border-primary/50 hover:bg-accent/50 focus-visible:ring-ring dark:hover:bg-accent/30 relative flex cursor-pointer flex-col items-center gap-3 rounded-xl border-2 border-dashed px-6 py-12 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
         onClick={handleButtonClick}
         onDragEnter={handleDragEnter}
@@ -142,7 +140,7 @@ export function UploadFromCsv({ onUploadComplete }: UploadFromCsvProps) {
       >
         <input
           accept=".csv"
-          aria-label="Select CSV file to upload"
+          aria-label={t('import.upload.dropzoneAria')}
           className="sr-only"
           onChange={handleFileSelect}
           ref={fileInputRef}
@@ -160,7 +158,7 @@ export function UploadFromCsv({ onUploadComplete }: UploadFromCsvProps) {
                 {uploadedFile.name}
               </span>
               <Button
-                aria-label="Clear selected file"
+                aria-label={t('import.upload.clearFile')}
                 className="h-6 w-6 rounded-full p-0"
                 onClick={handleClearFile}
                 size="sm"
@@ -169,7 +167,9 @@ export function UploadFromCsv({ onUploadComplete }: UploadFromCsvProps) {
                 <XIcon className="h-3 w-3" />
               </Button>
             </div>
-            <p className="text-muted-foreground text-sm">{formattedSize} • Click to change file</p>
+            <p className="text-muted-foreground text-sm">
+              {formattedSize} • {t('import.upload.clearFile')}
+            </p>
           </div>
         ) : (
           // Default state
@@ -177,12 +177,10 @@ export function UploadFromCsv({ onUploadComplete }: UploadFromCsvProps) {
             <div className="bg-primary/10 border-primary/20 flex h-16 w-16 items-center justify-center rounded-full border transition-transform group-hover:scale-105">
               <FileArrowUpIcon className="text-primary h-8 w-8" />
             </div>
-            <h2 className="text-lg font-semibold">
-              {isDragActive ? 'Drop your CSV file here' : 'Drag and drop your CSV file here'}
-            </h2>
-            <p className="text-muted-foreground text-sm">Supports .csv files up to 10MB</p>
+            <h2 className="text-lg font-semibold">{t('import.upload.dropzoneText')}</h2>
+            <p className="text-muted-foreground text-sm">{t('import.upload.fileHint')}</p>
             <Button className="mt-2" size="default">
-              Select File
+              {t('import.upload.selectFile')}
             </Button>
           </div>
         )}
@@ -191,40 +189,20 @@ export function UploadFromCsv({ onUploadComplete }: UploadFromCsvProps) {
       {uploadedFile.name ? (
         <Alert className="p-6" variant="success">
           <InfoIcon />
-          <AlertTitle className="text-lg font-bold">What happens next?</AlertTitle>
+          <AlertTitle className="text-lg font-bold">{t('import.upload.successTitle')}</AlertTitle>
           <AlertDescription>
-            <ul className="list-inside list-disc space-y-2 text-sm">
-              <li>We&apos;ll scan the file to help you map URLs, titles, and tags</li>
-              <li>Articles will be added to your library in the background</li>
-              <li>Large imports might take a while to complete content fetching</li>
-            </ul>
+            <p>{t('import.upload.successDescription')}</p>
           </AlertDescription>
         </Alert>
       ) : (
         <Alert className="p-6" variant="info">
           <LightbulbIcon />
-          <AlertTitle className="text-lg font-bold">Quick Tips for Successful Import</AlertTitle>
+          <AlertTitle className="text-lg font-bold">{t('import.upload.tipsTitle')}</AlertTitle>
           <AlertDescription>
             <ul className="list-inside list-disc space-y-2 text-sm">
-              <li>
-                Ensure your CSV file has a column named{' '}
-                <code className="bg-muted border-border rounded border px-1.5 py-0.5 font-mono text-xs">
-                  url
-                </code>{' '}
-                for the article links
-              </li>
-              <li>
-                Optional columns like{' '}
-                <code className="bg-muted border-border rounded border px-1.5 py-0.5 font-mono text-xs">
-                  title
-                </code>{' '}
-                and{' '}
-                <code className="bg-muted border-border rounded border px-1.5 py-0.5 font-mono text-xs">
-                  tags
-                </code>{' '}
-                (comma-separated) are also supported
-              </li>
-              <li>We support standard CSV formats, including exports from Pocket</li>
+              <li>{t('import.upload.tipOne')}</li>
+              <li>{t('import.upload.tipTwo')}</li>
+              <li>{t('import.upload.tipThree')}</li>
             </ul>
           </AlertDescription>
         </Alert>

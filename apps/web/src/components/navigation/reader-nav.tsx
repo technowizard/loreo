@@ -19,6 +19,7 @@ import {
 import { useNavigate } from '@tanstack/react-router';
 import { useTheme } from 'next-themes';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useGetLink } from '@/features/articles/api/get-link';
 import EditTagsDialog from '@/features/articles/components/edit-tags-dialog';
@@ -50,8 +51,41 @@ interface ReaderNavProps {
   onOpenHighlights: () => void;
 }
 
+const fontSizeLocaleKeys = ['small', 'medium', 'large', 'extraLarge', 'huge'] as const;
+const lineSpacingLocaleKeys = ['compact', 'normal', 'relaxed', 'loose'] as const;
+
+const fontCategoryLocaleKeys = {
+  legible: 'legible',
+  'sans-serif': 'sansSerif',
+  serif: 'serif'
+} as const;
+
+const fontFamilyLocaleKeys = {
+  alegreya: 'alegreya',
+  atkinson: 'atkinson',
+  'comic-neue': 'comicNeue',
+  default: 'default',
+  dyslexic: 'dyslexic',
+  inter: 'inter',
+  'lexend-deca': 'lexendDeca',
+  lora: 'lora',
+  literata: 'literata',
+  'plex-sans': 'plexSans',
+  'public-sans': 'publicSans',
+  spectral: 'spectral'
+} as const;
+
+function getFontFamilyLocaleKey(value: string) {
+  if (value in fontFamilyLocaleKeys) {
+    return fontFamilyLocaleKeys[value as keyof typeof fontFamilyLocaleKeys];
+  }
+
+  return fontFamilyLocaleKeys.default;
+}
+
 function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation('common');
 
   const linkQuery = useGetLink({ linkId });
 
@@ -75,10 +109,12 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
     formatUpdateMessage: (body) => {
       if (body.readingProgress !== undefined || body.timeSpentReading !== undefined) return false;
       if (body.isFavorite !== undefined)
-        return body.isFavorite ? 'Marked as favorite' : 'Removed from favorites';
+        return body.isFavorite
+          ? t('reader.actions.markedAsFavorite')
+          : t('reader.actions.removedFromFavorites');
       if (body.isArchived !== undefined && body.isRead !== undefined)
-        return 'Archived and marked as read';
-      return 'Link updated';
+        return t('reader.actions.archivedAndMarkedRead');
+      return t('reader.actions.linkUpdated');
     }
   });
 
@@ -113,6 +149,8 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
   };
 
   const currentFonts = getFontsByCategory(fontFamily.style);
+  const fontSizeLabelKey = fontSizeLocaleKeys[FONT_SIZES.indexOf(fontSize)] ?? 'medium';
+  const lineSpacingLabelKey = lineSpacingLocaleKeys[LINE_SPACING.indexOf(lineSpacing)] ?? 'normal';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -150,17 +188,17 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
         <div className="mx-auto max-w-[80ch] px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 w-full items-center justify-between">
             <Button
-              aria-label="Go back to articles"
+              aria-label={t('reader.nav.backToArticles')}
               onClick={() => navigate({ to: '/articles' })}
               variant="ghost"
             >
               <ArrowLeftIcon size={24} weight="bold" />
-              <span className="hidden sm:block">Back</span>
+              <span className="hidden sm:block">{t('reader.nav.back')}</span>
             </Button>
 
             <div className="flex items-center space-x-2">
               <Button
-                aria-label="Open article in new tab"
+                aria-label={t('reader.nav.openInNewTab')}
                 onClick={() => openOriginalLink(article!.url)}
                 size="icon"
                 variant="ghost"
@@ -169,7 +207,7 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
               </Button>
 
               <Button
-                aria-label="View highlights"
+                aria-label={t('reader.nav.viewHighlights')}
                 onClick={onOpenHighlights}
                 size="icon"
                 variant="ghost"
@@ -179,7 +217,7 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
 
               <Drawer direction={isMobile ? 'bottom' : 'right'}>
                 <DrawerTrigger asChild>
-                  <Button aria-label="Open reader settings" size="icon" variant="ghost">
+                  <Button aria-label={t('reader.nav.openSettings')} size="icon" variant="ghost">
                     <TextAaIcon size={24} weight="bold" />
                   </Button>
                 </DrawerTrigger>
@@ -188,12 +226,14 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
                   className="h-[50%] sm:h-full before:inset-0 sm:before:inset-2 before:rounded-b-none sm:before:rounded-b-4xl"
                 >
                   <div className="space-y-4 overflow-y-auto p-4">
-                    <div className="text-center text-lg font-semibold">Reader Settings</div>
+                    <div className="text-center text-lg font-semibold">
+                      {t('reader.settings.title')}
+                    </div>
                     <div className="flex items-center justify-between gap-2">
-                      <div className="flex font-medium">Theme</div>
+                      <div className="flex font-medium">{t('reader.settings.theme')}</div>
                       <div className="flex items-center justify-between gap-2">
                         <button
-                          aria-label="Set system theme"
+                          aria-label={t('reader.settings.setSystemTheme')}
                           aria-pressed={theme === 'system'}
                           className={cn(
                             'focus-visible:ring-ring hover:ring-foreground flex size-11 items-center justify-center rounded-full border transition-all hover:ring-1 focus-visible:ring-2 focus-visible:outline-none',
@@ -207,7 +247,7 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
                           <MonitorIcon weight="bold" />
                         </button>
                         <button
-                          aria-label="Set light theme"
+                          aria-label={t('reader.settings.setLightTheme')}
                           aria-pressed={theme === 'light'}
                           className={cn(
                             'reader-light focus-visible:ring-ring hover:ring-foreground flex size-11 items-center justify-center rounded-full border transition-all hover:ring-1 focus-visible:ring-2 focus-visible:outline-none',
@@ -221,7 +261,7 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
                           <SunIcon weight="bold" />
                         </button>
                         <button
-                          aria-label="Set sepia theme"
+                          aria-label={t('reader.settings.setSepiaTheme')}
                           aria-pressed={theme === 'sepia-theme'}
                           className={cn(
                             'reader-sepia focus-visible:ring-ring hover:ring-foreground flex size-11 items-center justify-center rounded-full border transition-all hover:ring-1 focus-visible:ring-2 focus-visible:outline-none',
@@ -235,7 +275,7 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
                           <SunIcon weight="bold" />
                         </button>
                         <button
-                          aria-label="Set dark theme"
+                          aria-label={t('reader.settings.setDarkTheme')}
                           aria-pressed={theme === 'dark'}
                           className={cn(
                             'reader-dark focus-visible:ring-ring hover:ring-foreground flex size-11 items-center justify-center rounded-full border transition-all hover:ring-1 focus-visible:ring-2 focus-visible:outline-none',
@@ -253,10 +293,10 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
 
                     <div className="space-y-3">
                       <div className="flex items-center justify-between gap-2">
-                        <div className="flex font-medium">Font Size</div>
+                        <div className="flex font-medium">{t('reader.settings.fontSize')}</div>
                         <div className="flex items-center justify-between gap-4">
                           <Button
-                            aria-label="Decrease font size"
+                            aria-label={t('reader.settings.decreaseFontSize')}
                             className="size-11"
                             disabled={fontSize === FONT_SIZES[0]}
                             onClick={decreaseFontSize}
@@ -266,10 +306,10 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
                             <MinusIcon size={16} weight="bold" />
                           </Button>
                           <span className="w-12 text-center text-sm font-medium tabular-nums">
-                            {fontSize}
+                            {t(`reader.fontSizes.${fontSizeLabelKey}`)}
                           </span>
                           <Button
-                            aria-label="Increase font size"
+                            aria-label={t('reader.settings.increaseFontSize')}
                             className="size-11"
                             disabled={fontSize === FONT_SIZES.at(-1)}
                             onClick={increaseFontSize}
@@ -281,10 +321,10 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
                         </div>
                       </div>
                       <div className="flex items-center justify-between gap-2">
-                        <div className="flex font-medium">Line Spacing</div>
+                        <div className="flex font-medium">{t('reader.settings.lineSpacing')}</div>
                         <div className="flex items-center justify-between gap-4">
                           <Button
-                            aria-label="Decrease line spacing"
+                            aria-label={t('reader.settings.decreaseLineSpacing')}
                             className="size-11"
                             disabled={lineSpacing === LINE_SPACING[0]}
                             onClick={decreaseLineSpacing}
@@ -294,10 +334,10 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
                             <MinusIcon weight="bold" />
                           </Button>
                           <span className="w-12 text-center text-sm font-medium tabular-nums">
-                            {lineSpacing}
+                            {t(`reader.lineSpacing.${lineSpacingLabelKey}`)}
                           </span>
                           <Button
-                            aria-label="Increase line spacing"
+                            aria-label={t('reader.settings.increaseLineSpacing')}
                             className="size-11"
                             disabled={lineSpacing === LINE_SPACING.at(-1)}
                             onClick={increaseLineSpacing}
@@ -309,10 +349,12 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
                         </div>
                       </div>
                       <div className="flex w-full items-center gap-2">
-                        <div className="flex w-1/2 font-medium">Text Alignment</div>
+                        <div className="flex w-1/2 font-medium">
+                          {t('reader.settings.textAlignment')}
+                        </div>
                         <div className="flex w-1/2 gap-2">
                           <button
-                            aria-label="Set default text alignment"
+                            aria-label={t('reader.settings.defaultTextAlignment')}
                             aria-pressed={textAlignment === 'default'}
                             className={cn(
                               'focus-visible:ring-ring hover:bg-muted/30 flex h-11 w-full cursor-pointer items-center justify-center rounded-md border transition-colors focus-visible:ring-2 focus-visible:outline-none',
@@ -325,7 +367,7 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
                             <TextAlignLeftIcon size={20} />
                           </button>
                           <button
-                            aria-label="Set justified text alignment"
+                            aria-label={t('reader.settings.justifiedTextAlignment')}
                             aria-pressed={textAlignment === 'justify'}
                             className={cn(
                               'focus-visible:ring-ring hover:bg-muted/30 flex h-11 w-full cursor-pointer items-center justify-center rounded-md border transition-colors focus-visible:ring-2 focus-visible:outline-none',
@@ -340,7 +382,7 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
                         </div>
                       </div>
                       <div className="flex flex-col gap-2">
-                        <div className="font-medium">Font Family</div>
+                        <div className="font-medium">{t('reader.settings.fontFamily')}</div>
                         <Tabs
                           className="w-full"
                           onValueChange={(value) => {
@@ -354,15 +396,17 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
                           <TabsList className="w-full">
                             {(['sans-serif', 'serif', 'legible'] as const).map((category) => (
                               <TabsTrigger className="capitalize" key={category} value={category}>
-                                {category === 'sans-serif' ? 'Sans Serif' : category}
+                                {t(`reader.fontCategories.${fontCategoryLocaleKeys[category]}`)}
                               </TabsTrigger>
                             ))}
                           </TabsList>
                           {currentFonts.map((font) => (
                             <TabsContent key={font.value} value={font.style}>
                               <SelectionCard
-                                checked={fontFamily.label === font.label}
-                                description={font.description}
+                                checked={fontFamily.name === font.value}
+                                description={t(
+                                  `reader.fontFamilies.${getFontFamilyLocaleKey(font.value)}.description`
+                                )}
                                 icon={
                                   <span className={cn('text-xl font-bold', `font-${font.value}`)}>
                                     Aa
@@ -371,12 +415,14 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
                                 key={font.value}
                                 onChange={() => {
                                   toggleFontFamily({
-                                    label: font.label,
+                                    label: font.value,
                                     name: font.value,
                                     style: font.style
                                   });
                                 }}
-                                title={font.label}
+                                title={t(
+                                  `reader.fontFamilies.${getFontFamilyLocaleKey(font.value)}.label`
+                                )}
                                 value={font.value}
                               />
                             </TabsContent>
@@ -391,7 +437,12 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
               <DropdownMenu>
                 <DropdownMenuTrigger
                   render={
-                    <Button aria-label="More options" className="mr-0" size="icon" variant="ghost">
+                    <Button
+                      aria-label={t('reader.settings.moreOptions')}
+                      className="mr-0"
+                      size="icon"
+                      variant="ghost"
+                    >
                       <DotsThreeIcon className="size-4" size={24} weight="bold" />
                     </Button>
                   }
@@ -406,7 +457,9 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
                       size={24}
                       weight={article?.isFavorite ? 'fill' : 'bold'}
                     />
-                    {article?.isFavorite ? 'Unfavorite' : 'Favorite'}
+                    {article?.isFavorite
+                      ? t('reader.settings.unfavorite')
+                      : t('reader.settings.favorite')}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="focus:bg-accent h-11 rounded-none"
@@ -417,14 +470,16 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
                       size={24}
                       weight={article?.isArchived ? 'fill' : 'bold'}
                     />
-                    {article?.isArchived ? 'Unarchive' : 'Archive'}
+                    {article?.isArchived
+                      ? t('reader.settings.unarchive')
+                      : t('reader.settings.archive')}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="focus:bg-accent h-11 rounded-none"
                     onClick={() => setIsEditTagsOpen(true)}
                   >
                     <TagIcon className="mr-2" size={24} weight="bold" />
-                    Edit Tags
+                    {t('reader.settings.editTags')}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="focus:bg-accent h-11 rounded-t-none"
@@ -432,7 +487,7 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
                     variant="destructive"
                   >
                     <TrashIcon className="mr-2" size={24} weight="bold" />
-                    Delete article
+                    {t('reader.settings.deleteArticle')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

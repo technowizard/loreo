@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { cn } from '@/lib/utils';
 
 type Props = {
@@ -6,8 +8,10 @@ type Props = {
 };
 
 export function WizardStepIndicator({ currentStep, steps }: Props) {
+  const { t } = useTranslation('common');
+
   return (
-    <nav aria-label="Steps" className="flex items-center gap-2 text-sm">
+    <nav aria-label={t('import.wizard.stepsAria')} className="flex items-center gap-2 text-sm">
       <ol className="flex items-center gap-2" role="list">
         {steps.map((label, index) => (
           <li
@@ -30,7 +34,9 @@ export function WizardStepIndicator({ currentStep, steps }: Props) {
                   'after:bg-primary after:absolute after:right-0 after:bottom-0 after:left-0 after:h-0.5 after:content-[""]'
               )}
             >
-              <span className="hidden sm:inline">Step {index + 1}: </span>
+              <span className="hidden sm:inline">
+                {t('import.wizard.stepLabel', { current: index + 1 })}{' '}
+              </span>
               {label}
             </span>
           </li>

@@ -1,4 +1,5 @@
 import { SpinnerIcon } from '@phosphor-icons/react';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -31,6 +32,7 @@ export function DeleteConfirmationDialog({
   relatedCount,
   type
 }: Props) {
+  const { t } = useTranslation('common');
   const itemName = type === 'group' ? (item as TagGroup)?.name : (item as TagType)?.name;
 
   return (
@@ -38,31 +40,40 @@ export function DeleteConfirmationDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            Delete {type === 'group' ? 'Group' : 'Tag'}: {itemName}
+            {type === 'group'
+              ? t('tags.deleteDialog.titleGroup', { name: itemName })
+              : t('tags.deleteDialog.titleTag', { name: itemName })}
           </DialogTitle>
           <DialogDescription>
             {type === 'group' && (relatedCount || 0) > 0 ? (
-              <>
+              <Trans
+                count={relatedCount}
+                i18nKey="tags.deleteDialog.confirmGroup"
+                t={t}
+                values={{ name: itemName }}
+              >
                 Are you sure you want to delete <strong>{itemName}</strong> and all {relatedCount}{' '}
                 tags in this group?
-              </>
+              </Trans>
             ) : (
-              <>
+              <Trans i18nKey="tags.deleteDialog.confirmTag" t={t} values={{ name: itemName }}>
                 Are you sure you want to delete <strong>{itemName}</strong>?
-              </>
+              </Trans>
             )}
             <br />
-            <span className="text-destructive font-semibold">This action cannot be undone.</span>
+            <span className="text-destructive font-semibold">
+              {t('tags.deleteDialog.cannotUndo')}
+            </span>
           </DialogDescription>
         </DialogHeader>
 
         <DialogFooter>
           <Button onClick={() => onOpenChange(false)} variant="outline">
-            Cancel
+            {t('tags.deleteDialog.cancel')}
           </Button>
           <Button disabled={isDeleting} onClick={onConfirm} variant="destructive">
             {isDeleting && <SpinnerIcon className="mr-2 animate-spin" size={16} />}
-            Delete
+            {t('tags.deleteDialog.delete')}
           </Button>
         </DialogFooter>
       </DialogContent>

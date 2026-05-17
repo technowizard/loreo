@@ -22,7 +22,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'form'>)
   const login = useLogin({
     mutationConfig: {
       onError: () => {
-        toast.error('Invalid email or password', {
+        toast.error(t('login.invalidCredentials'), {
           position: 'top-right',
           richColors: true
         });
@@ -30,7 +30,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'form'>)
       onSuccess: (user) => {
         queryClient.setQueryData(authKeys.user(), user);
 
-        toast.success('Login successful', {
+        toast.success(t('login.success'), {
           position: 'top-right',
           richColors: true
         });
@@ -68,7 +68,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'form'>)
             id="email"
             name="email"
             onChange={(event) => setFormData({ ...formData, email: event.target.value })}
-            placeholder="you@example.com"
+            placeholder={t('login.emailPlaceholder')}
             required
             type="email"
             value={formData.email}

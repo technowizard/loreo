@@ -1,4 +1,5 @@
 import { infiniteQueryOptions, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { apiClient } from '@/lib/api-client';
@@ -76,6 +77,7 @@ export const useGetLinksFromImportSession = ({
   queryConfig
 }: UseGetLinksFromImportSessionOptions) => {
   const queryClient = useQueryClient();
+  const { t } = useTranslation('common');
 
   const infiniteQuery = useInfiniteQuery({
     ...getLinksFromImportSessionQueryOptions(importSessionId, extractionStatus),
@@ -108,7 +110,7 @@ export const useGetLinksFromImportSession = ({
       try {
         await infiniteQuery.fetchNextPage();
       } catch {
-        toast.error('Failed to load more items', {
+        toast.error(t('import.extraction.failedLoadMore'), {
           position: 'bottom-right',
           richColors: true
         });

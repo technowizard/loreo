@@ -1,4 +1,5 @@
 import { SpinnerIcon } from '@phosphor-icons/react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -46,12 +47,13 @@ export function MoveTagsDialog({
   onConfirm,
   onDestinationChange
 }: Props) {
+  const { t } = useTranslation('common');
   const title =
     dialog?.mode === 'single'
-      ? `Move "${dialog.tag.name}"`
+      ? t('tags.moveDialog.titleSingle', { name: dialog.tag.name })
       : dialog?.mode === 'bulk'
-        ? `Move ${dialog.tagIds.length} tag(s)`
-        : 'Move all tags';
+        ? t('tags.moveDialog.titleBulk', { count: dialog.tagIds.length })
+        : t('tags.moveDialog.titleGroup');
 
   const availableGroups = allGroups.filter((c) => {
     if (dialog?.mode === 'group') return c.id !== dialog.fromGroupId;
@@ -69,19 +71,22 @@ export function MoveTagsDialog({
       <DialogContent className="sm:max-w-100">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>Select a destination group to move the tag(s) to.</DialogDescription>
+          <DialogDescription>{t('tags.moveDialog.description')}</DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4 py-2">
           <div className="grid gap-2">
-            <Label>Destination Group</Label>
+            <Label>{t('tags.moveDialog.destinationLabel')}</Label>
             <Select
-              items={availableGroups.map((c) => ({ label: c.name, value: c.id }))}
+              items={availableGroups.map((c) => ({
+                label: c.name,
+                value: c.id
+              }))}
               onValueChange={(value) => onDestinationChange(value ?? '')}
               value={destinationGroupId}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a group..." />
+                <SelectValue placeholder={t('tags.moveDialog.placeholder')} />
               </SelectTrigger>
               <SelectContent>
                 {availableGroups.map((c) => (
@@ -99,11 +104,11 @@ export function MoveTagsDialog({
 
         <DialogFooter>
           <Button onClick={onClose} variant="outline">
-            Cancel
+            {t('tags.moveDialog.cancel')}
           </Button>
           <Button disabled={!destinationGroupId || isPending} onClick={onConfirm}>
             {isPending && <SpinnerIcon className="mr-2 animate-spin" size={16} />}
-            Move
+            {t('tags.moveDialog.move')}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,5 +1,6 @@
 import { InfoIcon } from '@phosphor-icons/react';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
@@ -20,6 +21,7 @@ interface ReviewImportProps {
 }
 
 export function ReviewImport({ onReviewComplete }: ReviewImportProps) {
+  const { t } = useTranslation('common');
   const { preview, uploadedFile } = useImportArticles();
 
   useEffect(() => {
@@ -32,10 +34,10 @@ export function ReviewImport({ onReviewComplete }: ReviewImportProps) {
         <Card className="flex-1">
           <CardHeader>
             <CardContent>
-              <h3>Summary</h3>
+              <h3>{t('import.review.summary', { count: uploadedFile.totalRows })}</h3>
               <p className="mt-2 text-lg font-semibold">
                 <span className="text-primary text-3xl font-bold">{uploadedFile.totalRows}</span>{' '}
-                articles to import
+                {t('import.review.summary', { count: uploadedFile.totalRows })}
               </p>
             </CardContent>
           </CardHeader>
@@ -44,7 +46,11 @@ export function ReviewImport({ onReviewComplete }: ReviewImportProps) {
           <CardHeader>
             <CardContent>
               <div className="inline-flex gap-2">
-                <h3>Estimated Time</h3>
+                <h3>
+                  {t('import.review.estimatedTime', {
+                    time: preview.estimatedTime
+                  })}
+                </h3>
                 <Tooltip>
                   <TooltipTrigger>
                     <InfoIcon className="text-muted-foreground size-5" weight="fill" />
@@ -64,7 +70,7 @@ export function ReviewImport({ onReviewComplete }: ReviewImportProps) {
       </div>
 
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold sm:text-lg">Data Preview (First 5 Rows)</h3>
+        <h3 className="text-sm font-semibold sm:text-lg">{t('import.review.title')}</h3>
         <p className="text-muted-foreground text-xs sm:text-sm">
           Scroll horizontally to view all columns
         </p>
@@ -74,9 +80,9 @@ export function ReviewImport({ onReviewComplete }: ReviewImportProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Article URL</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead>Tags</TableHead>
+              <TableHead>{t('import.review.tableHeadingUrl')}</TableHead>
+              <TableHead>{t('import.review.tableHeadingTitle')}</TableHead>
+              <TableHead>{t('import.review.tableHeadingTags')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -93,12 +99,16 @@ export function ReviewImport({ onReviewComplete }: ReviewImportProps) {
                     ))}
                     {preview.tags.length > 3 && (
                       <span className="text-foreground text-sm">
-                        +{preview.tags.length - 3} more
+                        {t('import.review.moreCount', {
+                          count: preview.tags.length - 3
+                        })}
                       </span>
                     )}
                   </TableCell>
                 ) : (
-                  <TableCell className="text-muted-foreground">No Tags</TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {t('import.review.noTags')}
+                  </TableCell>
                 )}
               </TableRow>
             ))}

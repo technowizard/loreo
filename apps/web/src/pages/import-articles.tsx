@@ -1,6 +1,7 @@
 import { ArrowsClockwiseIcon, XCircleIcon } from '@phosphor-icons/react';
 import { useNavigate } from '@tanstack/react-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 
@@ -29,6 +30,7 @@ import { useImportArticles } from '@/features/import-articles/hooks/use-import-a
 import { useNotificationsStore } from '@/stores/notifications';
 
 function ImportArticlesPage() {
+  const { t } = useTranslation('common');
   const [step, setStep] = useState<ImportWizardStep>(STEP_UPLOAD);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,8 +70,7 @@ function ImportArticlesPage() {
     setError(null);
 
     if (!canProceedFromStep(step, stepComplete)) {
-      const errorMessage = STEP_ERROR_MESSAGES[step];
-      setError(errorMessage);
+      setError(t(STEP_ERROR_MESSAGES[step]));
 
       return;
     }
@@ -95,9 +96,9 @@ function ImportArticlesPage() {
 
   const handleCancel = () => {
     if (step !== STEP_UPLOAD || stepComplete[STEP_UPLOAD]) {
-      if (confirm('Are you sure you want to cancel the import? Your progress will be lost.')) {
+      if (confirm(t('import.wizard.confirmCancelDescription'))) {
         resetWizard();
-        notifyInfo('Import cancelled');
+        notifyInfo(t('import.wizard.toastCancelled'));
       }
     }
   };
@@ -111,9 +112,9 @@ function ImportArticlesPage() {
         mapping
       });
     } catch {
-      notifyError('Import failed. Please try again.');
+      notifyError(t('import.wizard.toastFailed'));
 
-      setError('Import failed. Please try again.');
+      setError(t('import.wizard.toastFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -186,12 +187,14 @@ function ImportArticlesPage() {
 
   return (
     <main aria-label="Article import wizard" className="flex max-w-350 flex-col gap-6" role="main">
-      <WizardStepIndicator currentStep={step} steps={STEP_LABELS} />
+      <WizardStepIndicator currentStep={step} steps={STEP_LABELS.map((key) => t(key))} />
 
       {/* Header */}
       <header>
-        <h1 className="text-foreground text-3xl font-bold tracking-tight">{STEP_LABELS[step]}</h1>
-        <p className="text-muted-foreground mt-1">{STEP_DESCRIPTIONS[step]}</p>
+        <h1 className="text-foreground text-3xl font-bold tracking-tight">
+          {t(STEP_LABELS[step])}
+        </h1>
+        <p className="text-muted-foreground mt-1">{t(STEP_DESCRIPTIONS[step])}</p>
       </header>
 
       {/* Error Alert */}
@@ -219,22 +222,22 @@ function ImportArticlesPage() {
       {/* Navigation */}
       <div className="flex items-center justify-between border-t pt-6">
         <Button onClick={handleCancel} variant="ghost">
-          Cancel
+          {t('import.wizard.cancel')}
         </Button>
 
         <div className="flex gap-2">
           {step > STEP_UPLOAD && (
             <Button onClick={handleBack} variant="secondary">
-              Go Back
+              {t('import.wizard.back')}
             </Button>
           )}
           <Button className="min-h-11" disabled={isLoading} onClick={handleContinue}>
             {isLoading ? (
               <ArrowsClockwiseIcon className="h-4 w-4 animate-spin" />
             ) : step === STEP_REVIEW ? (
-              'Start Import'
+              t('import.wizard.startImport')
             ) : (
-              'Continue'
+              t('import.wizard.continue')
             )}
           </Button>
         </div>

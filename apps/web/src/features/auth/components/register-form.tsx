@@ -28,7 +28,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'form
             richColors: true
           });
         } else {
-          toast.error('An error occurred', {
+          toast.error(t('register.genericError'), {
             position: 'top-right',
             richColors: true
           });
@@ -37,7 +37,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'form
       onSuccess: (user) => {
         queryClient.setQueryData(authKeys.user(), user);
 
-        toast.success('Account created. Welcome!', {
+        toast.success(t('register.success'), {
           position: 'top-right',
           richColors: true
         });

@@ -1,5 +1,6 @@
 import { BookmarkSimpleIcon, XIcon } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 
@@ -16,6 +17,7 @@ export default function ResumePositionBanner({
   onRestore,
   onDismiss
 }: ResumePositionBannerProps) {
+  const { t } = useTranslation('common');
   const [isVisible, setIsVisible] = useState(false);
   // Capture progress at mount so it doesn't update as the user scrolls
   const [snapshotPercent] = useState(Math.round(progress));
@@ -46,11 +48,13 @@ export default function ResumePositionBanner({
       <div className="bg-background sm:w-80 border-border flex items-center gap-4 rounded-xl border px-4 py-3 shadow-lg">
         <BookmarkSimpleIcon className="text-muted-foreground size-4 shrink-0" weight="fill" />
         <div className="flex flex-col w-full">
-          <span className="text-foreground text-sm font-semibold">Resume reading</span>
-          <span className="text-muted-foreground text-xs">You were at {snapshotPercent}%</span>
+          <span className="text-foreground text-sm font-semibold">{t('reader.resume.title')}</span>
+          <span className="text-muted-foreground text-xs">
+            {t('reader.resume.position', { progress: snapshotPercent })}
+          </span>
         </div>
         <Button className="h-7 px-3 text-xs" onClick={handleRestore} size="sm">
-          Continue
+          {t('reader.resume.continue')}
         </Button>
         <button
           className="text-muted-foreground hover:text-foreground -mr-1 transition-colors"

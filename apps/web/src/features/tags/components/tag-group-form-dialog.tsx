@@ -1,4 +1,5 @@
 import { SpinnerIcon } from '@phosphor-icons/react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -46,30 +47,33 @@ export function TagGroupFormDialog({
   onSave,
   open
 }: Props) {
+  const { t } = useTranslation('common');
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-125">
         <DialogHeader>
           <div className="flex items-center gap-2">
             <div className="size-5 rounded-full" style={{ backgroundColor: form.color }} />
-            <DialogTitle>{mode === 'create' ? 'New group' : 'Edit group'}</DialogTitle>
+            <DialogTitle>
+              {mode === 'create' ? t('tags.groupForm.createTitle') : t('tags.groupForm.editTitle')}
+            </DialogTitle>
           </div>
           <DialogDescription>
             {mode === 'create'
-              ? 'Create a new group to organize your tags'
-              : 'Update group details'}
+              ? t('tags.groupForm.createDescription')
+              : t('tags.groupForm.editDescription')}
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
             <Label htmlFor="group-name">
-              Group Name <span className="text-destructive">*</span>
+              {t('tags.groupForm.groupNameLabel')} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="group-name"
               onChange={(e) => onFormChange('name', e.target.value)}
-              placeholder="e.g., Work, Personal, Learning"
+              placeholder={t('tags.groupForm.groupNamePlaceholder')}
               value={form.name}
             />
             {errors.name && <p className="text-destructive text-xs">{errors.name}</p>}
@@ -77,26 +81,26 @@ export function TagGroupFormDialog({
 
           <div className="grid gap-2">
             <Label>
-              Color <span className="text-destructive">*</span>
+              {t('tags.groupForm.colorLabel')} <span className="text-destructive">*</span>
             </Label>
             <ColorPicker onChange={(color) => onFormChange('color', color)} value={form.color} />
           </div>
 
           <div className="grid gap-2">
             <Label htmlFor="group-description">
-              Description <span className="text-destructive">*</span>
+              {t('tags.groupForm.descriptionLabel')} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="group-description"
               onChange={(e) => onFormChange('description', e.target.value)}
-              placeholder="What is this group for?"
+              placeholder={t('tags.groupForm.descriptionPlaceholder')}
               value={form.description}
             />
             {errors.description && <p className="text-destructive text-xs">{errors.description}</p>}
           </div>
 
           <div className="bg-secondary/50 rounded-md border p-3">
-            <p className="text-muted-foreground mb-2 text-xs">Preview:</p>
+            <p className="text-muted-foreground mb-2 text-xs">{t('tags.groupForm.previewLabel')}</p>
             <div
               className="bg-card flex items-start gap-3 rounded-md border p-4"
               style={{ borderColor: form.color }}
@@ -106,9 +110,11 @@ export function TagGroupFormDialog({
                 style={{ backgroundColor: form.color }}
               />
               <div className="flex-1">
-                <p className="font-semibold">{form.name || 'Group name'}</p>
+                <p className="font-semibold">
+                  {form.name || t('tags.groupForm.previewNameFallback')}
+                </p>
                 <p className="text-muted-foreground text-sm">
-                  {form.description || 'Group description'}
+                  {form.description || t('tags.groupForm.previewDescriptionFallback')}
                 </p>
               </div>
             </div>
@@ -117,11 +123,11 @@ export function TagGroupFormDialog({
 
         <DialogFooter>
           <Button onClick={() => onOpenChange(false)} variant="outline">
-            Cancel
+            {t('tags.groupForm.cancel')}
           </Button>
           <Button disabled={isSaving} onClick={onSave}>
             {isSaving && <SpinnerIcon className="mr-2 animate-spin" size={16} />}
-            {mode === 'create' ? 'Create' : 'Update'} group
+            {mode === 'create' ? t('tags.groupForm.create') : t('tags.groupForm.update')}
           </Button>
         </DialogFooter>
       </DialogContent>

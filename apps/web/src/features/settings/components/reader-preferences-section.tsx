@@ -9,6 +9,7 @@ import {
 } from '@phosphor-icons/react';
 import { useTheme } from 'next-themes';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import { Field, FieldLabel } from '@/components/ui/field';
@@ -32,6 +33,34 @@ import { FONT_SIZES, getFontsByCategory, LINE_SPACING } from '../constants/theme
 import { SelectionCard } from './selection-card';
 import { SettingsRow, SettingsSection } from './settings-section';
 
+function getFontSizeLocaleKey(size: string) {
+  switch (size) {
+    case 'Extra Large':
+      return 'extraLarge';
+    case 'Huge':
+      return 'huge';
+    case 'Large':
+      return 'large';
+    case 'Small':
+      return 'small';
+    default:
+      return 'medium';
+  }
+}
+
+function getLineSpacingLocaleKey(spacing: string) {
+  switch (spacing) {
+    case 'Compact':
+      return 'compact';
+    case 'Loose':
+      return 'loose';
+    case 'Relaxed':
+      return 'relaxed';
+    default:
+      return 'normal';
+  }
+}
+
 export function ReaderPreferencesSection() {
   const { setTheme, theme } = useTheme();
   const {
@@ -48,6 +77,7 @@ export function ReaderPreferencesSection() {
   } = useThemeConfig();
 
   const [showFontPreview, setShowFontPreview] = useState(false);
+  const { t } = useTranslation('common');
 
   const currentFonts = getFontsByCategory(fontFamily.style);
 
@@ -85,20 +115,18 @@ export function ReaderPreferencesSection() {
 
   return (
     <SettingsSection
-      description="Customize how articles look when you read them"
-      title="Reader Preferences"
+      description={t('settings.readerPreferences.description')}
+      title={t('settings.readerPreferences.title')}
     >
       <SettingsRow>
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">Theme</span>
+          <span className="text-sm font-medium">{t('settings.readerPreferences.themeLabel')}</span>
           <Tooltip>
             <TooltipTrigger>
               <InfoIcon className="text-muted-foreground size-4 cursor-help" weight="fill" />
             </TooltipTrigger>
             <TooltipContent side="right">
-              <p className="max-w-xs text-xs">
-                Applies to both the app interface and article reader
-              </p>
+              <p className="max-w-xs text-xs">{t('settings.readerPreferences.themeTooltip')}</p>
             </TooltipContent>
           </Tooltip>
         </div>
@@ -110,7 +138,7 @@ export function ReaderPreferencesSection() {
               setTheme('system');
               toggleTheme('system');
             }}
-            title="System"
+            title={t('settings.readerPreferences.theme.system')}
             value="system"
           />
           <SelectionCard
@@ -120,7 +148,7 @@ export function ReaderPreferencesSection() {
               setTheme('light');
               toggleTheme('light');
             }}
-            title="Light"
+            title={t('settings.readerPreferences.theme.light')}
             value="light"
           />
           <SelectionCard
@@ -130,7 +158,7 @@ export function ReaderPreferencesSection() {
               setTheme('sepia-theme');
               toggleTheme('sepia-theme');
             }}
-            title="Sepia"
+            title={t('settings.readerPreferences.theme.sepia')}
             value="sepia-theme"
           />
           <SelectionCard
@@ -140,17 +168,17 @@ export function ReaderPreferencesSection() {
               setTheme('dark');
               toggleTheme('dark');
             }}
-            title="Dark"
+            title={t('settings.readerPreferences.theme.dark')}
             value="dark"
           />
         </div>
       </SettingsRow>
 
       <div className="space-y-3">
-        <div className="text-sm font-medium">Typography</div>
+        <div className="text-sm font-medium">{t('settings.readerPreferences.typographyLabel')}</div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Field>
-            <FieldLabel>Font Size</FieldLabel>
+            <FieldLabel>{t('settings.readerPreferences.fontSizeLabel')}</FieldLabel>
             <Select onValueChange={toggleFontSize} value={fontSize}>
               <SelectTrigger className="w-full">
                 <SelectValue />
@@ -159,7 +187,7 @@ export function ReaderPreferencesSection() {
                 <SelectGroup>
                   {FONT_SIZES.map((size) => (
                     <SelectItem key={size} value={size}>
-                      {size}
+                      {t(`reader.fontSizes.${getFontSizeLocaleKey(size)}`)}
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -167,7 +195,7 @@ export function ReaderPreferencesSection() {
             </Select>
           </Field>
           <Field>
-            <FieldLabel>Line Spacing</FieldLabel>
+            <FieldLabel>{t('settings.readerPreferences.lineSpacingLabel')}</FieldLabel>
             <Select onValueChange={toggleLineSpacing} value={lineSpacing}>
               <SelectTrigger className="w-full">
                 <SelectValue />
@@ -176,7 +204,7 @@ export function ReaderPreferencesSection() {
                 <SelectGroup>
                   {LINE_SPACING.map((spacing) => (
                     <SelectItem key={spacing} value={spacing}>
-                      {spacing}
+                      {t(`reader.lineSpacing.${getLineSpacingLocaleKey(spacing)}`)}
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -188,9 +216,13 @@ export function ReaderPreferencesSection() {
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <div className="text-sm font-medium">Font Family</div>
+          <div className="text-sm font-medium">
+            {t('settings.readerPreferences.fontFamilyLabel')}
+          </div>
           <Button onClick={() => setShowFontPreview(!showFontPreview)} size="sm" variant="ghost">
-            {showFontPreview ? 'Hide Preview' : 'Show Preview'}
+            {showFontPreview
+              ? t('settings.readerPreferences.hidePreview')
+              : t('settings.readerPreferences.showPreview')}
           </Button>
         </div>
         <Tabs
@@ -206,24 +238,24 @@ export function ReaderPreferencesSection() {
           <TabsList className="w-full">
             {(['sans-serif', 'serif', 'legible'] as const).map((category) => (
               <TabsTrigger className="capitalize" key={category} value={category}>
-                {category === 'sans-serif' ? 'Sans Serif' : category}
+                {t(`reader.fontCategories.${category === 'sans-serif' ? 'sansSerif' : category}`)}
               </TabsTrigger>
             ))}
           </TabsList>
           {currentFonts.map((font) => (
             <TabsContent key={font.value} value={font.style}>
               <SelectionCard
-                checked={fontFamily.label === font.label}
-                description={font.description}
+                checked={fontFamily.name === font.value}
+                description={t(font.descriptionKey)}
                 icon={<span className={cn('text-xl font-bold', `font-${font.value}`)}>Aa</span>}
                 onChange={() =>
                   toggleFontFamily({
-                    label: font.label,
+                    label: font.value,
                     name: font.value,
                     style: font.style
                   })
                 }
-                title={font.label}
+                title={t(font.labelKey)}
                 value={font.value}
               >
                 {showFontPreview && (
@@ -235,7 +267,7 @@ export function ReaderPreferencesSection() {
                       readerLineSpacingClass
                     )}
                   >
-                    The quick brown fox jumps over the lazy dog.
+                    {t('settings.readerPreferences.previewText')}
                   </p>
                 )}
               </SelectionCard>
@@ -245,36 +277,38 @@ export function ReaderPreferencesSection() {
       </div>
 
       <div className="space-y-3">
-        <div className="text-sm font-medium">Text Alignment</div>
+        <div className="text-sm font-medium">
+          {t('settings.readerPreferences.textAlignmentLabel')}
+        </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <SelectionCard
             checked={textAlignment === 'default'}
-            description="Text lines up on the left side"
+            description={t('settings.readerPreferences.alignment.default.description')}
             icon={<TextAlignLeftIcon size={20} />}
             onChange={() => toggleTextAlignment('default')}
-            title="Default"
+            title={t('settings.readerPreferences.alignment.default.title')}
             value="default"
           />
           <SelectionCard
             checked={textAlignment === 'justify'}
-            description="Text spreads evenly across the width"
+            description={t('settings.readerPreferences.alignment.justify.description')}
             icon={<TextAlignJustifyIcon size={20} />}
             onChange={() => toggleTextAlignment('justify')}
-            title="Justify"
+            title={t('settings.readerPreferences.alignment.justify.title')}
             value="justify"
           />
         </div>
 
         <div className="flex items-center justify-between rounded-4xl border border-dashed p-6">
           <div>
-            <p className="text-sm font-medium">Reset Preferences</p>
+            <p className="text-sm font-medium">{t('settings.readerPreferences.reset.title')}</p>
             <p className="text-muted-foreground text-xs">
-              Restore all reader settings to their default values
+              {t('settings.readerPreferences.reset.description')}
             </p>
           </div>
           <Button onClick={resetSettings} size="sm" variant="outline">
             <ClockClockwiseIcon className="mr-1.5 size-4" />
-            Reset to Default
+            {t('settings.readerPreferences.resetToDefault')}
           </Button>
         </div>
       </div>

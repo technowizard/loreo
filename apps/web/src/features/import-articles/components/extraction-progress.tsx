@@ -1,5 +1,6 @@
 import { ArrowsClockwiseIcon } from '@phosphor-icons/react';
 import { useNavigate } from '@tanstack/react-router';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -35,13 +36,14 @@ interface ExtractionProgressProps {
   totalRows: number;
 }
 
-const statuses = [
-  { label: 'All Statuses', value: null },
-  { label: 'Completed', value: 'completed' },
-  { label: 'Failed', value: 'failed' }
-];
+const statusFilterKeys = [
+  { labelKey: 'import.extraction.statusAll', value: null },
+  { labelKey: 'import.extraction.statusCompleted', value: 'completed' },
+  { labelKey: 'import.extraction.statusFailed', value: 'failed' }
+] as const;
 
 export function ExtractionProgress(props: ExtractionProgressProps) {
+  const { t } = useTranslation('common');
   const {
     extractionCompleted,
     extractionFailed,
@@ -54,13 +56,18 @@ export function ExtractionProgress(props: ExtractionProgressProps) {
     onFilterChange
   } = props;
 
+  const statusFilterItems = statusFilterKeys.map((s) => ({
+    label: t(s.labelKey),
+    value: s.value
+  }));
+
   const navigate = useNavigate();
 
   return (
     <div className="mx-auto flex w-full flex-col gap-4">
       <div className="flex w-full justify-between">
         <div className="flex flex-col gap-2">
-          <h1 className="text-foreground">Extracting content</h1>
+          <h1 className="text-foreground">{t('import.extraction.title')}</h1>
           <div className="text-muted-foreground max-w-[80%] text-sm sm:text-base">
             Extraction is running in the background. You can close this window and check back later.
           </div>
@@ -76,7 +83,7 @@ export function ExtractionProgress(props: ExtractionProgressProps) {
         <Card className="flex-1">
           <CardHeader>
             <CardContent>
-              <h2>Completed</h2>
+              <h2>{t('import.extraction.statusCompleted')}</h2>
               <p className="mt-2 text-lg font-semibold tabular-nums">
                 <span className="text-success-500 dark:text-success-400 text-3xl font-bold">
                   {extractionCompleted}
@@ -88,7 +95,7 @@ export function ExtractionProgress(props: ExtractionProgressProps) {
         <Card className="flex-1">
           <CardHeader>
             <CardContent>
-              <h2>Failed</h2>
+              <h2>{t('import.extraction.statusFailed')}</h2>
               <p className="mt-2 text-lg font-semibold tabular-nums">
                 <span className="text-danger-500 dark:text-danger-400 text-3xl font-bold">
                   {extractionFailed}
@@ -99,11 +106,13 @@ export function ExtractionProgress(props: ExtractionProgressProps) {
         </Card>
       </div>
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold sm:text-lg">Processing Queue</h2>
+        <h2 className="text-sm font-semibold sm:text-lg">
+          {t('import.extraction.processingQueue')}
+        </h2>
         <div>
           <Select
             disabled={isFetchingNextPage}
-            items={statuses}
+            items={statusFilterItems}
             onValueChange={(value) => {
               if (value === null) {
                 onFilterChange(null);
@@ -118,7 +127,7 @@ export function ExtractionProgress(props: ExtractionProgressProps) {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {statuses.map((status) => (
+                {statusFilterItems.map((status) => (
                   <SelectItem key={status.value} value={status.value}>
                     {status.label}
                   </SelectItem>
@@ -152,7 +161,7 @@ export function ExtractionProgress(props: ExtractionProgressProps) {
               Loading...
             </>
           ) : (
-            'Load more items'
+            t('import.extraction.loadMore')
           )}
         </Button>
       )}

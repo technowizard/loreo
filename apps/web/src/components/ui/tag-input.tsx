@@ -10,6 +10,7 @@ import {
   useRef,
   useState
 } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -147,6 +148,7 @@ const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
     }, [groupedTags, inputValue]);
 
     const isMaxReached = maxTags ? value.length >= maxTags : false;
+    const { t } = useTranslation('common');
 
     const addTag = useCallback(
       (tag: Tag) => {
@@ -330,7 +332,7 @@ const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
               className="h-9"
               disabled={isMaxReached}
               onValueChange={setInputValue}
-              placeholder="Search tags..."
+              placeholder={t('tags.tagInput.searchPlaceholder')}
               ref={mergeRefs(inputRef, ref)}
               value={inputValue}
             />
@@ -367,7 +369,9 @@ const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
                 groups.length > 0 && (
                   <CommandGroup className="border-b border-dashed pb-2">
                     <div className="text-muted-foreground px-2 py-1.5 text-xs font-semibold">
-                      Create &quot;{inputValue.trim()}&quot; in:
+                      {t('tags.tagInput.createIn', {
+                        input: inputValue.trim()
+                      })}
                     </div>
                     <div className="px-2 py-2">
                       <div className="flex flex-wrap gap-2">
@@ -397,8 +401,9 @@ const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
                       />
                       <span className="flex-1">{group.group.name}</span>
                       <span className="opacity-60">
-                        {group.tags.length} tag
-                        {group.tags.length !== 1 ? 's' : ''}
+                        {t('tags.tagInput.tagCount', {
+                          count: group.tags.length
+                        })}
                       </span>
                     </div>
 
@@ -423,8 +428,13 @@ const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
                     ) : (
                       <div className="text-muted-foreground px-2 py-2 text-center text-xs italic">
                         {inputValue.trim() !== ''
-                          ? `No tags matching "${inputValue.trim()}" in ${group.group.name}`
-                          : `No tags in ${group.group.name}`}
+                          ? t('tags.tagInput.noTagsMatching', {
+                              input: inputValue.trim(),
+                              group: group.group.name
+                            })
+                          : t('tags.tagInput.noTagsIn', {
+                              group: group.group.name
+                            })}
                       </div>
                     )}
                   </CommandGroup>
@@ -432,13 +442,15 @@ const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
 
               {!isMaxReached && Object.keys(filteredGroupedTags).length === 0 && (
                 <CommandEmpty>
-                  {inputValue.trim() === '' ? 'No tags available' : 'No matching tags'}
+                  {inputValue.trim() === ''
+                    ? t('tags.tagInput.noTagsAvailable')
+                    : t('tags.tagInput.noMatchingTags')}
                 </CommandEmpty>
               )}
 
               {isMaxReached && (
                 <div className="text-muted-foreground border-t border-dashed px-2 py-3 text-center text-xs">
-                  Maximum number of tags reached ({maxTags})
+                  {t('tags.tagInput.maxTagsReached', { maxTags })}
                 </div>
               )}
             </CommandList>

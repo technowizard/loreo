@@ -1,5 +1,6 @@
 import { SpinnerIcon } from '@phosphor-icons/react';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -25,6 +26,7 @@ const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.
 const easeOutCubic = 'cubic-bezier(0.215, 0.61, 0.355, 1)';
 
 export function AccountSection() {
+  const { t } = useTranslation('common');
   const { data: user } = useGetUser();
   const notifyError = useNotificationsStore.useError();
   const notifySuccess = useNotificationsStore.useSuccess();
@@ -70,7 +72,7 @@ export function AccountSection() {
       onError: (error) => notifyError(error.message),
       onSuccess: (data) => {
         setAvatarPreview(data.url);
-        notifySuccess('Avatar updated');
+        notifySuccess(t('settings.account.toasts.avatarUpdated'));
       }
     }
   });
@@ -79,7 +81,7 @@ export function AccountSection() {
     mutationConfig: {
       meta: { invalidates: [authKeys.user()] },
       onError: (error) => notifyError(error.message),
-      onSuccess: () => notifySuccess('Name updated')
+      onSuccess: () => notifySuccess(t('settings.account.toasts.nameUpdated'))
     }
   });
 
@@ -90,7 +92,7 @@ export function AccountSection() {
       onSuccess: () => {
         setShowPasswordField(false);
         setEmailPassword('');
-        notifySuccess('Email updated');
+        notifySuccess(t('settings.account.toasts.emailUpdated'));
       }
     }
   });
@@ -110,7 +112,10 @@ export function AccountSection() {
   };
 
   return (
-    <SettingsSection description="Your personal information and profile details" title="Account">
+    <SettingsSection
+      description={t('settings.account.description')}
+      title={t('settings.account.title')}
+    >
       <div className="space-y-6">
         {/* Avatar */}
         <div className="flex items-center gap-4">
@@ -126,9 +131,11 @@ export function AccountSection() {
               variant="outline"
             >
               {uploadAvatar.isPending && <SpinnerIcon className="mr-2 animate-spin" size={16} />}
-              Change Avatar
+              {t('settings.account.changeAvatar')}
             </Button>
-            <span className="text-muted-foreground text-xs">JPG or PNG. Max 2MB.</span>
+            <span className="text-muted-foreground text-xs">
+              {t('settings.account.avatarHint')}
+            </span>
           </div>
           <input
             accept="image/jpeg,image/png"
@@ -141,12 +148,12 @@ export function AccountSection() {
 
         {/* Name */}
         <Field>
-          <FieldLabel>Name</FieldLabel>
+          <FieldLabel>{t('settings.account.nameLabel')}</FieldLabel>
           {/* Outer grid: input takes 1fr, button wrapper takes auto (content-sized) */}
           <div className="grid grid-cols-[1fr_auto]">
             <Input
               onChange={(e) => setName(e.target.value)}
-              placeholder="Enter your name"
+              placeholder={t('settings.account.namePlaceholder')}
               type="text"
               value={name}
             />
@@ -170,7 +177,7 @@ export function AccountSection() {
                       {updateAccount.isPending ? (
                         <SpinnerIcon className="animate-spin" size={16} />
                       ) : (
-                        'Save'
+                        t('settings.account.save')
                       )}
                     </Button>
                   )}
@@ -183,7 +190,7 @@ export function AccountSection() {
         {/* Email */}
         <div>
           <Field>
-            <FieldLabel>Email</FieldLabel>
+            <FieldLabel>{t('settings.account.emailLabel')}</FieldLabel>
             <div className="grid grid-cols-[1fr_auto]">
               <Input
                 disabled={showPasswordField}
@@ -192,7 +199,7 @@ export function AccountSection() {
                   setShowPasswordField(false);
                   setEmailPassword('');
                 }}
-                placeholder="you@example.com"
+                placeholder={t('settings.account.emailPlaceholder')}
                 type="email"
                 value={email}
               />
@@ -212,7 +219,7 @@ export function AccountSection() {
                         size="sm"
                         variant="outline"
                       >
-                        Save Email
+                        {t('settings.account.saveEmail')}
                       </Button>
                     )}
                   </div>
@@ -238,10 +245,10 @@ export function AccountSection() {
             >
               <div className="space-y-3 pt-3">
                 <Field>
-                  <FieldLabel>Confirm with your current password</FieldLabel>
+                  <FieldLabel>{t('settings.account.confirmPasswordLabel')}</FieldLabel>
                   <PasswordInput
                     onChange={(e) => setEmailPassword(e.target.value)}
-                    placeholder="Enter current password"
+                    placeholder={t('settings.account.passwordPlaceholder')}
                     ref={passwordInputRef}
                     value={emailPassword}
                   />
@@ -260,11 +267,11 @@ export function AccountSection() {
                     {updateEmail.isPending ? (
                       <SpinnerIcon className="animate-spin" size={16} />
                     ) : (
-                      'Confirm'
+                      t('settings.account.confirm')
                     )}
                   </Button>
                   <Button onClick={handleCancelEmailEdit} size="sm" variant="outline">
-                    Cancel
+                    {t('settings.account.cancel')}
                   </Button>
                 </div>
               </div>

@@ -1,5 +1,6 @@
 import { PencilSimpleIcon, PlusIcon, TrashIcon } from '@phosphor-icons/react';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -28,6 +29,7 @@ export function NoteCard({
   onRemove,
   onUpdate
 }: NoteCardProps) {
+  const { t } = useTranslation('common');
   const [isEditing, setIsEditing] = useState(false);
   const [noteText, setNoteText] = useState(note || '');
   const cardRef = useRef<HTMLDivElement>(null);
@@ -67,7 +69,7 @@ export function NoteCard({
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="font-semibold">Highlight color</div>
+          <div className="font-semibold">{t('reader.notes.highlightColor')}</div>
           <div className="inline-flex gap-2">
             {[
               { bg: 'bg-blue-300', color: 'blue' },
@@ -97,7 +99,7 @@ export function NoteCard({
                   e.stopPropagation();
                   setIsEditing(true);
                 }}
-                title="Edit note"
+                title={t('reader.notes.editNote')}
               >
                 <PencilSimpleIcon size={16} weight="bold" />
               </button>
@@ -113,7 +115,7 @@ export function NoteCard({
             }}
           >
             <PlusIcon />
-            <div className="text-foreground font-bold">Add note</div>
+            <div className="text-foreground font-bold">{t('reader.notes.addNote')}</div>
           </div>
         )}
 
@@ -121,15 +123,15 @@ export function NoteCard({
           <div className="flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
             <Textarea
               onChange={(e) => setNoteText(e.target.value)}
-              placeholder="Add your thoughts"
+              placeholder={t('reader.notes.addYourThoughts')}
               value={noteText}
             />
             <div className="flex justify-end gap-2">
               <Button onClick={handleDeleteNote} size="sm" variant="destructive">
-                Delete note
+                {t('reader.notes.deleteNote')}
               </Button>
               <Button onClick={handleSaveNote} size="sm">
-                Save
+                {t('reader.notes.save')}
               </Button>
             </div>
           </div>
@@ -143,7 +145,9 @@ export function NoteCard({
           }}
         >
           <TrashIcon className="text-danger-500 dark:text-danger-400" />
-          <div className="text-danger-500 dark:text-danger-400 font-bold">Remove highlight</div>
+          <div className="text-danger-500 dark:text-danger-400 font-bold">
+            {t('reader.notes.removeHighlight')}
+          </div>
         </div>
       </div>
     </div>

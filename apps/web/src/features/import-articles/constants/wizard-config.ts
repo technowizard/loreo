@@ -4,18 +4,22 @@ export const STEP_REVIEW = 2;
 
 export type ImportWizardStep = typeof STEP_UPLOAD | typeof STEP_MAP_FIELDS | typeof STEP_REVIEW;
 
-export const STEP_LABELS = ['Upload CSV', 'Map Fields', 'Final Review'] as const;
+export const STEP_LABELS = [
+  'import.wizard.stepUpload',
+  'import.wizard.stepMap',
+  'import.wizard.stepReview'
+] as const;
 
 export const STEP_DESCRIPTIONS = [
-  'Upload a CSV file to import your articles. Works with Pocket exports.',
-  'Match the columns from your CSV file to the article fields. Required fields are marked with an asterisk (*).',
-  'Please confirm the data summary below. Once you start the import, your articles will be added to your library.'
+  'import.wizard.stepUploadDescription',
+  'import.wizard.stepMapDescription',
+  'import.wizard.stepReviewDescription'
 ] as const;
 
 export const STEP_ERROR_MESSAGES: Record<ImportWizardStep, string> = {
-  [STEP_MAP_FIELDS]: 'Please complete field mapping before continuing',
-  [STEP_REVIEW]: 'Please review your import before starting',
-  [STEP_UPLOAD]: 'Please upload a CSV file before continuing'
+  [STEP_UPLOAD]: 'import.wizard.errorUploadRequired',
+  [STEP_MAP_FIELDS]: 'import.wizard.errorMapRequired',
+  [STEP_REVIEW]: 'import.wizard.errorNoData'
 };
 
 export type ImportWizardCompletion = Record<ImportWizardStep, boolean>;

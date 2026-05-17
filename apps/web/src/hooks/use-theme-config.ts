@@ -40,7 +40,7 @@ interface ThemeConfigType {
 const defaultReadingPreferences = {
   articleCardView: 'grid' as const,
   fontFamily: {
-    label: 'Hanken Grotesk (Default)',
+    label: 'default',
     name: 'default',
     style: 'sans-serif'
   } as const,
@@ -129,7 +129,7 @@ const useThemeConfigBase = create<ThemeConfigType>()(
       toggleFontFamily: (fontFamily) => {
         set(
           produce((state) => {
-            state.fontFamily.label = fontFamily.label;
+            state.fontFamily.label = fontFamily.name;
             state.fontFamily.name = fontFamily.name;
             state.fontFamily.style = fontFamily.style;
           })

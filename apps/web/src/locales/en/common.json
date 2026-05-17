@@ -8,16 +8,34 @@
       "Never lose a link again"
     ]
   },
+  "common": {
+    "error": {
+      "label": "Error",
+      "title": "Something went wrong",
+      "retry": "Try again"
+    },
+    "notFound": {
+      "title": "Page not found",
+      "goBack": "go back"
+    },
+    "dialog": {
+      "close": "Close"
+    },
+    "loading": "Loading"
+  },
   "login": {
     "title": "Welcome back",
     "description": "Sign in to your account to continue",
     "email": "Email",
+    "emailPlaceholder": "you@example.com",
     "password": "Password",
     "submit": "Login",
     "forgotPassword": "Forgot Password",
     "signUp": "Create one",
     "signIn": "Sign in",
-    "dontHaveAccount": "Don't have an account?"
+    "dontHaveAccount": "Don't have an account?",
+    "invalidCredentials": "Invalid email or password",
+    "success": "Login successful"
   },
   "register": {
     "title": "Create your account",
@@ -29,8 +47,11 @@
     "password": "Password",
     "confirmPassword": "Confirm Password",
     "submit": "Create account",
+    "createAccount": "Create account",
     "alreadyHaveAccount": "Already have an account?",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "genericError": "An error occurred",
+    "success": "Account created. Welcome!"
   },
   "home": {
     "welcome": "Welcome to Loreo",
@@ -54,10 +75,652 @@
       "openAnyArticleAndStartReading": "Open any article and start reading"
     },
     "suggestions": "Suggestions",
+    "continueReading": "Continue Reading",
     "quickReads": "Quick reads",
     "longReads": "Long reads",
     "thisWeek": "This week",
     "mustRead": "Must read",
-    "recentlySaved": "Recently saved"
+    "recentlySaved": "Recently saved",
+    "pasteUrlToSaveFirstArticle": "Paste a URL to save your first article"
+  },
+  "nav": {
+    "home": "Home",
+    "articles": "Articles",
+    "moreActionsAria": "More actions"
+  },
+  "userMenu": {
+    "fallbackName": "User",
+    "switchTheme": "Switch theme",
+    "settings": "Settings",
+    "logOut": "Log out",
+    "themes": {
+      "system": "System",
+      "light": "Light",
+      "sepia": "Sepia",
+      "dark": "Dark"
+    }
+  },
+  "routes": {
+    "common": {
+      "error": {
+        "label": "error",
+        "title": "Something went wrong",
+        "retry": "Try again"
+      },
+      "notFound": {
+        "title": "Page not found",
+        "goBack": "go back"
+      },
+      "dialog": {
+        "close": "Close"
+      }
+    },
+    "home": {
+      "metaTitle": "Home | Loreo"
+    },
+    "login": {
+      "metaTitle": "Login | Loreo"
+    },
+    "register": {
+      "metaTitle": "Register | Loreo"
+    },
+    "articles": {
+      "metaTitle": "Articles | Loreo"
+    },
+    "articleReader": {
+      "fallbackMetaTitle": "Loreo"
+    },
+    "settings": {
+      "metaTitle": "Settings | Loreo"
+    },
+    "manageTags": {
+      "metaTitle": "Manage Tags | Loreo"
+    },
+    "importArticles": {
+      "metaTitle": "Import Articles | Loreo"
+    },
+    "importProgress": {
+      "metaTitle": "Import Progress | Loreo"
+    }
+  },
+  "articles": {
+    "toasts": {
+      "updating": "Updating...",
+      "linkUpdated": "Link updated",
+      "deletingLink": "Deleting link",
+      "linkDeleted": "Link deleted",
+      "reprocessing": "Requesting for reprocessing...",
+      "queuedForReprocessing": "Link queued for reprocessing",
+      "linkSaved": "Link saved",
+      "failedCreateTag": "Failed to create tag",
+      "tagCreated": "Tag \"{{name}}\" created",
+      "failedUpdateTags": "Failed to update tags",
+      "tagsUpdated": "Tags updated"
+    },
+    "toolbar": {
+      "searchPlaceholder": "Search articles...",
+      "searchAria": "Search articles",
+      "clearSearchAria": "Clear search",
+      "filterSheetTitle": "Filter Articles",
+      "filterSheetDescription": "Choose a filter to organize your articles",
+      "saveArticle": "Save article",
+      "saveArticleAria": "Save article"
+    },
+    "filters": {
+      "articles": "Articles",
+      "priority": "Priority",
+      "readingLength": "Reading Length",
+      "sortBy": "Sort By",
+      "tags": "Tags",
+      "manageTagsAria": "Manage tags",
+      "toggleGroupAria": "Toggle group"
+    },
+    "empty": {
+      "noResultsTitle": "No articles found",
+      "noResultsDescription": "Try adjusting your search terms or browse all articles.",
+      "clearSearch": "Clear Search",
+      "noFavoritesTitle": "No favorite articles yet",
+      "noFavoritesDescription": "Start adding articles to your favorites to see them here.",
+      "browseArticles": "Browse articles",
+      "noArchivedTitle": "No archived articles",
+      "noArchivedDescription": "Articles you archive will appear here and be kept forever.",
+      "noHighlightsTitle": "No highlighted articles",
+      "noHighlightsDescription": "Articles you highlight will appear here and be kept forever.",
+      "emptyLibraryTitle": "Your reading list is empty",
+      "emptyLibraryDescription": "Save your first article and start building your personal reading sanctuary.",
+      "saveFirstArticle": "Save your first article",
+      "gettingStartedTips": "Getting Started Tips",
+      "tip1": "Click \"Save Article\" to save any article using its link",
+      "tip2": "Use the search bar to find articles in your library",
+      "tip3": "Mark articles as favorites to easily access your best reads",
+      "tip4": "Customize your reading experience in the settings"
+    },
+    "card": {
+      "priority": {
+        "none": "No Priority",
+        "lowPriority": "Low Priority",
+        "thisWeek": "This Week",
+        "mustRead": "Must Read"
+      },
+      "actions": {
+        "more": "More actions",
+        "favorite": "Favorite this article",
+        "toggleFavorite": "Toggle favorite",
+        "editTags": "Edit Tags",
+        "refresh": "Refresh",
+        "archive": "Archive",
+        "unarchive": "Unarchive",
+        "delete": "Delete article"
+      },
+      "moreCount": "+{{count}} more"
+    },
+    "dialog": {
+      "saveLaterTitle": "Save article for later",
+      "saveLaterDescription": "Enter the URL of an article you'd like to read later. We'll automatically extract the content for offline reading.",
+      "urlLabel": "Article URL",
+      "urlPlaceholder": "https://example.com/article",
+      "tagsLabel": "Tags (optional)",
+      "submit": "Save Article"
+    },
+    "editTags": {
+      "title": "Edit Tags",
+      "description": "Add or remove tags for this article.",
+      "save": "Save Tags",
+      "saving": "Saving..."
+    }
+  },
+  "settings": {
+    "page": {
+      "title": "Settings",
+      "description": "Manage your account and customize your reading experience"
+    },
+    "language": {
+      "title": "Language",
+      "description": "Switch the app language",
+      "currentLabel": "Current language",
+      "currentLanguage": "Current language: {{language}}",
+      "switchTo": "Switch to {{language}}",
+      "languages": {
+        "en": "English",
+        "id": "Indonesian"
+      }
+    },
+    "account": {
+      "title": "Account",
+      "description": "Your personal information and profile details",
+      "changeAvatar": "Change Avatar",
+      "avatarHint": "JPG or PNG. Max 2MB.",
+      "nameLabel": "Name",
+      "namePlaceholder": "Enter your name",
+      "save": "Save",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "saveEmail": "Save Email",
+      "confirmPasswordLabel": "Confirm with your current password",
+      "passwordPlaceholder": "Enter current password",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "toasts": {
+        "avatarUpdated": "Avatar updated",
+        "nameUpdated": "Name updated",
+        "emailUpdated": "Email updated"
+      }
+    },
+    "security": {
+      "title": "Security",
+      "description": "Update your password to keep your account secure",
+      "currentPasswordLabel": "Current Password",
+      "currentPasswordPlaceholder": "Enter current password",
+      "newPasswordLabel": "New Password",
+      "newPasswordPlaceholder": "Enter new password",
+      "confirmPasswordLabel": "Confirm New Password",
+      "confirmPasswordPlaceholder": "Confirm new password",
+      "validationHint": "Password must be at least 8 characters",
+      "updatePassword": "Update Password",
+      "toasts": {
+        "passwordUpdated": "Password updated"
+      }
+    },
+    "readerPreferences": {
+      "title": "Reader Preferences",
+      "description": "Customize how articles look when you read them",
+      "themeLabel": "Theme",
+      "themeTooltip": "Applies to both the app interface and article reader",
+      "theme": {
+        "system": "System",
+        "light": "Light",
+        "sepia": "Sepia",
+        "dark": "Dark"
+      },
+      "typographyLabel": "Typography",
+      "fontSizeLabel": "Font Size",
+      "lineSpacingLabel": "Line Spacing",
+      "fontFamilyLabel": "Font Family",
+      "showPreview": "Show Preview",
+      "hidePreview": "Hide Preview",
+      "previewText": "The quick brown fox jumps over the lazy dog.",
+      "textAlignmentLabel": "Text Alignment",
+      "textAlignment": {
+        "default": {
+          "title": "Default",
+          "description": "Text lines up on the left side"
+        },
+        "justify": {
+          "title": "Justify",
+          "description": "Text spreads evenly across the width"
+        }
+      },
+      "alignment": {
+        "default": {
+          "title": "Default",
+          "description": "Text lines up on the left side"
+        },
+        "justify": {
+          "title": "Justify",
+          "description": "Text spreads evenly across the width"
+        }
+      },
+      "resetPreferences": {
+        "title": "Reset Preferences",
+        "description": "Restore all reader settings to their default values"
+      },
+      "reset": {
+        "title": "Reset Preferences",
+        "description": "Restore all reader settings to their default values"
+      },
+      "resetToDefault": "Reset to Default"
+    },
+    "data": {
+      "title": "Data",
+      "description": "Import articles and manage your reading data",
+      "importCard": {
+        "cardTitle": "Import Articles",
+        "cardDescription": "Import articles from a CSV file to quickly build your reading list",
+        "button": "Import from CSV",
+        "title": "Import from CSV · {{date}}"
+      },
+      "updated": "Updated {{date}}",
+      "recentImports": "Recent Imports",
+      "statusCompleted": "Completed",
+      "statusInProgress": "In Progress",
+      "progress": "Progress",
+      "counts": {
+        "extracted": "{{count}} extracted",
+        "failed": "{{count}} failed"
+      },
+      "delete": "Delete",
+      "viewDetails": "View Details"
+    }
+  },
+  "tags": {
+    "page": {
+      "title": "Manage Tags",
+      "description": "Organize your tags into groups",
+      "searchPlaceholder": "Search groups...",
+      "newGroup": "New Group",
+      "error": "Something went wrong loading your tags.",
+      "tryAgain": "Try Again",
+      "emptySearchTitle": "No groups found",
+      "emptyTitle": "No tag groups yet",
+      "emptySearchDescription": "Try a different search term",
+      "emptyDescription": "Start by clicking the \"New Group\" button",
+      "emptyHint": "A good starting point is a \"General\" group"
+    },
+    "deleteDialog": {
+      "titleGroup": "Delete Group: {{name}}",
+      "titleTag": "Delete Tag: {{name}}",
+      "confirmGroup": "Are you sure you want to delete <1>{{name}}</1> and all {{count}} tags in this group?",
+      "confirmTag": "Are you sure you want to delete <1>{{name}}</1>?",
+      "cannotUndo": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
+    "groupForm": {
+      "createTitle": "New group",
+      "editTitle": "Edit group",
+      "createDescription": "Create a new group to organize your tags",
+      "editDescription": "Update group details",
+      "groupNameLabel": "Group Name",
+      "groupNamePlaceholder": "e.g., Work, Personal, Learning",
+      "colorLabel": "Color",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "What is this group for?",
+      "previewLabel": "Preview:",
+      "previewNameFallback": "Group name",
+      "previewDescriptionFallback": "Group description",
+      "cancel": "Cancel",
+      "create": "Create group",
+      "update": "Update group"
+    },
+    "tagForm": {
+      "editTitle": "Edit Tag",
+      "addTitle": "Add Tag to {{group}}",
+      "editDescription": "Update tag details",
+      "addDescription": "Create a new tag for the {{group}} group",
+      "tagNameLabel": "Tag Name",
+      "tagNamePlaceholder": "Enter tag name",
+      "previewLabel": "Preview:",
+      "previewNameFallback": "Tag name",
+      "cancel": "Cancel",
+      "create": "Create Tag",
+      "update": "Update Tag"
+    },
+    "sheet": {
+      "tagsCount": "{{count}} tags",
+      "cancel": "Cancel",
+      "select": "Select",
+      "addTag": "Add Tag",
+      "selectedCount": "{{count}} selected",
+      "moveTo": "Move to...",
+      "delete": "Delete",
+      "moveAria": "Move {{name}} tag",
+      "editAria": "Edit {{name}} tag",
+      "deleteAria": "Delete {{name}} tag"
+    },
+    "moveDialog": {
+      "titleSingle": "Move \"{{name}}\"",
+      "titleBulk": "Move {{count}} tag(s)",
+      "titleGroup": "Move all tags",
+      "description": "Select a destination group to move the tag(s) to.",
+      "destinationLabel": "Destination Group",
+      "placeholder": "Select a group...",
+      "cancel": "Cancel",
+      "move": "Move"
+    },
+    "groupCard": {
+      "tagCount_one": "{{count}} tag",
+      "tagCount_other": "{{count}} tags",
+      "actions": {
+        "editGroup": "Edit group",
+        "moveAllTags": "Move all tags",
+        "deleteGroup": "Delete group",
+        "manageAria": "Actions for {{name}}",
+        "manageTagsAria": "Manage tags for {{name}}"
+      },
+      "moreCount": "+{{count}} more",
+      "manageTags": "Manage tags \u2192",
+      "addFirstTag": "Add First Tag"
+    },
+    "tagInput": {
+      "searchPlaceholder": "Search tags...",
+      "placeholder": "Add tags...",
+      "createIn": "Create \"{{input}}\" in:",
+      "noTagsMatching": "No tags matching \"{{input}}\" in {{group}}",
+      "noTagsIn": "No tags in {{group}}",
+      "noTagsAvailable": "No tags available",
+      "noMatchingTags": "No matching tags",
+      "maxTagsReached": "Maximum number of tags reached ({{maxTags}})",
+      "tagCount_one": "{{count}} tag",
+      "tagCount_other": "{{count}} tags"
+    },
+    "toasts": {
+      "creating": "Creating...",
+      "groupCreated": "Group created",
+      "updating": "Updating...",
+      "groupUpdated": "Group updated",
+      "deleting": "Deleting...",
+      "groupDeleted": "Group deleted",
+      "tagCreated": "Tag created",
+      "tagUpdated": "Tag updated",
+      "tagDeleted": "Tag deleted",
+      "fixValidation": "Please fix validation errors",
+      "failedUpdateGroup": "Failed to update group",
+      "failedCreateGroup": "Failed to create group",
+      "failedUpdateTag": "Failed to update tag",
+      "failedCreateTag": "Failed to create tag",
+      "failedDeleteType": "Failed to delete {{type}}",
+      "tagsDeleted_one": "{{count}} tag deleted",
+      "tagsDeleted_other": "{{count}} tags deleted",
+      "failedDeleteTags": "Failed to delete tags",
+      "tagMoved": "Tag moved successfully",
+      "tagsMoved_one": "{{count}} tag moved",
+      "tagsMoved_other": "{{count}} tags moved",
+      "nameConflict": "A tag with the same name already exists in the target group",
+      "failedMoveTags": "Failed to move tag(s)"
+    }
+  },
+  "reader": {
+    "whatsNext": "What's next?",
+    "actions": {
+      "favorite": "Favorite",
+      "favorited": "Favorited",
+      "archiveAndMarkRead": "Archive & Mark Read",
+      "copyLink": "Copy Link",
+      "linkCopied": "Link Copied",
+      "upNext": "Up next",
+      "markedAsFavorite": "Marked as favorite",
+      "removedFromFavorites": "Removed from favorites",
+      "archivedAndMarkedRead": "Archived and marked as read",
+      "linkUpdated": "Link updated"
+    },
+    "highlights": {
+      "title": "Highlights",
+      "description": "Your highlights on this article",
+      "viewInPanel": "View in panel",
+      "closeOptionsAria": "Close highlight options",
+      "changeColorAria": "Change to {{label}}",
+      "changeColorTitle": "Change to {{label}}"
+    },
+    "notes": {
+      "highlightColor": "Highlight color",
+      "editNote": "Edit note",
+      "addNote": "Add note",
+      "addYourThoughts": "Add your thoughts",
+      "deleteNote": "Delete note",
+      "save": "Save",
+      "removeHighlight": "Remove highlight"
+    },
+    "resume": {
+      "title": "Resume reading",
+      "position": "You were at {{progress}}%",
+      "continue": "Continue"
+    },
+    "progress": {
+      "read": "{{progress}}% read",
+      "left": "~{{minutes}}m left",
+      "top": "Top",
+      "end": "End"
+    },
+    "nav": {
+      "backToArticles": "Go back to articles",
+      "back": "Back",
+      "openInNewTab": "Open article in new tab",
+      "viewHighlights": "View highlights",
+      "openSettings": "Open reader settings"
+    },
+    "settings": {
+      "title": "Reader Settings",
+      "theme": "Theme",
+      "setSystemTheme": "Set system theme",
+      "setLightTheme": "Set light theme",
+      "setSepiaTheme": "Set sepia theme",
+      "setDarkTheme": "Set dark theme",
+      "fontSize": "Font Size",
+      "decreaseFontSize": "Decrease font size",
+      "increaseFontSize": "Increase font size",
+      "lineSpacing": "Line Spacing",
+      "decreaseLineSpacing": "Decrease line spacing",
+      "increaseLineSpacing": "Increase line spacing",
+      "textAlignment": "Text Alignment",
+      "defaultTextAlignment": "Set default text alignment",
+      "justifiedTextAlignment": "Set justified text alignment",
+      "fontFamily": "Font Family",
+      "moreOptions": "More options",
+      "unfavorite": "Unfavorite",
+      "favorite": "Favorite",
+      "unarchive": "Unarchive",
+      "archive": "Archive",
+      "editTags": "Edit Tags",
+      "deleteArticle": "Delete article"
+    },
+    "fontCategories": {
+      "sansSerif": "Sans Serif",
+      "serif": "Serif",
+      "legible": "Legible"
+    },
+    "fontSizes": {
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large",
+      "extraLarge": "Extra Large",
+      "huge": "Huge"
+    },
+    "lineSpacing": {
+      "compact": "Compact",
+      "normal": "Normal",
+      "relaxed": "Relaxed",
+      "loose": "Loose"
+    },
+    "fontFamilies": {
+      "default": {
+        "label": "Hanken Grotesk (Default)",
+        "description": "Clean, modern, highly readable"
+      },
+      "inter": {
+        "label": "Inter",
+        "description": "Clear font, easy on eyes"
+      },
+      "plexSans": {
+        "label": "IBM Plex Sans",
+        "description": "Balanced font with human, technical feel"
+      },
+      "publicSans": {
+        "label": "Public Sans",
+        "description": "Calm, neutral font"
+      },
+      "lora": {
+        "label": "Lora",
+        "description": "Warm font for long reading"
+      },
+      "literata": {
+        "label": "Literata",
+        "description": "Book-style font for long reading"
+      },
+      "spectral": {
+        "label": "Spectral",
+        "description": "Modern font suited for long reading"
+      },
+      "alegreya": {
+        "label": "Alegreya",
+        "description": "Lively font with a classic feel"
+      },
+      "atkinson": {
+        "label": "Atkinson Hyperlegible",
+        "description": "Designed for readability"
+      },
+      "lexendDeca": {
+        "label": "Lexend Deca",
+        "description": "Smooth font, supports relaxed reading"
+      },
+      "dyslexic": {
+        "label": "Open Dyslexic",
+        "description": "Dyslexia-friendly font"
+      },
+      "comicNeue": {
+        "label": "Comic Neue",
+        "description": "Casual, handwritten-style font"
+      }
+    }
+  },
+  "import": {
+    "wizard": {
+      "cancel": "Cancel import",
+      "confirmCancelTitle": "Cancel import?",
+      "confirmCancelDescription": "Your progress will not be saved. Are you sure you want to cancel?",
+      "back": "Go Back",
+      "continue": "Continue",
+      "startImport": "Start Import",
+      "toastCancelled": "Import cancelled",
+      "toastFailed": "Import failed",
+      "failedTitle": "Oops! We encountered an error while importing your articles.",
+      "failedDescription": "This could be due to an issue with your CSV file. Check the import for any problematic rows.",
+      "stepUpload": "Upload your file",
+      "stepMap": "Map fields",
+      "stepReview": "Review",
+      "stepUploadDescription": "Select a CSV file to get started",
+      "stepMapDescription": "Match the columns in your file to article fields",
+      "stepReviewDescription": "Review your data before importing",
+      "errorUploadRequired": "Please upload a CSV file first",
+      "errorMapRequired": "Please map all required fields",
+      "errorNoData": "No data to import",
+      "stepsAria": "Steps",
+      "stepLabel": "Step {{current}}"
+    },
+    "progress": {
+      "completeTitle": "Import Complete!",
+      "completeDescription": "Your articles have been imported successfully.",
+      "importingTitle": "Importing your articles",
+      "importingDescription": "Please wait while we process your file.",
+      "processing": "Processing...",
+      "progressText": "Importing {{current}} of {{total}} articles",
+      "estimatedTime": "Estimated time remaining: {{time}}",
+      "viewExtractionProgress": "View extraction progress",
+      "goToArticles": "Go to articles",
+      "goHome": "Go home",
+      "importAnother": "Import another file"
+    },
+    "upload": {
+      "toastLoading": "Importing...",
+      "dropzoneAria": "Upload CSV file",
+      "dropzoneText": "Drag and drop your CSV file here, or click to browse",
+      "selectFile": "Select file...",
+      "clearFile": "Clear file",
+      "fileHint": "CSV files only. Max file size: 10MB.",
+      "tipsTitle": "Tips for a successful import",
+      "tipOne": "Your CSV file should have at least a column for URLs",
+      "tipTwo": "Optional columns include: title, tags, description",
+      "tipThree": "Make sure URLs start with http:// or https://",
+      "successTitle": "File ready to import",
+      "successDescription": "We found {{count}} articles in your file.",
+      "alertRowCount": "{{count}} articles found"
+    },
+    "mapFields": {
+      "title": "Map Fields",
+      "description": "Match your CSV columns to article fields",
+      "csvColumnHeading": "CSV Column",
+      "articleFieldHeading": "Article Field",
+      "fieldUrl": "URL",
+      "fieldTitle": "Title",
+      "fieldTags": "Tags",
+      "fieldDescription": "Description",
+      "fieldPublishedAt": "Published Date",
+      "fieldTimeAdded": "Time Added",
+      "required": "Required",
+      "doNotMap": "Don't import",
+      "helpText": "Select which column in your CSV corresponds to each article field"
+    },
+    "review": {
+      "title": "Review your data",
+      "description": "Check that everything looks correct before importing",
+      "summary": "{{count}} articles ready to import",
+      "estimatedTime": "Estimated time: {{time}}",
+      "tableHeadingRow": "Row",
+      "tableHeadingUrl": "URL",
+      "tableHeadingTitle": "Title",
+      "tableHeadingTags": "Tags",
+      "noTags": "No tags",
+      "moreCount": "+{{count}} more",
+      "startOver": "Start over"
+    },
+    "progressDemo": {
+      "completing": "Completing import...",
+      "importingDemo": "Importing demo articles..."
+    },
+    "extraction": {
+      "title": "Extraction Progress",
+      "statusAll": "All",
+      "statusCompleted": "Completed",
+      "statusFailed": "Failed",
+      "statusProcessing": "Processing",
+      "badgeCompleted": "Completed",
+      "badgeProcessing": "Processing",
+      "badgeFailed": "Failed",
+      "badgePending": "Pending",
+      "loadMore": "Load more",
+      "noResults": "No extraction results found",
+      "viewArticle": "View",
+      "failedLoadMore": "Failed to load more items",
+      "processingQueue": "Processing Queue"
+    }
   }
 }
