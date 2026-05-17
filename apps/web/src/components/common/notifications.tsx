@@ -27,7 +27,13 @@ function useNotificationBridge() {
       const toastFn =
         n.type === 'error' ? toast.error : n.type === 'success' ? toast.success : toast.info;
 
-      toastFn(n.message, { id: n.id, onDismiss: dismiss, onAutoClose: dismiss });
+      toastFn(n.message, {
+        id: n.id,
+        onAutoClose: dismiss,
+        onDismiss: dismiss,
+        position: 'top-right',
+        richColors: true
+      });
     }
   }, [notifications, remove]);
 }

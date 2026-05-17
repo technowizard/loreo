@@ -1,6 +1,5 @@
 import { SpinnerIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Field, FieldLabel } from '@/components/ui/field';
@@ -8,21 +7,29 @@ import { PasswordInput } from '@/components/ui/password-input';
 
 import { useUpdatePassword } from '@/features/auth/api/update-password';
 
+import { useNotificationsStore } from '@/stores/notifications';
+
 import { SettingsSection } from './settings-section';
 
-const emptyForm = { confirmNewPassword: '', currentPassword: '', newPassword: '' };
+const emptyForm = {
+  confirmNewPassword: '',
+  currentPassword: '',
+  newPassword: ''
+};
 
 export function SecuritySection() {
+  const notifyError = useNotificationsStore.useError();
+  const notifySuccess = useNotificationsStore.useSuccess();
   const [formData, setFormData] = useState(emptyForm);
 
   const hasChanges = Object.values(formData).some(Boolean);
 
   const updatePassword = useUpdatePassword({
     mutationConfig: {
-      onError: (error) => toast.error(error.message, { position: 'top-right', richColors: true }),
+      onError: (error) => notifyError(error.message),
       onSuccess: () => {
         setFormData(emptyForm);
-        toast.success('Password updated', { position: 'top-right', richColors: true });
+        notifySuccess('Password updated');
       }
     }
   });

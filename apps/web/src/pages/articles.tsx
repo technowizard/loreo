@@ -15,7 +15,6 @@ import { EmptyState } from '@/features/articles/components/empty-state';
 import { FilterSidebar } from '@/features/articles/components/filter-sidebar';
 import { InfiniteScrollLoader } from '@/features/articles/components/infinite-scroll-loader';
 import { filterConfig } from '@/features/articles/constants/filter-config';
-import { useArticlesPage } from '@/features/articles/hooks/use-articles-page';
 import { useGetTagGroups } from '@/features/tags/api/get-tag-groups';
 import { useGetTags } from '@/features/tags/api/get-tags';
 
@@ -24,6 +23,8 @@ import { useMediaQuery } from '@/hooks/use-media-query';
 import { useThemeConfig } from '@/hooks/use-theme-config';
 
 import { cn } from '@/lib/utils';
+
+import { useNotificationsStore } from '@/stores/notifications';
 
 import type { UpdateLinkBody } from '@/types/links';
 import type { Tag, TagGroup } from '@/types/tags';
@@ -34,10 +35,15 @@ filterConfig.priority.forEach((f) => filterTypeMap.set(f.id, 'priority'));
 filterConfig.readLength.forEach((f) => filterTypeMap.set(f.id, 'readLength'));
 filterConfig.sort.forEach((f) => filterTypeMap.set(f.id, 'sort'));
 
+function ArticleListSkeleton() {
+  return Array.from({ length: 5 }).map((_, index) => (
+    <Skeleton className="h-70 w-full md:h-42.5" key={index} />
+  ));
+}
+
 function ArticlesPage() {
   const { isDesktop, isMobile, isTablet } = useMediaQuery();
-
-  const { addArticleModal } = useArticlesPage();
+  const notifySuccess = useNotificationsStore.useSuccess();
 
   const navigate = useNavigate();
   const searchParams = useSearch({ strict: false }) as {
@@ -53,6 +59,27 @@ function ArticlesPage() {
   const [openFilterModal, setOpenFilterModal] = useState(false);
   const { articleCardView, toggleArticleCardView } = useThemeConfig();
   const [searchQuery, setSearchQuery] = useState('');
+  const [isAddArticleOpen, setIsAddArticleOpen] = useState(false);
+  const [addArticleFormData, setAddArticleFormData] = useState<{
+    tags: Tag[];
+    url: string;
+  }>({
+    tags: [],
+    url: ''
+  });
+
+  const addArticleModal = useMemo(
+    () => ({
+      close: () => setIsAddArticleOpen(false),
+      formData: addArticleFormData,
+      isOpen: isAddArticleOpen,
+      onChange: (field: string, value: string | Tag[]) =>
+        setAddArticleFormData((prev) => ({ ...prev, [field]: value })),
+      open: () => setIsAddArticleOpen(true),
+      reset: () => setAddArticleFormData({ tags: [], url: '' })
+    }),
+    [isAddArticleOpen, addArticleFormData]
+  );
 
   const hasAnySearchParams = Object.keys(searchParams).length > 0;
 
@@ -108,10 +135,7 @@ function ArticlesPage() {
         }),
       onSuccess: () => {
         toast.dismiss();
-        toast.success('Link updated', {
-          position: 'top-right',
-          richColors: true
-        });
+        notifySuccess('Link updated');
       }
     }
   });
@@ -125,10 +149,7 @@ function ArticlesPage() {
         }),
       onSuccess: () => {
         toast.dismiss();
-        toast.success('Link deleted', {
-          position: 'top-right',
-          richColors: true
-        });
+        notifySuccess('Link deleted');
       }
     }
   });
@@ -142,10 +163,7 @@ function ArticlesPage() {
         }),
       onSuccess: () => {
         toast.dismiss();
-        toast.success('Link queued for reprocessing', {
-          position: 'top-right',
-          richColors: true
-        });
+        notifySuccess('Link queued for reprocessing');
       }
     }
   });
@@ -301,10 +319,7 @@ function ArticlesPage() {
             setOpenFilterModal={setOpenFilterModal}
           />
 
-          {infiniteLinksQuery.isLoading &&
-            Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton className="h-70 w-full md:h-42.5" key={i} />
-            ))}
+          {infiniteLinksQuery.isLoading && <ArticleListSkeleton />}
 
           <div
             className={cn(
@@ -313,9 +328,7 @@ function ArticlesPage() {
             )}
           >
             {infiniteLinksQuery.isLoading ? (
-              Array.from({ length: 5 }).map((_, i) => (
-                <Skeleton className="h-70 w-full md:h-42.5" key={i} />
-              ))
+              <ArticleListSkeleton />
             ) : links && links.length > 0 ? (
               links.map((link) => (
                 <Link

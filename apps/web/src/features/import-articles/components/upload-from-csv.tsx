@@ -11,6 +11,8 @@ import { useImportArticles } from '../hooks/use-import-articles';
 
 import { formatFileSize } from '@/lib/utils';
 
+import { useNotificationsStore } from '@/stores/notifications';
+
 interface UploadFromCsvProps {
   onUploadComplete?: () => void;
 }
@@ -18,6 +20,7 @@ interface UploadFromCsvProps {
 export function UploadFromCsv({ onUploadComplete }: UploadFromCsvProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragActive, setIsDragActive] = useState(false);
+  const notifyError = useNotificationsStore.useError();
 
   const { onSelectedFileChange, onUploadSuccess, resetUploadedFile, uploadedFile } =
     useImportArticles();
@@ -102,10 +105,12 @@ export function UploadFromCsv({ onUploadComplete }: UploadFromCsvProps) {
           onSelectedFileChange(file);
           uploadCSVMutation.mutate(file);
           onUploadComplete?.();
+        } else {
+          notifyError('Please upload a CSV file.');
         }
       }
     },
-    [onSelectedFileChange, onUploadComplete, uploadCSVMutation]
+    [notifyError, onSelectedFileChange, onUploadComplete, uploadCSVMutation]
   );
 
   const handleKeyDown = useCallback(

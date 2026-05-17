@@ -1,6 +1,5 @@
 import { SpinnerIcon } from '@phosphor-icons/react';
 import { useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -16,6 +15,8 @@ import { useUpdateEmail } from '@/features/auth/api/update-email';
 
 import { cn } from '@/lib/utils';
 
+import { useNotificationsStore } from '@/stores/notifications';
+
 import { SettingsSection } from './settings-section';
 
 const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
@@ -25,6 +26,8 @@ const easeOutCubic = 'cubic-bezier(0.215, 0.61, 0.355, 1)';
 
 export function AccountSection() {
   const { data: user } = useGetUser();
+  const notifyError = useNotificationsStore.useError();
+  const notifySuccess = useNotificationsStore.useSuccess();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -64,10 +67,10 @@ export function AccountSection() {
   const uploadAvatar = useUploadAvatar({
     mutationConfig: {
       meta: { invalidates: [authKeys.user()] },
-      onError: (error) => toast.error(error.message, { position: 'top-right', richColors: true }),
+      onError: (error) => notifyError(error.message),
       onSuccess: (data) => {
         setAvatarPreview(data.url);
-        toast.success('Avatar updated', { position: 'top-right', richColors: true });
+        notifySuccess('Avatar updated');
       }
     }
   });
@@ -75,19 +78,19 @@ export function AccountSection() {
   const updateAccount = useUpdateAccount({
     mutationConfig: {
       meta: { invalidates: [authKeys.user()] },
-      onError: (error) => toast.error(error.message, { position: 'top-right', richColors: true }),
-      onSuccess: () => toast.success('Name updated', { position: 'top-right', richColors: true })
+      onError: (error) => notifyError(error.message),
+      onSuccess: () => notifySuccess('Name updated')
     }
   });
 
   const updateEmail = useUpdateEmail({
     mutationConfig: {
       meta: { invalidates: [authKeys.user()] },
-      onError: (error) => toast.error(error.message, { position: 'top-right', richColors: true }),
+      onError: (error) => notifyError(error.message),
       onSuccess: () => {
         setShowPasswordField(false);
         setEmailPassword('');
-        toast.success('Email updated', { position: 'top-right', richColors: true });
+        notifySuccess('Email updated');
       }
     }
   });
@@ -247,7 +250,10 @@ export function AccountSection() {
                   <Button
                     disabled={!emailPassword || updateEmail.isPending}
                     onClick={() =>
-                      updateEmail.mutate({ newEmail: email, currentPassword: emailPassword })
+                      updateEmail.mutate({
+                        newEmail: email,
+                        currentPassword: emailPassword
+                      })
                     }
                     size="sm"
                   >
