@@ -1,4 +1,5 @@
 import { MagnifyingGlassIcon, PlusIcon, TagIcon } from '@phosphor-icons/react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -15,6 +16,7 @@ import { useTagsActions } from '@/features/tags/hooks/use-tags-actions';
 import { cn } from '@/lib/utils';
 
 function ManageTagsPage() {
+  const { t } = useTranslation('common');
   const {
     isLoading,
     isError,
@@ -39,8 +41,8 @@ function ManageTagsPage() {
     <>
       <div className="flex flex-col space-y-6">
         <header className="mb-8 border-b pb-6">
-          <h1 className="text-2xl font-semibold tracking-tight">Manage Tags</h1>
-          <p className="text-muted-foreground mt-1 text-sm">Organize your tags into groups</p>
+          <h1 className="text-2xl font-semibold tracking-tight">{t('tags.page.title')}</h1>
+          <p className="text-muted-foreground mt-1 text-sm">{t('tags.page.description')}</p>
         </header>
 
         <div className="flex flex-col items-center gap-4 sm:flex-row">
@@ -50,14 +52,14 @@ function ManageTagsPage() {
               className="pl-10"
               disabled={isLoading}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search groups..."
+              placeholder={t('tags.page.searchPlaceholder')}
               type="text"
               value={searchQuery}
             />
           </div>
           <Button className="w-full sm:w-auto" disabled={isLoading} onClick={openCreateGroup}>
             <PlusIcon className="size-4" />
-            New Group
+            {t('tags.page.newGroup')}
           </Button>
         </div>
 
@@ -84,9 +86,9 @@ function ManageTagsPage() {
           </div>
         ) : isError ? (
           <div className="flex flex-col items-center justify-center gap-3 py-12">
-            <p className="text-muted-foreground text-sm">Something went wrong loading your tags.</p>
+            <p className="text-muted-foreground text-sm">{t('tags.page.error')}</p>
             <Button onClick={() => refetch()} variant="outline">
-              Try Again
+              {t('tags.page.tryAgain')}
             </Button>
           </div>
         ) : filteredGroups.length === 0 ? (
@@ -106,16 +108,14 @@ function ManageTagsPage() {
               <TagIcon className={cn('text-primary-600 dark:text-primary-400 size-6')} />
             </div>
             <div className="flex flex-col items-center gap-1 text-center">
-              <h4>{searchQuery ? 'No groups found' : 'No tag groups yet'}</h4>
+              <h4>{searchQuery ? t('tags.page.emptySearchTitle') : t('tags.page.emptyTitle')}</h4>
               <p>
                 {searchQuery
-                  ? 'Try a different search term'
-                  : 'Start by clicking the "New Group" button'}
+                  ? t('tags.page.emptySearchDescription')
+                  : t('tags.page.emptyDescription')}
               </p>
               {!searchQuery && (
-                <p className="text-muted-foreground text-sm">
-                  A good starting point is a &quot;General&quot; group
-                </p>
+                <p className="text-muted-foreground text-sm">{t('tags.page.emptyHint')}</p>
               )}
             </div>
           </div>

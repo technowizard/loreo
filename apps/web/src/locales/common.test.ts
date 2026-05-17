@@ -199,6 +199,81 @@ const phaseFiveKeys = [
   'settings.data.viewDetails'
 ] as const;
 
+const phaseSixKeys = [
+  'tags.page.title',
+  'tags.page.description',
+  'tags.page.searchPlaceholder',
+  'tags.page.newGroup',
+  'tags.page.error',
+  'tags.page.tryAgain',
+  'tags.page.emptySearchTitle',
+  'tags.page.emptyTitle',
+  'tags.page.emptySearchDescription',
+  'tags.page.emptyDescription',
+  'tags.page.emptyHint',
+  'tags.deleteDialog.titleGroup',
+  'tags.deleteDialog.titleTag',
+  'tags.deleteDialog.confirmGroup',
+  'tags.deleteDialog.confirmTag',
+  'tags.deleteDialog.cannotUndo',
+  'tags.deleteDialog.cancel',
+  'tags.deleteDialog.delete',
+  'tags.groupForm.createTitle',
+  'tags.groupForm.editTitle',
+  'tags.groupForm.createDescription',
+  'tags.groupForm.editDescription',
+  'tags.groupForm.groupNameLabel',
+  'tags.groupForm.groupNamePlaceholder',
+  'tags.groupForm.colorLabel',
+  'tags.groupForm.descriptionLabel',
+  'tags.groupForm.descriptionPlaceholder',
+  'tags.groupForm.previewLabel',
+  'tags.groupForm.previewNameFallback',
+  'tags.groupForm.previewDescriptionFallback',
+  'tags.groupForm.cancel',
+  'tags.groupForm.create',
+  'tags.groupForm.update',
+  'tags.tagForm.editTitle',
+  'tags.tagForm.addTitle',
+  'tags.tagForm.editDescription',
+  'tags.tagForm.addDescription',
+  'tags.tagForm.tagNameLabel',
+  'tags.tagForm.tagNamePlaceholder',
+  'tags.tagForm.previewLabel',
+  'tags.tagForm.previewNameFallback',
+  'tags.tagForm.cancel',
+  'tags.tagForm.update',
+  'tags.tagForm.create',
+  'tags.sheet.tagsCount',
+  'tags.sheet.cancel',
+  'tags.sheet.select',
+  'tags.sheet.addTag',
+  'tags.sheet.selectedCount',
+  'tags.sheet.moveTo',
+  'tags.sheet.delete',
+  'tags.sheet.moveAria',
+  'tags.sheet.editAria',
+  'tags.sheet.deleteAria',
+  'tags.moveDialog.titleSingle',
+  'tags.moveDialog.titleBulk',
+  'tags.moveDialog.titleGroup',
+  'tags.moveDialog.description',
+  'tags.moveDialog.destinationLabel',
+  'tags.moveDialog.placeholder',
+  'tags.moveDialog.cancel',
+  'tags.moveDialog.move',
+  'tags.groupCard.tagCount_one',
+  'tags.groupCard.tagCount_other',
+  'tags.groupCard.actions.editGroup',
+  'tags.groupCard.actions.moveAllTags',
+  'tags.groupCard.actions.deleteGroup',
+  'tags.groupCard.actions.manageAria',
+  'tags.groupCard.actions.manageTagsAria',
+  'tags.groupCard.moreCount',
+  'tags.groupCard.manageTags',
+  'tags.groupCard.addFirstTag'
+] as const;
+
 function getValue(source: unknown, key: string) {
   return key.split('.').reduce<unknown>((value, segment) => {
     if (value && typeof value === 'object' && segment in value) {
@@ -239,6 +314,13 @@ describe('common locale phase 4 coverage', () => {
 
 describe('common locale phase 5 coverage', () => {
   it.each(phaseFiveKeys)('defines %s in English and Indonesian locales', (key) => {
+    expect(getValue(enCommon, key)).toEqual(expect.any(String));
+    expect(getValue(idCommon, key)).toEqual(expect.any(String));
+  });
+});
+
+describe('common locale phase 6 coverage', () => {
+  it.each(phaseSixKeys)('defines %s in English and Indonesian locales', (key) => {
     expect(getValue(enCommon, key)).toEqual(expect.any(String));
     expect(getValue(idCommon, key)).toEqual(expect.any(String));
   });

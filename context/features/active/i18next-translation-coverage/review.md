@@ -123,3 +123,28 @@
 
 - `id/common.json` still mirrors English values; it needs a later Indonesian copy pass.
 - Reader navigation drawer copy remains untranslated and deferred.
+
+## Phase 6: Tags Management
+
+### Completed
+
+- Added `tags.*` locale block to English and Indonesian common locales covering page shell, delete dialog, group/tag form dialogs, group tags sheet, move dialog, and group card.
+- Translated `pages/manage-tags.tsx` page title, description, search placeholder, new group button, error/empty states.
+- Translated `delete-confirmation-dialog.tsx` with `<Trans>` components for rich-text confirm messages.
+- Translated `tag-group-form-dialog.tsx` and `tag-form-dialog.tsx` dialog headers, descriptions, labels, placeholders, preview labels, buttons.
+- Translated `group-tags-sheet.tsx` tags count, select/cancel, add tag, selected count, move-to, delete, and aria labels.
+- Translated `move-tags-dialog.tsx` title (single/bulk/group), description, destination label, placeholder, cancel, move.
+- Translated `tag-group-card.tsx` tag count (plural), action labels, more count, manage tags, add first tag, and aria labels.
+- Removed duplicate Move button in move-tags-dialog.tsx.
+
+### Verification
+
+- RED: 70 phase 6 locale tests failed before keys were added.
+- GREEN: `bun test src/locales/common.test.ts` passed: 246 tests, 492 assertions.
+- Typecheck: `bun run typecheck` passed.
+- Touched-file lint/format: `pnpm exec oxlint ... && pnpm exec oxfmt --check ...` passed.
+
+### Remaining Risks
+
+- `id/common.json` still mirrors English values; it needs a later Indonesian copy pass.
+- Phase 6 only covers tags management UI; some aria labels use interpolation.

@@ -1,4 +1,5 @@
 import { SpinnerIcon } from '@phosphor-icons/react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -43,13 +44,18 @@ export function TagFormDialog({
   open,
   tag
 }: Props) {
+  const { t } = useTranslation('common');
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{tag ? 'Edit Tag' : `Add Tag to ${group?.name}`}</DialogTitle>
+          <DialogTitle>
+            {tag ? t('tags.tagForm.editTitle') : t('tags.tagForm.addTitle', { group: group?.name })}
+          </DialogTitle>
           <DialogDescription>
-            {tag ? 'Update tag details' : `Create a new tag for the ${group?.name} group`}
+            {tag
+              ? t('tags.tagForm.editDescription')
+              : t('tags.tagForm.addDescription', { group: group?.name })}
           </DialogDescription>
         </DialogHeader>
 
@@ -63,23 +69,23 @@ export function TagFormDialog({
         >
           <div className="grid gap-2">
             <Label htmlFor="tag-name">
-              Tag Name <span className="text-destructive">*</span>
+              {t('tags.tagForm.tagNameLabel')} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="tag-name"
               onChange={(e) => onFormChange('name', e.target.value)}
-              placeholder="Enter tag name"
+              placeholder={t('tags.tagForm.tagNamePlaceholder')}
               value={form.name}
             />
             {errors.name && <p className="text-destructive text-xs">{errors.name}</p>}
           </div>
 
           <div className="bg-secondary/50 rounded-md border p-3">
-            <p className="text-muted-foreground mb-2 text-xs">Preview:</p>
+            <p className="text-muted-foreground mb-2 text-xs">{t('tags.tagForm.previewLabel')}</p>
             <Tag
               tag={{
                 color: form.color || group?.color || '',
-                name: form.name || 'Tag name'
+                name: form.name || t('tags.tagForm.previewNameFallback')
               }}
             />
           </div>
@@ -87,11 +93,11 @@ export function TagFormDialog({
 
         <DialogFooter>
           <Button onClick={() => onOpenChange(false)} variant="outline">
-            Cancel
+            {t('tags.tagForm.cancel')}
           </Button>
           <Button disabled={isSaving} onClick={onSave}>
             {isSaving && <SpinnerIcon className="mr-2 animate-spin" size={16} />}
-            {tag ? 'Update' : 'Create'} Tag
+            {tag ? t('tags.tagForm.update') : t('tags.tagForm.create')}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -5,6 +5,7 @@ import {
   PlusIcon,
   TrashIcon
 } from '@phosphor-icons/react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -43,6 +44,7 @@ export function TagGroupCard({
   onManageTags,
   onMoveAll
 }: TagGroupCardProps) {
+  const { t } = useTranslation('common');
   const tagCount = group.tags?.length || 0;
   const displayTags = group.tags?.slice(0, 3) || [];
   const remainingTags = Math.max(0, tagCount - displayTags.length);
@@ -55,7 +57,7 @@ export function TagGroupCard({
           <CardTitle className="text-base">{group.name}</CardTitle>
           {tagCount > 0 && (
             <span className="text-muted-foreground text-xs">
-              {tagCount} {tagCount === 1 ? 'tag' : 'tags'}
+              {t('tags.groupCard.tagCount', { count: tagCount })}
             </span>
           )}
         </div>
@@ -66,7 +68,13 @@ export function TagGroupCard({
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
-                <Button aria-label={`Actions for ${group.name}`} size="icon" variant="ghost">
+                <Button
+                  aria-label={t('tags.groupCard.actions.manageAria', {
+                    name: group.name
+                  })}
+                  size="icon"
+                  variant="ghost"
+                >
                   <DotsThreeIcon className="size-4" weight="bold" />
                 </Button>
               }
@@ -80,7 +88,7 @@ export function TagGroupCard({
                 }}
               >
                 <PencilSimpleIcon className="size-4" />
-                Edit group
+                {t('tags.groupCard.actions.editGroup')}
               </DropdownMenuItem>
               {tagCount > 0 && (
                 <DropdownMenuItem
@@ -91,7 +99,7 @@ export function TagGroupCard({
                   }}
                 >
                   <ArrowsLeftRightIcon className="size-4" />
-                  Move all tags
+                  {t('tags.groupCard.actions.moveAllTags')}
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
@@ -104,7 +112,7 @@ export function TagGroupCard({
                 variant="destructive"
               >
                 <TrashIcon className="size-4" />
-                Delete group
+                {t('tags.groupCard.actions.deleteGroup')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -119,11 +127,15 @@ export function TagGroupCard({
                 <Tag key={tag.id} tag={{ color: group.color, name: tag.name }} />
               ))}
               {remainingTags > 0 && (
-                <span className="text-muted-foreground text-sm">+{remainingTags} more</span>
+                <span className="text-muted-foreground text-sm">
+                  {t('tags.groupCard.moreCount', { count: remainingTags })}
+                </span>
               )}
             </div>
             <button
-              aria-label={`Manage tags for ${group.name}`}
+              aria-label={t('tags.groupCard.actions.manageTagsAria', {
+                name: group.name
+              })}
               className="text-muted-foreground hover:text-foreground mt-auto text-sm transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
@@ -131,7 +143,7 @@ export function TagGroupCard({
               }}
               type="button"
             >
-              Manage tags &rarr;
+              {t('tags.groupCard.manageTags')}
             </button>
           </>
         ) : (
@@ -144,7 +156,7 @@ export function TagGroupCard({
             variant="outline"
           >
             <PlusIcon className="mr-2 size-4" />
-            Add First Tag
+            {t('tags.groupCard.addFirstTag')}
           </Button>
         )}
       </CardContent>

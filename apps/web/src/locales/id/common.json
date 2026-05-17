@@ -290,6 +290,96 @@
       "viewDetails": "View Details"
     }
   },
+  "tags": {
+    "page": {
+      "title": "Manage Tags",
+      "description": "Organize your tags into groups",
+      "searchPlaceholder": "Search groups...",
+      "newGroup": "New Group",
+      "error": "Something went wrong loading your tags.",
+      "tryAgain": "Try Again",
+      "emptySearchTitle": "No groups found",
+      "emptyTitle": "No tag groups yet",
+      "emptySearchDescription": "Try a different search term",
+      "emptyDescription": "Start by clicking the \"New Group\" button",
+      "emptyHint": "A good starting point is a \"General\" group"
+    },
+    "deleteDialog": {
+      "titleGroup": "Delete Group: {{name}}",
+      "titleTag": "Delete Tag: {{name}}",
+      "confirmGroup": "Are you sure you want to delete <1>{{name}}</1> and all {{count}} tags in this group?",
+      "confirmTag": "Are you sure you want to delete <1>{{name}}</1>?",
+      "cannotUndo": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
+    "groupForm": {
+      "createTitle": "New group",
+      "editTitle": "Edit group",
+      "createDescription": "Create a new group to organize your tags",
+      "editDescription": "Update group details",
+      "groupNameLabel": "Group Name",
+      "groupNamePlaceholder": "e.g., Work, Personal, Learning",
+      "colorLabel": "Color",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "What is this group for?",
+      "previewLabel": "Preview:",
+      "previewNameFallback": "Group name",
+      "previewDescriptionFallback": "Group description",
+      "cancel": "Cancel",
+      "create": "Create group",
+      "update": "Update group"
+    },
+    "tagForm": {
+      "editTitle": "Edit Tag",
+      "addTitle": "Add Tag to {{group}}",
+      "editDescription": "Update tag details",
+      "addDescription": "Create a new tag for the {{group}} group",
+      "tagNameLabel": "Tag Name",
+      "tagNamePlaceholder": "Enter tag name",
+      "previewLabel": "Preview:",
+      "previewNameFallback": "Tag name",
+      "cancel": "Cancel",
+      "create": "Create Tag",
+      "update": "Update Tag"
+    },
+    "sheet": {
+      "tagsCount": "{{count}} tags",
+      "cancel": "Cancel",
+      "select": "Select",
+      "addTag": "Add Tag",
+      "selectedCount": "{{count}} selected",
+      "moveTo": "Move to...",
+      "delete": "Delete",
+      "moveAria": "Move {{name}} tag",
+      "editAria": "Edit {{name}} tag",
+      "deleteAria": "Delete {{name}} tag"
+    },
+    "moveDialog": {
+      "titleSingle": "Move \"{{name}}\"",
+      "titleBulk": "Move {{count}} tag(s)",
+      "titleGroup": "Move all tags",
+      "description": "Select a destination group to move the tag(s) to.",
+      "destinationLabel": "Destination Group",
+      "placeholder": "Select a group...",
+      "cancel": "Cancel",
+      "move": "Move"
+    },
+    "groupCard": {
+      "tagCount_one": "{{count}} tag",
+      "tagCount_other": "{{count}} tags",
+      "actions": {
+        "editGroup": "Edit group",
+        "moveAllTags": "Move all tags",
+        "deleteGroup": "Delete group",
+        "manageAria": "Actions for {{name}}",
+        "manageTagsAria": "Manage tags for {{name}}"
+      },
+      "moreCount": "+{{count}} more",
+      "manageTags": "Manage tags \u2192",
+      "addFirstTag": "Add First Tag"
+    }
+  },
   "reader": {
     "whatsNext": "What's next?",
     "actions": {

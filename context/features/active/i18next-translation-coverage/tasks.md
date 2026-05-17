@@ -50,11 +50,11 @@
 
 ## Phase 6: Tags Management
 
-- [ ] Translate manage-tags page shell.
-- [ ] Translate tag/group cards and forms.
-- [ ] Translate delete/move/group dialogs.
-- [ ] Translate tags validation and toasts.
-- [ ] Verify tags flows.
+- [x] Translate manage-tags page shell.
+- [x] Translate tag/group cards and forms.
+- [x] Translate delete/move/group dialogs.
+- [x] Translate tags validation and toasts.
+- [x] Verify tags flows.
 
 ## Phase 7: Import Articles Workflow
 

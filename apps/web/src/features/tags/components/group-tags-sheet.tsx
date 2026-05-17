@@ -5,6 +5,7 @@ import {
   SpinnerIcon,
   TrashIcon
 } from '@phosphor-icons/react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -53,6 +54,7 @@ export function GroupTagsSheet({
   onToggleSelect,
   selectedTagIds
 }: GroupTagsSheetProps) {
+  const { t } = useTranslation('common');
   const tagCount = group?.tags?.length || 0;
 
   return (
@@ -73,7 +75,9 @@ export function GroupTagsSheet({
 
         <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-4">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">{tagCount} tags</span>
+            <span className="text-sm font-medium">
+              {t('tags.sheet.tagsCount', { count: tagCount })}
+            </span>
             <div className="flex items-center gap-2">
               {tagCount > 0 && (
                 <Button
@@ -81,26 +85,33 @@ export function GroupTagsSheet({
                   size="sm"
                   variant={isSelectMode ? 'secondary' : 'ghost'}
                 >
-                  {isSelectMode ? 'Cancel' : 'Select'}
+                  {isSelectMode ? t('tags.sheet.cancel') : t('tags.sheet.select')}
                 </Button>
               )}
               <Button onClick={onAddTag} size="sm" variant="outline">
                 <PlusIcon className="mr-1 size-3" />
-                Add Tag
+                {t('tags.sheet.addTag')}
               </Button>
             </div>
           </div>
 
           {selectedTagIds.size > 0 && (
             <div className="bg-secondary flex items-center gap-2 rounded-md px-3 py-2">
-              <span className="flex-1 text-sm font-medium">{selectedTagIds.size} selected</span>
+              <span className="flex-1 text-sm font-medium">
+                {t('tags.sheet.selectedCount', { count: selectedTagIds.size })}
+              </span>
               <Button
-                onClick={() => onMoveTag({ mode: 'bulk', tagIds: Array.from(selectedTagIds) })}
+                onClick={() =>
+                  onMoveTag({
+                    mode: 'bulk',
+                    tagIds: Array.from(selectedTagIds)
+                  })
+                }
                 size="sm"
                 variant="outline"
               >
                 <ArrowRightIcon className="mr-1 size-3" />
-                Move to...
+                {t('tags.sheet.moveTo')}
               </Button>
               <Button
                 disabled={bulkDeletePending}
@@ -113,7 +124,7 @@ export function GroupTagsSheet({
                 ) : (
                   <TrashIcon className="mr-1 size-3" />
                 )}
-                Delete
+                {t('tags.sheet.delete')}
               </Button>
             </div>
           )}
@@ -144,7 +155,9 @@ export function GroupTagsSheet({
                     {!isSelectMode && (
                       <div className="flex items-center gap-1">
                         <Button
-                          aria-label={`Move ${tag.name} tag`}
+                          aria-label={t('tags.sheet.moveAria', {
+                            name: tag.name
+                          })}
                           onClick={() => onMoveTag({ mode: 'single', tag })}
                           size="icon"
                           variant="ghost"
@@ -152,7 +165,9 @@ export function GroupTagsSheet({
                           <ArrowRightIcon className="size-3" />
                         </Button>
                         <Button
-                          aria-label={`Edit ${tag.name} tag`}
+                          aria-label={t('tags.sheet.editAria', {
+                            name: tag.name
+                          })}
                           onClick={() => onEditTag(tag)}
                           size="icon"
                           variant="ghost"
@@ -160,7 +175,9 @@ export function GroupTagsSheet({
                           <PencilSimpleIcon className="size-3" />
                         </Button>
                         <Button
-                          aria-label={`Delete ${tag.name} tag`}
+                          aria-label={t('tags.sheet.deleteAria', {
+                            name: tag.name
+                          })}
                           onClick={() => onDeleteTag(tag)}
                           size="icon"
                           variant="ghost"
