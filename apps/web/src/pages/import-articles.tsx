@@ -1,7 +1,6 @@
 import { ArrowsClockwiseIcon, XCircleIcon } from '@phosphor-icons/react';
 import { useNavigate } from '@tanstack/react-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 
@@ -11,46 +10,39 @@ import { MapFields } from '@/features/import-articles/components/map-fields';
 import { ReviewImport } from '@/features/import-articles/components/review-import';
 import { UploadFromCsv } from '@/features/import-articles/components/upload-from-csv';
 import { WizardStepIndicator } from '@/features/import-articles/components/wizard-step-indicator';
+import {
+  canProceedFromStep,
+  createInitialStepCompletion,
+  getNextStep,
+  getPreviousStep,
+  type ImportWizardStep,
+  markStepComplete,
+  STEP_DESCRIPTIONS,
+  STEP_ERROR_MESSAGES,
+  STEP_LABELS,
+  STEP_MAP_FIELDS,
+  STEP_REVIEW,
+  STEP_UPLOAD
+} from '@/features/import-articles/constants/wizard-config';
 import { useImportArticles } from '@/features/import-articles/hooks/use-import-articles';
 
-// Constants
-const STEP_UPLOAD = 0;
-const STEP_MAP_FIELDS = 1;
-const STEP_REVIEW = 2;
-
-const STEP_LABELS = ['Upload CSV', 'Map Fields', 'Final Review'] as const;
-
-const STEP_DESCRIPTIONS = [
-  'Upload a CSV file to import your articles. Works with Pocket exports.',
-  'Match the columns from your CSV file to the article fields. Required fields are marked with an asterisk (*).',
-  'Please confirm the data summary below. Once you start the import, your articles will be added to your library.'
-] as const;
-
-// Types
-type Step = typeof STEP_UPLOAD | typeof STEP_MAP_FIELDS | typeof STEP_REVIEW;
+import { useNotificationsStore } from '@/stores/notifications';
 
 function ImportArticlesPage() {
-  const [step, setStep] = useState<Step>(STEP_UPLOAD);
+  const [step, setStep] = useState<ImportWizardStep>(STEP_UPLOAD);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const notifyError = useNotificationsStore.useError();
+  const notifyInfo = useNotificationsStore.useInfo();
 
   // Track completion state for each step
-  const [stepComplete, setStepComplete] = useState<Record<Step, boolean>>({
-    [STEP_MAP_FIELDS]: false,
-    [STEP_REVIEW]: false,
-    [STEP_UPLOAD]: false
-  });
+  const [stepComplete, setStepComplete] = useState(createInitialStepCompletion);
 
   const stepRef = useRef<HTMLDivElement>(null);
 
   const { mapping, onPreviewImportSuccess, uploadedFile } = useImportArticles();
 
   const navigate = useNavigate();
-
-  // Validation - check if current step is complete
-  const canProceed = (): boolean => {
-    return stepComplete[step];
-  };
 
   // Focus management on step change
   useEffect(() => {
@@ -75,14 +67,8 @@ function ImportArticlesPage() {
   const handleContinue = () => {
     setError(null);
 
-    if (!canProceed()) {
-      const errorMessages: Record<Step, string> = {
-        [STEP_MAP_FIELDS]: 'Please complete field mapping before continuing',
-        [STEP_REVIEW]: 'Please review your import before starting',
-        [STEP_UPLOAD]: 'Please upload a CSV file before continuing'
-      };
-
-      const errorMessage = errorMessages[step];
+    if (!canProceedFromStep(step, stepComplete)) {
+      const errorMessage = STEP_ERROR_MESSAGES[step];
       setError(errorMessage);
 
       return;
@@ -96,14 +82,14 @@ function ImportArticlesPage() {
         mapping
       });
     } else {
-      setStep((prev) => (prev + 1) as Step);
+      setStep((prev) => getNextStep(prev));
     }
   };
 
   const handleBack = () => {
     setError(null);
     if (step > STEP_UPLOAD) {
-      setStep((prev) => (prev - 1) as Step);
+      setStep((prev) => getPreviousStep(prev));
     }
   };
 
@@ -111,7 +97,7 @@ function ImportArticlesPage() {
     if (step !== STEP_UPLOAD || stepComplete[STEP_UPLOAD]) {
       if (confirm('Are you sure you want to cancel the import? Your progress will be lost.')) {
         resetWizard();
-        toast.info('Import cancelled');
+        notifyInfo('Import cancelled');
       }
     }
   };
@@ -125,7 +111,7 @@ function ImportArticlesPage() {
         mapping
       });
     } catch {
-      toast.error('Import failed. Please try again.');
+      notifyError('Import failed. Please try again.');
 
       setError('Import failed. Please try again.');
     } finally {
@@ -135,28 +121,24 @@ function ImportArticlesPage() {
 
   const resetWizard = () => {
     setStep(STEP_UPLOAD);
-    setStepComplete({
-      [STEP_MAP_FIELDS]: false,
-      [STEP_REVIEW]: false,
-      [STEP_UPLOAD]: false
-    });
+    setStepComplete(createInitialStepCompletion());
     setError(null);
   };
 
-  const markStepComplete = (completedStep: Step) => {
-    setStepComplete({ ...stepComplete, [completedStep]: true });
+  const handleStepComplete = (completedStep: ImportWizardStep) => {
+    setStepComplete((current) => markStepComplete(current, completedStep));
   };
 
   const handleUploadComplete = useCallback(() => {
-    markStepComplete(STEP_UPLOAD);
+    handleStepComplete(STEP_UPLOAD);
   }, []);
 
   const handleMappingComplete = useCallback(() => {
-    markStepComplete(STEP_MAP_FIELDS);
+    handleStepComplete(STEP_MAP_FIELDS);
   }, []);
 
   const handleReviewComplete = useCallback(() => {
-    markStepComplete(STEP_REVIEW);
+    handleStepComplete(STEP_REVIEW);
   }, []);
 
   const previewImportMutation = usePreviewImport({
@@ -165,7 +147,7 @@ function ImportArticlesPage() {
         if (data.result) {
           onPreviewImportSuccess(data.result);
 
-          setStep((prev) => (prev + 1) as Step);
+          setStep((prev) => getNextStep(prev));
         }
       }
     }
