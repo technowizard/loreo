@@ -1,25 +1,24 @@
 import { LinkIcon, PlusIcon } from '@phosphor-icons/react';
-import { useState, type SubmitEvent } from 'react';
+import { type SubmitEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 import { useCreateLink } from '@/features/articles/api/create-link';
 
+import { useNotificationsStore } from '@/stores/notifications';
+
 export function QuickAddBar() {
   const { t } = useTranslation('common');
+  const notifySuccess = useNotificationsStore.useSuccess();
 
   const [url, setUrl] = useState('');
 
   const createLink = useCreateLink({
     mutationConfig: {
       onSuccess: () => {
-        toast.success(t('home.quickAdd.success'), {
-          position: 'top-right',
-          richColors: true
-        });
+        notifySuccess(t('home.quickAdd.success'));
 
         setUrl('');
       }

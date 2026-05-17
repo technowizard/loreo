@@ -3,13 +3,14 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 import { cn } from '@/lib/utils';
+
+import { useNotificationsStore } from '@/stores/notifications';
 
 import { authKeys } from '../api/query-keys';
 import { type RegisterInput, useRegister } from '../api/register';
@@ -18,29 +19,22 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'form
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const notifyError = useNotificationsStore.useError();
+  const notifySuccess = useNotificationsStore.useSuccess();
 
   const register = useRegister({
     mutationConfig: {
       onError: (error: unknown) => {
         if (error instanceof Error) {
-          toast.error(error.message, {
-            position: 'top-right',
-            richColors: true
-          });
+          notifyError(error.message);
         } else {
-          toast.error(t('register.genericError'), {
-            position: 'top-right',
-            richColors: true
-          });
+          notifyError(t('register.genericError'));
         }
       },
       onSuccess: (user) => {
         queryClient.setQueryData(authKeys.user(), user);
 
-        toast.success(t('register.success'), {
-          position: 'top-right',
-          richColors: true
-        });
+        notifySuccess(t('register.success'));
 
         navigate({ to: '/' });
       }
