@@ -234,6 +234,17 @@
       "title": "Settings",
       "description": "Manage your account and customize your reading experience"
     },
+    "language": {
+      "title": "Language",
+      "description": "Switch the app language",
+      "currentLabel": "Current language",
+      "currentLanguage": "Current language: {{language}}",
+      "switchTo": "Switch to {{language}}",
+      "languages": {
+        "en": "English",
+        "id": "Indonesian"
+      }
+    },
     "account": {
       "title": "Account",
       "description": "Your personal information and profile details",
@@ -275,12 +286,19 @@
       "description": "Customize how articles look when you read them",
       "themeLabel": "Theme",
       "themeTooltip": "Applies to both the app interface and article reader",
+      "theme": {
+        "system": "System",
+        "light": "Light",
+        "sepia": "Sepia",
+        "dark": "Dark"
+      },
       "typographyLabel": "Typography",
       "fontSizeLabel": "Font Size",
       "lineSpacingLabel": "Line Spacing",
       "fontFamilyLabel": "Font Family",
       "showPreview": "Show Preview",
       "hidePreview": "Hide Preview",
+      "previewText": "The quick brown fox jumps over the lazy dog.",
       "textAlignmentLabel": "Text Alignment",
       "textAlignment": {
         "default": {
@@ -292,7 +310,21 @@
           "description": "Text spreads evenly across the width"
         }
       },
+      "alignment": {
+        "default": {
+          "title": "Default",
+          "description": "Text lines up on the left side"
+        },
+        "justify": {
+          "title": "Justify",
+          "description": "Text spreads evenly across the width"
+        }
+      },
       "resetPreferences": {
+        "title": "Reset Preferences",
+        "description": "Restore all reader settings to their default values"
+      },
+      "reset": {
         "title": "Reset Preferences",
         "description": "Restore all reader settings to their default values"
       },
@@ -411,6 +443,7 @@
     },
     "tagInput": {
       "searchPlaceholder": "Search tags...",
+      "placeholder": "Add tags...",
       "createIn": "Create \"{{input}}\" in:",
       "noTagsMatching": "No tags matching \"{{input}}\" in {{group}}",
       "noTagsIn": "No tags in {{group}}",

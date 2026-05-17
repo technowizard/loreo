@@ -1,693 +1,726 @@
 {
   "brandPanel": {
-    "firstTagline": "Your reading list,",
-    "secondTagline": "beautifully organized",
+    "firstTagline": "Daftar bacaanmu,",
+    "secondTagline": "tertata dengan indah",
     "keyFeatures": [
-      "Save articles from anywhere",
-      "Read without distractions",
-      "Never lose a link again"
+      "Simpan artikel dari mana saja",
+      "Baca tanpa gangguan",
+      "Tak pernah kehilangan tautan lagi"
     ]
   },
   "common": {
     "error": {
-      "label": "Error",
-      "title": "Something went wrong",
-      "retry": "Try again"
+      "label": "Kesalahan",
+      "title": "Ada yang salah",
+      "retry": "Coba lagi"
     },
     "notFound": {
-      "title": "Page not found",
-      "goBack": "go back"
+      "title": "Halaman tidak ditemukan",
+      "goBack": "kembali"
     },
     "dialog": {
-      "close": "Close"
+      "close": "Tutup"
     },
-    "loading": "Loading"
+    "loading": "Memuat"
   },
   "login": {
-    "title": "Welcome back",
-    "description": "Sign in to your account to continue",
+    "title": "Selamat datang kembali",
+    "description": "Masuk ke akunmu untuk melanjutkan",
     "email": "Email",
-    "emailPlaceholder": "you@example.com",
-    "password": "Password",
-    "submit": "Login",
-    "forgotPassword": "Forgot Password",
-    "signUp": "Create one",
-    "signIn": "Sign in",
-    "dontHaveAccount": "Don't have an account?",
-    "invalidCredentials": "Invalid email or password",
-    "success": "Login successful"
+    "emailPlaceholder": "anda@contoh.com",
+    "password": "Kata sandi",
+    "submit": "Masuk",
+    "forgotPassword": "Lupa kata sandi",
+    "signUp": "Buat akun",
+    "signIn": "Masuk",
+    "dontHaveAccount": "Belum punya akun?",
+    "invalidCredentials": "Email atau kata sandi tidak valid",
+    "success": "Berhasil masuk"
   },
   "register": {
-    "title": "Create your account",
-    "description": "Start building your personal reading library",
-    "name": "Name",
-    "namePlaceholder": "Your name",
+    "title": "Buat akunmu",
+    "description": "Mulai membangun perpustakaan bacaan pribadimu",
+    "name": "Nama",
+    "namePlaceholder": "Namamu",
     "email": "Email",
-    "emailPlaceholder": "you@example.com",
-    "password": "Password",
-    "confirmPassword": "Confirm Password",
-    "submit": "Create account",
-    "createAccount": "Create account",
-    "alreadyHaveAccount": "Already have an account?",
-    "signIn": "Sign in",
-    "genericError": "An error occurred",
-    "success": "Account created. Welcome!"
+    "emailPlaceholder": "anda@contoh.com",
+    "password": "Kata sandi",
+    "confirmPassword": "Konfirmasi kata sandi",
+    "submit": "Buat akun",
+    "createAccount": "Buat akun",
+    "alreadyHaveAccount": "Sudah punya akun?",
+    "signIn": "Masuk",
+    "genericError": "Terjadi kesalahan",
+    "success": "Akun berhasil dibuat. Selamat datang!"
   },
   "home": {
-    "welcome": "Welcome to Loreo",
-    "onboardingDescription": "Add your first article to start building your reading queue",
-    "readyToCatchUp": "Ready to catch up on your saved articles?",
+    "welcome": "Selamat datang di Loreo",
+    "onboardingDescription": "Tambahkan artikel pertamamu untuk mulai membangun antrean bacaan",
+    "readyToCatchUp": "Siap menyusul bacaan yang sudah disimpan?",
     "quickAdd": {
-      "title": "Quick Add",
-      "placeholder": "Paste URL here...",
-      "save": "Save",
-      "success": "Link saved"
+      "title": "Tambah Cepat",
+      "placeholder": "Tempel URL di sini...",
+      "save": "Simpan",
+      "success": "Tautan disimpan"
     },
     "onboardingProgress": {
-      "title": "Getting started",
-      "addFirstArticle": "Add your first article",
-      "saveThreeArticles": "Save three articles",
-      "readFirstOne": "Read your first article",
-      "stepsCompleted": "{{completed}} of {{total}} steps completed",
-      "pasteUrlOrImport": "Paste a URL above, or",
-      "importFromCsv": "import from CSV",
-      "unlocksReadingFilters": "Unlocks reading filters and suggestions",
-      "openAnyArticleAndStartReading": "Open any article and start reading"
+      "title": "Memulai",
+      "addFirstArticle": "Tambahkan artikel pertamamu",
+      "saveThreeArticles": "Simpan tiga artikel",
+      "readFirstOne": "Baca artikel pertamamu",
+      "stepsCompleted": "{{completed}} dari {{total}} langkah selesai",
+      "pasteUrlOrImport": "Tempel URL di atas, atau",
+      "importFromCsv": "impor dari CSV",
+      "unlocksReadingFilters": "Membuka filter dan saran bacaan",
+      "openAnyArticleAndStartReading": "Buka artikel apa pun dan mulai membaca"
     },
-    "suggestions": "Suggestions",
-    "continueReading": "Continue Reading",
-    "quickReads": "Quick reads",
-    "longReads": "Long reads",
-    "thisWeek": "This week",
-    "mustRead": "Must read",
-    "recentlySaved": "Recently saved",
-    "pasteUrlToSaveFirstArticle": "Paste a URL to save your first article"
+    "suggestions": "Saran",
+    "continueReading": "Lanjutkan membaca",
+    "quickReads": "Bacaan singkat",
+    "longReads": "Bacaan panjang",
+    "thisWeek": "Minggu ini",
+    "mustRead": "Wajib dibaca",
+    "recentlySaved": "Baru disimpan",
+    "pasteUrlToSaveFirstArticle": "Tempel URL untuk menyimpan artikel pertamamu"
   },
   "nav": {
-    "home": "Home",
-    "articles": "Articles",
-    "moreActionsAria": "More actions"
+    "home": "Beranda",
+    "articles": "Artikel",
+    "moreActionsAria": "Aksi lainnya"
   },
   "userMenu": {
-    "fallbackName": "User",
-    "switchTheme": "Switch theme",
-    "settings": "Settings",
-    "logOut": "Log out",
+    "fallbackName": "Pengguna",
+    "switchTheme": "Ganti tema",
+    "settings": "Pengaturan",
+    "logOut": "Keluar",
     "themes": {
-      "system": "System",
-      "light": "Light",
+      "system": "Sistem",
+      "light": "Terang",
       "sepia": "Sepia",
-      "dark": "Dark"
+      "dark": "Gelap"
     }
   },
   "routes": {
     "common": {
       "error": {
-        "label": "error",
-        "title": "Something went wrong",
-        "retry": "Try again"
+        "label": "kesalahan",
+        "title": "Ada yang salah",
+        "retry": "Coba lagi"
       },
       "notFound": {
-        "title": "Page not found",
-        "goBack": "go back"
+        "title": "Halaman tidak ditemukan",
+        "goBack": "kembali"
       },
       "dialog": {
-        "close": "Close"
+        "close": "Tutup"
       }
     },
     "home": {
-      "metaTitle": "Home | Loreo"
+      "metaTitle": "Beranda | Loreo"
     },
     "login": {
-      "metaTitle": "Login | Loreo"
+      "metaTitle": "Masuk | Loreo"
     },
     "register": {
-      "metaTitle": "Register | Loreo"
+      "metaTitle": "Daftar | Loreo"
     },
     "articles": {
-      "metaTitle": "Articles | Loreo"
+      "metaTitle": "Artikel | Loreo"
     },
     "articleReader": {
       "fallbackMetaTitle": "Loreo"
     },
     "settings": {
-      "metaTitle": "Settings | Loreo"
+      "metaTitle": "Pengaturan | Loreo"
     },
     "manageTags": {
-      "metaTitle": "Manage Tags | Loreo"
+      "metaTitle": "Kelola Tag | Loreo"
     },
     "importArticles": {
-      "metaTitle": "Import Articles | Loreo"
+      "metaTitle": "Impor Artikel | Loreo"
     },
     "importProgress": {
-      "metaTitle": "Import Progress | Loreo"
+      "metaTitle": "Progres Impor | Loreo"
     }
   },
   "articles": {
     "toasts": {
-      "updating": "Updating...",
-      "linkUpdated": "Link updated",
-      "deletingLink": "Deleting link",
-      "linkDeleted": "Link deleted",
-      "reprocessing": "Requesting for reprocessing...",
-      "queuedForReprocessing": "Link queued for reprocessing",
-      "linkSaved": "Link saved",
-      "failedCreateTag": "Failed to create tag",
-      "tagCreated": "Tag \"{{name}}\" created",
-      "failedUpdateTags": "Failed to update tags",
-      "tagsUpdated": "Tags updated"
+      "updating": "Memperbarui...",
+      "linkUpdated": "Tautan diperbarui",
+      "deletingLink": "Menghapus tautan",
+      "linkDeleted": "Tautan dihapus",
+      "reprocessing": "Meminta pemrosesan ulang...",
+      "queuedForReprocessing": "Tautan masuk antrean pemrosesan ulang",
+      "linkSaved": "Tautan disimpan",
+      "failedCreateTag": "Gagal membuat tag",
+      "tagCreated": "Tag \"{{name}}\" dibuat",
+      "failedUpdateTags": "Gagal memperbarui tag",
+      "tagsUpdated": "Tag diperbarui"
     },
     "toolbar": {
-      "searchPlaceholder": "Search articles...",
-      "searchAria": "Search articles",
-      "clearSearchAria": "Clear search",
-      "filterSheetTitle": "Filter Articles",
-      "filterSheetDescription": "Choose a filter to organize your articles",
-      "saveArticle": "Save article",
-      "saveArticleAria": "Save article"
+      "searchPlaceholder": "Cari artikel...",
+      "searchAria": "Cari artikel",
+      "clearSearchAria": "Hapus pencarian",
+      "filterSheetTitle": "Filter Artikel",
+      "filterSheetDescription": "Pilih filter untuk mengatur artikelmu",
+      "saveArticle": "Simpan artikel",
+      "saveArticleAria": "Simpan artikel"
     },
     "filters": {
-      "articles": "Articles",
-      "priority": "Priority",
-      "readingLength": "Reading Length",
-      "sortBy": "Sort By",
-      "tags": "Tags",
-      "manageTagsAria": "Manage tags",
-      "toggleGroupAria": "Toggle group"
+      "articles": "Artikel",
+      "priority": "Prioritas",
+      "readingLength": "Panjang bacaan",
+      "sortBy": "Urutkan berdasarkan",
+      "tags": "Tag",
+      "manageTagsAria": "Kelola tag",
+      "toggleGroupAria": "Alihkan grup"
     },
     "empty": {
-      "noResultsTitle": "No articles found",
-      "noResultsDescription": "Try adjusting your search terms or browse all articles.",
-      "clearSearch": "Clear Search",
-      "noFavoritesTitle": "No favorite articles yet",
-      "noFavoritesDescription": "Start adding articles to your favorites to see them here.",
-      "browseArticles": "Browse articles",
-      "noArchivedTitle": "No archived articles",
-      "noArchivedDescription": "Articles you archive will appear here and be kept forever.",
-      "noHighlightsTitle": "No highlighted articles",
-      "noHighlightsDescription": "Articles you highlight will appear here and be kept forever.",
-      "emptyLibraryTitle": "Your reading list is empty",
-      "emptyLibraryDescription": "Save your first article and start building your personal reading sanctuary.",
-      "saveFirstArticle": "Save your first article",
-      "gettingStartedTips": "Getting Started Tips",
-      "tip1": "Click \"Save Article\" to save any article using its link",
-      "tip2": "Use the search bar to find articles in your library",
-      "tip3": "Mark articles as favorites to easily access your best reads",
-      "tip4": "Customize your reading experience in the settings"
+      "noResultsTitle": "Tidak ada artikel ditemukan",
+      "noResultsDescription": "Coba ubah kata kunci pencarian atau telusuri semua artikel.",
+      "clearSearch": "Hapus pencarian",
+      "noFavoritesTitle": "Belum ada artikel favorit",
+      "noFavoritesDescription": "Mulai tambahkan artikel ke favoritmu untuk melihatnya di sini.",
+      "browseArticles": "Telusuri artikel",
+      "noArchivedTitle": "Belum ada artikel diarsipkan",
+      "noArchivedDescription": "Artikel yang kamu arsipkan akan muncul di sini dan disimpan selamanya.",
+      "noHighlightsTitle": "Belum ada artikel disorot",
+      "noHighlightsDescription": "Artikel yang kamu sorot akan muncul di sini dan disimpan selamanya.",
+      "emptyLibraryTitle": "Daftar bacaanmu kosong",
+      "emptyLibraryDescription": "Simpan artikel pertamamu dan mulai membangun tempat baca pribadimu.",
+      "saveFirstArticle": "Simpan artikel pertamamu",
+      "gettingStartedTips": "Tips Memulai",
+      "tip1": "Klik \"Simpan Artikel\" untuk menyimpan artikel apa pun menggunakan tautannya",
+      "tip2": "Gunakan bilah pencarian untuk menemukan artikel di perpustakaanmu",
+      "tip3": "Tandai artikel sebagai favorit agar mudah mengakses bacaan terbaikmu",
+      "tip4": "Sesuaikan pengalaman membaca di pengaturan"
     },
     "card": {
       "priority": {
-        "none": "No Priority",
-        "lowPriority": "Low Priority",
-        "thisWeek": "This Week",
-        "mustRead": "Must Read"
+        "none": "Tanpa prioritas",
+        "lowPriority": "Prioritas rendah",
+        "thisWeek": "Minggu ini",
+        "mustRead": "Wajib dibaca"
       },
       "actions": {
-        "more": "More actions",
-        "favorite": "Favorite this article",
-        "toggleFavorite": "Toggle favorite",
-        "editTags": "Edit Tags",
-        "refresh": "Refresh",
-        "archive": "Archive",
-        "unarchive": "Unarchive",
-        "delete": "Delete article"
+        "more": "Aksi lainnya",
+        "favorite": "Favoritkan artikel ini",
+        "toggleFavorite": "Alihkan favorit",
+        "editTags": "Ubah tag",
+        "refresh": "Muat ulang",
+        "archive": "Arsipkan",
+        "unarchive": "Batalkan arsip",
+        "delete": "Hapus artikel"
       },
-      "moreCount": "+{{count}} more"
+      "moreCount": "+{{count}} lainnya"
     },
     "dialog": {
-      "saveLaterTitle": "Save article for later",
-      "saveLaterDescription": "Enter the URL of an article you'd like to read later. We'll automatically extract the content for offline reading.",
-      "urlLabel": "Article URL",
+      "saveLaterTitle": "Simpan artikel untuk nanti",
+      "saveLaterDescription": "Masukkan URL artikel yang ingin kamu baca nanti. Kami akan mengekstrak kontennya secara otomatis untuk dibaca offline.",
+      "urlLabel": "URL artikel",
       "urlPlaceholder": "https://example.com/article",
-      "tagsLabel": "Tags (optional)",
-      "submit": "Save Article"
+      "tagsLabel": "Tag (opsional)",
+      "submit": "Simpan Artikel"
     },
     "editTags": {
-      "title": "Edit Tags",
-      "description": "Add or remove tags for this article.",
-      "save": "Save Tags",
-      "saving": "Saving..."
+      "title": "Ubah Tag",
+      "description": "Tambahkan atau hapus tag untuk artikel ini.",
+      "save": "Simpan Tag",
+      "saving": "Menyimpan..."
     }
   },
   "settings": {
     "page": {
-      "title": "Settings",
-      "description": "Manage your account and customize your reading experience"
+      "title": "Pengaturan",
+      "description": "Kelola akunmu dan sesuaikan pengalaman membaca"
+    },
+    "language": {
+      "title": "Bahasa",
+      "description": "Ganti bahasa aplikasi",
+      "currentLabel": "Bahasa saat ini",
+      "currentLanguage": "Bahasa saat ini: {{language}}",
+      "switchTo": "Ganti ke {{language}}",
+      "languages": {
+        "en": "Inggris",
+        "id": "Indonesia"
+      }
     },
     "account": {
-      "title": "Account",
-      "description": "Your personal information and profile details",
-      "changeAvatar": "Change Avatar",
-      "avatarHint": "JPG or PNG. Max 2MB.",
-      "nameLabel": "Name",
-      "namePlaceholder": "Enter your name",
-      "save": "Save",
+      "title": "Akun",
+      "description": "Informasi pribadi dan detail profilmu",
+      "changeAvatar": "Ubah avatar",
+      "avatarHint": "JPG atau PNG. Maks 2MB.",
+      "nameLabel": "Nama",
+      "namePlaceholder": "Masukkan namamu",
+      "save": "Simpan",
       "emailLabel": "Email",
-      "emailPlaceholder": "you@example.com",
-      "saveEmail": "Save Email",
-      "confirmPasswordLabel": "Confirm with your current password",
-      "passwordPlaceholder": "Enter current password",
-      "confirm": "Confirm",
-      "cancel": "Cancel",
+      "emailPlaceholder": "anda@contoh.com",
+      "saveEmail": "Simpan Email",
+      "confirmPasswordLabel": "Konfirmasi dengan kata sandi saat ini",
+      "passwordPlaceholder": "Masukkan kata sandi saat ini",
+      "confirm": "Konfirmasi",
+      "cancel": "Batal",
       "toasts": {
-        "avatarUpdated": "Avatar updated",
-        "nameUpdated": "Name updated",
-        "emailUpdated": "Email updated"
+        "avatarUpdated": "Avatar diperbarui",
+        "nameUpdated": "Nama diperbarui",
+        "emailUpdated": "Email diperbarui"
       }
     },
     "security": {
-      "title": "Security",
-      "description": "Update your password to keep your account secure",
-      "currentPasswordLabel": "Current Password",
-      "currentPasswordPlaceholder": "Enter current password",
-      "newPasswordLabel": "New Password",
-      "newPasswordPlaceholder": "Enter new password",
-      "confirmPasswordLabel": "Confirm New Password",
-      "confirmPasswordPlaceholder": "Confirm new password",
-      "validationHint": "Password must be at least 8 characters",
-      "updatePassword": "Update Password",
+      "title": "Keamanan",
+      "description": "Perbarui kata sandimu agar akun tetap aman",
+      "currentPasswordLabel": "Kata sandi saat ini",
+      "currentPasswordPlaceholder": "Masukkan kata sandi saat ini",
+      "newPasswordLabel": "Kata sandi baru",
+      "newPasswordPlaceholder": "Masukkan kata sandi baru",
+      "confirmPasswordLabel": "Konfirmasi kata sandi baru",
+      "confirmPasswordPlaceholder": "Konfirmasi kata sandi baru",
+      "validationHint": "Kata sandi harus minimal 8 karakter",
+      "updatePassword": "Perbarui kata sandi",
       "toasts": {
-        "passwordUpdated": "Password updated"
+        "passwordUpdated": "Kata sandi diperbarui"
       }
     },
     "readerPreferences": {
-      "title": "Reader Preferences",
-      "description": "Customize how articles look when you read them",
-      "themeLabel": "Theme",
-      "themeTooltip": "Applies to both the app interface and article reader",
-      "typographyLabel": "Typography",
-      "fontSizeLabel": "Font Size",
-      "lineSpacingLabel": "Line Spacing",
-      "fontFamilyLabel": "Font Family",
-      "showPreview": "Show Preview",
-      "hidePreview": "Hide Preview",
-      "textAlignmentLabel": "Text Alignment",
+      "title": "Preferensi Pembaca",
+      "description": "Sesuaikan tampilan artikel saat kamu membacanya",
+      "themeLabel": "Tema",
+      "themeTooltip": "Berlaku untuk antarmuka aplikasi dan pembaca artikel",
+      "theme": {
+        "system": "Sistem",
+        "light": "Terang",
+        "sepia": "Sepia",
+        "dark": "Gelap"
+      },
+      "typographyLabel": "Tipografi",
+      "fontSizeLabel": "Ukuran font",
+      "lineSpacingLabel": "Jarak baris",
+      "fontFamilyLabel": "Jenis font",
+      "showPreview": "Tampilkan pratinjau",
+      "hidePreview": "Sembunyikan pratinjau",
+      "previewText": "The quick brown fox jumps over the lazy dog.",
+      "textAlignmentLabel": "Perataan teks",
       "textAlignment": {
         "default": {
           "title": "Default",
-          "description": "Text lines up on the left side"
+          "description": "Teks rata di sisi kiri"
         },
         "justify": {
-          "title": "Justify",
-          "description": "Text spreads evenly across the width"
+          "title": "Rata kiri kanan",
+          "description": "Teks tersebar merata di seluruh lebar"
+        }
+      },
+      "alignment": {
+        "default": {
+          "title": "Default",
+          "description": "Teks rata di sisi kiri"
+        },
+        "justify": {
+          "title": "Rata kiri kanan",
+          "description": "Teks tersebar merata di seluruh lebar"
         }
       },
       "resetPreferences": {
-        "title": "Reset Preferences",
-        "description": "Restore all reader settings to their default values"
+        "title": "Reset Preferensi",
+        "description": "Kembalikan semua pengaturan pembaca ke nilai bawaan"
       },
-      "resetToDefault": "Reset to Default"
+      "reset": {
+        "title": "Reset Preferensi",
+        "description": "Kembalikan semua pengaturan pembaca ke nilai bawaan"
+      },
+      "resetToDefault": "Kembalikan ke default"
     },
     "data": {
       "title": "Data",
-      "description": "Import articles and manage your reading data",
+      "description": "Impor artikel dan kelola data bacaanmu",
       "importCard": {
-        "cardTitle": "Import Articles",
-        "cardDescription": "Import articles from a CSV file to quickly build your reading list",
-        "button": "Import from CSV",
-        "title": "Import from CSV · {{date}}"
+        "cardTitle": "Impor Artikel",
+        "cardDescription": "Impor artikel dari file CSV untuk dengan cepat membangun daftar bacaanmu",
+        "button": "Impor dari CSV",
+        "title": "Impor dari CSV · {{date}}"
       },
-      "updated": "Updated {{date}}",
-      "recentImports": "Recent Imports",
-      "statusCompleted": "Completed",
-      "statusInProgress": "In Progress",
-      "progress": "Progress",
+      "updated": "Diperbarui {{date}}",
+      "recentImports": "Impor terbaru",
+      "statusCompleted": "Selesai",
+      "statusInProgress": "Sedang berlangsung",
+      "progress": "Progres",
       "counts": {
-        "extracted": "{{count}} extracted",
-        "failed": "{{count}} failed"
+        "extracted": "{{count}} berhasil diekstrak",
+        "failed": "{{count}} gagal"
       },
-      "delete": "Delete",
-      "viewDetails": "View Details"
+      "delete": "Hapus",
+      "viewDetails": "Lihat detail"
     }
   },
   "tags": {
     "page": {
-      "title": "Manage Tags",
-      "description": "Organize your tags into groups",
-      "searchPlaceholder": "Search groups...",
-      "newGroup": "New Group",
-      "error": "Something went wrong loading your tags.",
-      "tryAgain": "Try Again",
-      "emptySearchTitle": "No groups found",
-      "emptyTitle": "No tag groups yet",
-      "emptySearchDescription": "Try a different search term",
-      "emptyDescription": "Start by clicking the \"New Group\" button",
-      "emptyHint": "A good starting point is a \"General\" group"
+      "title": "Kelola Tag",
+      "description": "Atur tag-mu ke dalam grup",
+      "searchPlaceholder": "Cari grup...",
+      "newGroup": "Grup baru",
+      "error": "Ada masalah saat memuat tag-mu.",
+      "tryAgain": "Coba lagi",
+      "emptySearchTitle": "Tidak ada grup ditemukan",
+      "emptyTitle": "Belum ada grup tag",
+      "emptySearchDescription": "Coba kata pencarian yang berbeda",
+      "emptyDescription": "Mulai dengan menekan tombol \"Grup baru\"",
+      "emptyHint": "Awalan yang baik adalah grup \"Umum\""
     },
     "deleteDialog": {
-      "titleGroup": "Delete Group: {{name}}",
-      "titleTag": "Delete Tag: {{name}}",
-      "confirmGroup": "Are you sure you want to delete <1>{{name}}</1> and all {{count}} tags in this group?",
-      "confirmTag": "Are you sure you want to delete <1>{{name}}</1>?",
-      "cannotUndo": "This action cannot be undone.",
-      "cancel": "Cancel",
-      "delete": "Delete"
+      "titleGroup": "Hapus Grup: {{name}}",
+      "titleTag": "Hapus Tag: {{name}}",
+      "confirmGroup": "Apakah kamu yakin ingin menghapus <1>{{name}}</1> dan semua {{count}} tag di grup ini?",
+      "confirmTag": "Apakah kamu yakin ingin menghapus <1>{{name}}</1>?",
+      "cannotUndo": "Tindakan ini tidak dapat dibatalkan.",
+      "cancel": "Batal",
+      "delete": "Hapus"
     },
     "groupForm": {
-      "createTitle": "New group",
-      "editTitle": "Edit group",
-      "createDescription": "Create a new group to organize your tags",
-      "editDescription": "Update group details",
-      "groupNameLabel": "Group Name",
-      "groupNamePlaceholder": "e.g., Work, Personal, Learning",
-      "colorLabel": "Color",
-      "descriptionLabel": "Description",
-      "descriptionPlaceholder": "What is this group for?",
-      "previewLabel": "Preview:",
-      "previewNameFallback": "Group name",
-      "previewDescriptionFallback": "Group description",
-      "cancel": "Cancel",
-      "create": "Create group",
-      "update": "Update group"
+      "createTitle": "Grup baru",
+      "editTitle": "Ubah grup",
+      "createDescription": "Buat grup baru untuk mengatur tag-mu",
+      "editDescription": "Perbarui detail grup",
+      "groupNameLabel": "Nama grup",
+      "groupNamePlaceholder": "mis. Pekerjaan, Pribadi, Belajar",
+      "colorLabel": "Warna",
+      "descriptionLabel": "Deskripsi",
+      "descriptionPlaceholder": "Grup ini untuk apa?",
+      "previewLabel": "Pratinjau:",
+      "previewNameFallback": "Nama grup",
+      "previewDescriptionFallback": "Deskripsi grup",
+      "cancel": "Batal",
+      "create": "Buat grup",
+      "update": "Perbarui grup"
     },
     "tagForm": {
-      "editTitle": "Edit Tag",
-      "addTitle": "Add Tag to {{group}}",
-      "editDescription": "Update tag details",
-      "addDescription": "Create a new tag for the {{group}} group",
-      "tagNameLabel": "Tag Name",
-      "tagNamePlaceholder": "Enter tag name",
-      "previewLabel": "Preview:",
-      "previewNameFallback": "Tag name",
-      "cancel": "Cancel",
-      "create": "Create Tag",
-      "update": "Update Tag"
+      "editTitle": "Ubah Tag",
+      "addTitle": "Tambahkan Tag ke {{group}}",
+      "editDescription": "Perbarui detail tag",
+      "addDescription": "Buat tag baru untuk grup {{group}}",
+      "tagNameLabel": "Nama tag",
+      "tagNamePlaceholder": "Masukkan nama tag",
+      "previewLabel": "Pratinjau:",
+      "previewNameFallback": "Nama tag",
+      "cancel": "Batal",
+      "create": "Buat Tag",
+      "update": "Perbarui Tag"
     },
     "sheet": {
-      "tagsCount": "{{count}} tags",
-      "cancel": "Cancel",
-      "select": "Select",
-      "addTag": "Add Tag",
-      "selectedCount": "{{count}} selected",
-      "moveTo": "Move to...",
-      "delete": "Delete",
-      "moveAria": "Move {{name}} tag",
-      "editAria": "Edit {{name}} tag",
-      "deleteAria": "Delete {{name}} tag"
+      "tagsCount": "{{count}} tag",
+      "cancel": "Batal",
+      "select": "Pilih",
+      "addTag": "Tambah Tag",
+      "selectedCount": "{{count}} dipilih",
+      "moveTo": "Pindahkan ke...",
+      "delete": "Hapus",
+      "moveAria": "Pindahkan tag {{name}}",
+      "editAria": "Ubah tag {{name}}",
+      "deleteAria": "Hapus tag {{name}}"
     },
     "moveDialog": {
-      "titleSingle": "Move \"{{name}}\"",
-      "titleBulk": "Move {{count}} tag(s)",
-      "titleGroup": "Move all tags",
-      "description": "Select a destination group to move the tag(s) to.",
-      "destinationLabel": "Destination Group",
-      "placeholder": "Select a group...",
-      "cancel": "Cancel",
-      "move": "Move"
+      "titleSingle": "Pindahkan \"{{name}}\"",
+      "titleBulk": "Pindahkan {{count}} tag",
+      "titleGroup": "Pindahkan semua tag",
+      "description": "Pilih grup tujuan untuk memindahkan tag.",
+      "destinationLabel": "Grup tujuan",
+      "placeholder": "Pilih grup...",
+      "cancel": "Batal",
+      "move": "Pindahkan"
     },
     "groupCard": {
       "tagCount_one": "{{count}} tag",
-      "tagCount_other": "{{count}} tags",
+      "tagCount_other": "{{count}} tag",
       "actions": {
-        "editGroup": "Edit group",
-        "moveAllTags": "Move all tags",
-        "deleteGroup": "Delete group",
-        "manageAria": "Actions for {{name}}",
-        "manageTagsAria": "Manage tags for {{name}}"
+        "editGroup": "Ubah grup",
+        "moveAllTags": "Pindahkan semua tag",
+        "deleteGroup": "Hapus grup",
+        "manageAria": "Aksi untuk {{name}}",
+        "manageTagsAria": "Kelola tag untuk {{name}}"
       },
-      "moreCount": "+{{count}} more",
-      "manageTags": "Manage tags \u2192",
-      "addFirstTag": "Add First Tag"
+      "moreCount": "+{{count}} lainnya",
+      "manageTags": "Kelola tag \u2192",
+      "addFirstTag": "Tambah Tag Pertama"
     },
     "tagInput": {
-      "searchPlaceholder": "Search tags...",
-      "createIn": "Create \"{{input}}\" in:",
-      "noTagsMatching": "No tags matching \"{{input}}\" in {{group}}",
-      "noTagsIn": "No tags in {{group}}",
-      "noTagsAvailable": "No tags available",
-      "noMatchingTags": "No matching tags",
-      "maxTagsReached": "Maximum number of tags reached ({{maxTags}})",
+      "searchPlaceholder": "Cari tag...",
+      "placeholder": "Tambah tag...",
+      "createIn": "Buat \"{{input}}\" di:",
+      "noTagsMatching": "Tidak ada tag yang cocok dengan \"{{input}}\" di {{group}}",
+      "noTagsIn": "Tidak ada tag di {{group}}",
+      "noTagsAvailable": "Tidak ada tag tersedia",
+      "noMatchingTags": "Tidak ada tag yang cocok",
+      "maxTagsReached": "Jumlah tag maksimum telah tercapai ({{maxTags}})",
       "tagCount_one": "{{count}} tag",
-      "tagCount_other": "{{count}} tags"
+      "tagCount_other": "{{count}} tag"
     },
     "toasts": {
-      "creating": "Creating...",
-      "groupCreated": "Group created",
-      "updating": "Updating...",
-      "groupUpdated": "Group updated",
-      "deleting": "Deleting...",
-      "groupDeleted": "Group deleted",
-      "tagCreated": "Tag created",
-      "tagUpdated": "Tag updated",
-      "tagDeleted": "Tag deleted",
-      "fixValidation": "Please fix validation errors",
-      "failedUpdateGroup": "Failed to update group",
-      "failedCreateGroup": "Failed to create group",
-      "failedUpdateTag": "Failed to update tag",
-      "failedCreateTag": "Failed to create tag",
-      "failedDeleteType": "Failed to delete {{type}}",
-      "tagsDeleted_one": "{{count}} tag deleted",
-      "tagsDeleted_other": "{{count}} tags deleted",
-      "failedDeleteTags": "Failed to delete tags",
-      "tagMoved": "Tag moved successfully",
-      "tagsMoved_one": "{{count}} tag moved",
-      "tagsMoved_other": "{{count}} tags moved",
-      "nameConflict": "A tag with the same name already exists in the target group",
-      "failedMoveTags": "Failed to move tag(s)"
+      "creating": "Membuat...",
+      "groupCreated": "Grup dibuat",
+      "updating": "Memperbarui...",
+      "groupUpdated": "Grup diperbarui",
+      "deleting": "Menghapus...",
+      "groupDeleted": "Grup dihapus",
+      "tagCreated": "Tag dibuat",
+      "tagUpdated": "Tag diperbarui",
+      "tagDeleted": "Tag dihapus",
+      "fixValidation": "Perbaiki error validasi",
+      "failedUpdateGroup": "Gagal memperbarui grup",
+      "failedCreateGroup": "Gagal membuat grup",
+      "failedUpdateTag": "Gagal memperbarui tag",
+      "failedCreateTag": "Gagal membuat tag",
+      "failedDeleteType": "Gagal menghapus {{type}}",
+      "tagsDeleted_one": "{{count}} tag dihapus",
+      "tagsDeleted_other": "{{count}} tag dihapus",
+      "failedDeleteTags": "Gagal menghapus tag",
+      "tagMoved": "Tag berhasil dipindahkan",
+      "tagsMoved_one": "{{count}} tag dipindahkan",
+      "tagsMoved_other": "{{count}} tag dipindahkan",
+      "nameConflict": "Tag dengan nama yang sama sudah ada di grup tujuan",
+      "failedMoveTags": "Gagal memindahkan tag"
     }
   },
   "reader": {
-    "whatsNext": "What's next?",
+    "whatsNext": "Apa selanjutnya?",
     "actions": {
-      "favorite": "Favorite",
-      "favorited": "Favorited",
-      "archiveAndMarkRead": "Archive & Mark Read",
-      "copyLink": "Copy Link",
-      "linkCopied": "Link Copied",
-      "upNext": "Up next",
-      "markedAsFavorite": "Marked as favorite",
-      "removedFromFavorites": "Removed from favorites",
-      "archivedAndMarkedRead": "Archived and marked as read",
-      "linkUpdated": "Link updated"
+      "favorite": "Favorit",
+      "favorited": "Difavoritkan",
+      "archiveAndMarkRead": "Arsipkan & Tandai dibaca",
+      "copyLink": "Salin tautan",
+      "linkCopied": "Tautan disalin",
+      "upNext": "Berikutnya",
+      "markedAsFavorite": "Ditandai sebagai favorit",
+      "removedFromFavorites": "Dihapus dari favorit",
+      "archivedAndMarkedRead": "Diarsipkan dan ditandai dibaca",
+      "linkUpdated": "Tautan diperbarui"
     },
     "highlights": {
-      "title": "Highlights",
-      "description": "Your highlights on this article",
-      "viewInPanel": "View in panel",
-      "closeOptionsAria": "Close highlight options",
-      "changeColorAria": "Change to {{label}}",
-      "changeColorTitle": "Change to {{label}}"
+      "title": "Sorotan",
+      "description": "Sorotanmu pada artikel ini",
+      "viewInPanel": "Lihat di panel",
+      "closeOptionsAria": "Tutup opsi sorotan",
+      "changeColorAria": "Ubah ke {{label}}",
+      "changeColorTitle": "Ubah ke {{label}}"
     },
     "notes": {
-      "highlightColor": "Highlight color",
-      "editNote": "Edit note",
-      "addNote": "Add note",
-      "addYourThoughts": "Add your thoughts",
-      "deleteNote": "Delete note",
-      "save": "Save",
-      "removeHighlight": "Remove highlight"
+      "highlightColor": "Warna sorotan",
+      "editNote": "Ubah catatan",
+      "addNote": "Tambah catatan",
+      "addYourThoughts": "Tambahkan pemikiranmu",
+      "deleteNote": "Hapus catatan",
+      "save": "Simpan",
+      "removeHighlight": "Hapus sorotan"
     },
     "resume": {
-      "title": "Resume reading",
-      "position": "You were at {{progress}}%",
-      "continue": "Continue"
+      "title": "Lanjutkan membaca",
+      "position": "Kamu berada di {{progress}}%",
+      "continue": "Lanjutkan"
     },
     "progress": {
-      "read": "{{progress}}% read",
-      "left": "~{{minutes}}m left",
-      "top": "Top",
-      "end": "End"
+      "read": "{{progress}}% dibaca",
+      "left": "~{{minutes}}m lagi",
+      "top": "Atas",
+      "end": "Akhir"
     },
     "nav": {
-      "backToArticles": "Go back to articles",
-      "back": "Back",
-      "openInNewTab": "Open article in new tab",
-      "viewHighlights": "View highlights",
-      "openSettings": "Open reader settings"
+      "backToArticles": "Kembali ke artikel",
+      "back": "Kembali",
+      "openInNewTab": "Buka artikel di tab baru",
+      "viewHighlights": "Lihat sorotan",
+      "openSettings": "Buka pengaturan pembaca"
     },
     "settings": {
-      "title": "Reader Settings",
-      "theme": "Theme",
-      "setSystemTheme": "Set system theme",
-      "setLightTheme": "Set light theme",
-      "setSepiaTheme": "Set sepia theme",
-      "setDarkTheme": "Set dark theme",
-      "fontSize": "Font Size",
-      "decreaseFontSize": "Decrease font size",
-      "increaseFontSize": "Increase font size",
-      "lineSpacing": "Line Spacing",
-      "decreaseLineSpacing": "Decrease line spacing",
-      "increaseLineSpacing": "Increase line spacing",
-      "textAlignment": "Text Alignment",
-      "defaultTextAlignment": "Set default text alignment",
-      "justifiedTextAlignment": "Set justified text alignment",
-      "fontFamily": "Font Family",
-      "moreOptions": "More options",
-      "unfavorite": "Unfavorite",
-      "favorite": "Favorite",
-      "unarchive": "Unarchive",
-      "archive": "Archive",
-      "editTags": "Edit Tags",
-      "deleteArticle": "Delete article"
+      "title": "Pengaturan Pembaca",
+      "theme": "Tema",
+      "setSystemTheme": "Atur tema sistem",
+      "setLightTheme": "Atur tema terang",
+      "setSepiaTheme": "Atur tema sepia",
+      "setDarkTheme": "Atur tema gelap",
+      "fontSize": "Ukuran font",
+      "decreaseFontSize": "Perkecil ukuran font",
+      "increaseFontSize": "Perbesar ukuran font",
+      "lineSpacing": "Jarak baris",
+      "decreaseLineSpacing": "Perkecil jarak baris",
+      "increaseLineSpacing": "Perbesar jarak baris",
+      "textAlignment": "Perataan teks",
+      "defaultTextAlignment": "Atur perataan teks default",
+      "justifiedTextAlignment": "Atur perataan rata kiri kanan",
+      "fontFamily": "Jenis font",
+      "moreOptions": "Opsi lainnya",
+      "unfavorite": "Hapus favorit",
+      "favorite": "Favorit",
+      "unarchive": "Batalkan arsip",
+      "archive": "Arsipkan",
+      "editTags": "Ubah tag",
+      "deleteArticle": "Hapus artikel"
     },
     "fontCategories": {
       "sansSerif": "Sans Serif",
       "serif": "Serif",
-      "legible": "Legible"
+      "legible": "Mudah dibaca"
     },
     "fontSizes": {
-      "small": "Small",
-      "medium": "Medium",
-      "large": "Large",
-      "extraLarge": "Extra Large",
-      "huge": "Huge"
+      "small": "Kecil",
+      "medium": "Sedang",
+      "large": "Besar",
+      "extraLarge": "Sangat besar",
+      "huge": "Raksasa"
     },
     "lineSpacing": {
-      "compact": "Compact",
+      "compact": "Rapat",
       "normal": "Normal",
-      "relaxed": "Relaxed",
-      "loose": "Loose"
+      "relaxed": "Renggang",
+      "loose": "Sangat renggang"
     },
     "fontFamilies": {
       "default": {
         "label": "Hanken Grotesk (Default)",
-        "description": "Clean, modern, highly readable"
+        "description": "Bersih, modern, sangat mudah dibaca"
       },
       "inter": {
         "label": "Inter",
-        "description": "Clear font, easy on eyes"
+        "description": "Font yang jelas, nyaman di mata"
       },
       "plexSans": {
         "label": "IBM Plex Sans",
-        "description": "Balanced font with human, technical feel"
+        "description": "Font seimbang dengan nuansa manusiawi dan teknis"
       },
       "publicSans": {
         "label": "Public Sans",
-        "description": "Calm, neutral font"
+        "description": "Font yang tenang dan netral"
       },
       "lora": {
         "label": "Lora",
-        "description": "Warm font for long reading"
+        "description": "Font hangat untuk bacaan panjang"
       },
       "literata": {
         "label": "Literata",
-        "description": "Book-style font for long reading"
+        "description": "Font bergaya buku untuk bacaan panjang"
       },
       "spectral": {
         "label": "Spectral",
-        "description": "Modern font suited for long reading"
+        "description": "Font modern yang cocok untuk bacaan panjang"
       },
       "alegreya": {
         "label": "Alegreya",
-        "description": "Lively font with a classic feel"
+        "description": "Font hidup dengan nuansa klasik"
       },
       "atkinson": {
         "label": "Atkinson Hyperlegible",
-        "description": "Designed for readability"
+        "description": "Dirancang untuk keterbacaan"
       },
       "lexendDeca": {
         "label": "Lexend Deca",
-        "description": "Smooth font, supports relaxed reading"
+        "description": "Font halus, mendukung bacaan santai"
       },
       "dyslexic": {
         "label": "Open Dyslexic",
-        "description": "Dyslexia-friendly font"
+        "description": "Font ramah disleksia"
       },
       "comicNeue": {
         "label": "Comic Neue",
-        "description": "Casual, handwritten-style font"
+        "description": "Font kasual bergaya tulisan tangan"
       }
     }
   },
   "import": {
     "wizard": {
-      "cancel": "Cancel import",
-      "confirmCancelTitle": "Cancel import?",
-      "confirmCancelDescription": "Your progress will not be saved. Are you sure you want to cancel?",
-      "back": "Go Back",
-      "continue": "Continue",
-      "startImport": "Start Import",
-      "toastCancelled": "Import cancelled",
-      "toastFailed": "Import failed",
-      "failedTitle": "Oops! We encountered an error while importing your articles.",
-      "failedDescription": "This could be due to an issue with your CSV file. Check the import for any problematic rows.",
-      "stepUpload": "Upload your file",
-      "stepMap": "Map fields",
-      "stepReview": "Review",
-      "stepUploadDescription": "Select a CSV file to get started",
-      "stepMapDescription": "Match the columns in your file to article fields",
-      "stepReviewDescription": "Review your data before importing",
-      "errorUploadRequired": "Please upload a CSV file first",
-      "errorMapRequired": "Please map all required fields",
-      "errorNoData": "No data to import",
-      "stepsAria": "Steps",
-      "stepLabel": "Step {{current}}"
+      "cancel": "Batalkan impor",
+      "confirmCancelTitle": "Batalkan impor?",
+      "confirmCancelDescription": "Progresmu tidak akan disimpan. Yakin ingin membatalkan?",
+      "back": "Kembali",
+      "continue": "Lanjutkan",
+      "startImport": "Mulai impor",
+      "toastCancelled": "Impor dibatalkan",
+      "toastFailed": "Impor gagal",
+      "failedTitle": "Ups! Kami mengalami kesalahan saat mengimpor artikelmu.",
+      "failedDescription": "Ini mungkin disebabkan oleh masalah pada file CSV-mu. Periksa baris yang bermasalah pada impor.",
+      "stepUpload": "Unggah file-mu",
+      "stepMap": "Peta bidang",
+      "stepReview": "Tinjau",
+      "stepUploadDescription": "Pilih file CSV untuk memulai",
+      "stepMapDescription": "Cocokkan kolom di file-mu dengan bidang artikel",
+      "stepReviewDescription": "Tinjau datamu sebelum mengimpor",
+      "errorUploadRequired": "Silakan unggah file CSV terlebih dahulu",
+      "errorMapRequired": "Silakan petakan semua bidang yang diperlukan",
+      "errorNoData": "Tidak ada data untuk diimpor",
+      "stepsAria": "Langkah-langkah",
+      "stepLabel": "Langkah {{current}}"
     },
     "progress": {
-      "completeTitle": "Import Complete!",
-      "completeDescription": "Your articles have been imported successfully.",
-      "importingTitle": "Importing your articles",
-      "importingDescription": "Please wait while we process your file.",
-      "processing": "Processing...",
-      "progressText": "Importing {{current}} of {{total}} articles",
-      "estimatedTime": "Estimated time remaining: {{time}}",
-      "viewExtractionProgress": "View extraction progress",
-      "goToArticles": "Go to articles",
-      "goHome": "Go home",
-      "importAnother": "Import another file"
+      "completeTitle": "Impor selesai!",
+      "completeDescription": "Artikelmu telah berhasil diimpor.",
+      "importingTitle": "Mengimpor artikelmu",
+      "importingDescription": "Harap tunggu saat kami memproses file-mu.",
+      "processing": "Memproses...",
+      "progressText": "Mengimpor {{current}} dari {{total}} artikel",
+      "estimatedTime": "Perkiraan sisa waktu: {{time}}",
+      "viewExtractionProgress": "Lihat progres ekstraksi",
+      "goToArticles": "Ke artikel",
+      "goHome": "Ke beranda",
+      "importAnother": "Impor file lain"
     },
     "upload": {
-      "toastLoading": "Importing...",
-      "dropzoneAria": "Upload CSV file",
-      "dropzoneText": "Drag and drop your CSV file here, or click to browse",
-      "selectFile": "Select file...",
-      "clearFile": "Clear file",
-      "fileHint": "CSV files only. Max file size: 10MB.",
-      "tipsTitle": "Tips for a successful import",
-      "tipOne": "Your CSV file should have at least a column for URLs",
-      "tipTwo": "Optional columns include: title, tags, description",
-      "tipThree": "Make sure URLs start with http:// or https://",
-      "successTitle": "File ready to import",
-      "successDescription": "We found {{count}} articles in your file.",
-      "alertRowCount": "{{count}} articles found"
+      "toastLoading": "Mengimpor...",
+      "dropzoneAria": "Unggah file CSV",
+      "dropzoneText": "Seret dan lepas file CSV-mu di sini, atau klik untuk menelusuri",
+      "selectFile": "Pilih file...",
+      "clearFile": "Hapus file",
+      "fileHint": "Hanya file CSV. Ukuran maksimal: 10MB.",
+      "tipsTitle": "Tips untuk impor yang sukses",
+      "tipOne": "File CSV-mu harus memiliki setidaknya satu kolom untuk URL",
+      "tipTwo": "Kolom opsional meliputi: title, tags, description",
+      "tipThree": "Pastikan URL dimulai dengan http:// atau https://",
+      "successTitle": "File siap diimpor",
+      "successDescription": "Kami menemukan {{count}} artikel di file-mu.",
+      "alertRowCount": "{{count}} artikel ditemukan"
     },
     "mapFields": {
-      "title": "Map Fields",
-      "description": "Match your CSV columns to article fields",
-      "csvColumnHeading": "CSV Column",
-      "articleFieldHeading": "Article Field",
+      "title": "Peta Bidang",
+      "description": "Cocokkan kolom CSV-mu dengan bidang artikel",
+      "csvColumnHeading": "Kolom CSV",
+      "articleFieldHeading": "Bidang Artikel",
       "fieldUrl": "URL",
-      "fieldTitle": "Title",
-      "fieldTags": "Tags",
-      "fieldDescription": "Description",
-      "fieldPublishedAt": "Published Date",
-      "fieldTimeAdded": "Time Added",
-      "required": "Required",
-      "doNotMap": "Don't import",
-      "helpText": "Select which column in your CSV corresponds to each article field"
+      "fieldTitle": "Judul",
+      "fieldTags": "Tag",
+      "fieldDescription": "Deskripsi",
+      "fieldPublishedAt": "Tanggal terbit",
+      "fieldTimeAdded": "Waktu ditambahkan",
+      "required": "Wajib",
+      "doNotMap": "Jangan impor",
+      "helpText": "Pilih kolom CSV yang sesuai untuk setiap bidang artikel"
     },
     "review": {
-      "title": "Review your data",
-      "description": "Check that everything looks correct before importing",
-      "summary": "{{count}} articles ready to import",
-      "estimatedTime": "Estimated time: {{time}}",
-      "tableHeadingRow": "Row",
+      "title": "Tinjau datamu",
+      "description": "Periksa apakah semuanya sudah benar sebelum mengimpor",
+      "summary": "{{count}} artikel siap diimpor",
+      "estimatedTime": "Perkiraan waktu: {{time}}",
+      "tableHeadingRow": "Baris",
       "tableHeadingUrl": "URL",
-      "tableHeadingTitle": "Title",
-      "tableHeadingTags": "Tags",
-      "noTags": "No tags",
-      "moreCount": "+{{count}} more",
-      "startOver": "Start over"
+      "tableHeadingTitle": "Judul",
+      "tableHeadingTags": "Tag",
+      "noTags": "Tidak ada tag",
+      "moreCount": "+{{count}} lainnya",
+      "startOver": "Mulai ulang"
     },
     "progressDemo": {
-      "completing": "Completing import...",
-      "importingDemo": "Importing demo articles..."
+      "completing": "Menyelesaikan impor...",
+      "importingDemo": "Mengimpor artikel demo..."
     },
     "extraction": {
-      "title": "Extraction Progress",
-      "statusAll": "All",
-      "statusCompleted": "Completed",
-      "statusFailed": "Failed",
-      "statusProcessing": "Processing",
-      "badgeCompleted": "Completed",
-      "badgeProcessing": "Processing",
-      "badgeFailed": "Failed",
-      "badgePending": "Pending",
-      "loadMore": "Load more",
-      "noResults": "No extraction results found",
-      "viewArticle": "View",
-      "failedLoadMore": "Failed to load more items",
-      "processingQueue": "Processing Queue"
+      "title": "Progres Ekstraksi",
+      "statusAll": "Semua",
+      "statusCompleted": "Selesai",
+      "statusFailed": "Gagal",
+      "statusProcessing": "Memproses",
+      "badgeCompleted": "Selesai",
+      "badgeProcessing": "Memproses",
+      "badgeFailed": "Gagal",
+      "badgePending": "Menunggu",
+      "loadMore": "Muat lebih banyak",
+      "noResults": "Tidak ada hasil ekstraksi ditemukan",
+      "viewArticle": "Lihat",
+      "failedLoadMore": "Gagal memuat lebih banyak item",
+      "processingQueue": "Antrean pemrosesan"
     }
   }
 }

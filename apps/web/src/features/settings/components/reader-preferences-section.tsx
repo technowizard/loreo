@@ -33,6 +33,34 @@ import { FONT_SIZES, getFontsByCategory, LINE_SPACING } from '../constants/theme
 import { SelectionCard } from './selection-card';
 import { SettingsRow, SettingsSection } from './settings-section';
 
+function getFontSizeLocaleKey(size: string) {
+  switch (size) {
+    case 'Extra Large':
+      return 'extraLarge';
+    case 'Huge':
+      return 'huge';
+    case 'Large':
+      return 'large';
+    case 'Small':
+      return 'small';
+    default:
+      return 'medium';
+  }
+}
+
+function getLineSpacingLocaleKey(spacing: string) {
+  switch (spacing) {
+    case 'Compact':
+      return 'compact';
+    case 'Loose':
+      return 'loose';
+    case 'Relaxed':
+      return 'relaxed';
+    default:
+      return 'normal';
+  }
+}
+
 export function ReaderPreferencesSection() {
   const { setTheme, theme } = useTheme();
   const {
@@ -159,7 +187,7 @@ export function ReaderPreferencesSection() {
                 <SelectGroup>
                   {FONT_SIZES.map((size) => (
                     <SelectItem key={size} value={size}>
-                      {size}
+                      {t(`reader.fontSizes.${getFontSizeLocaleKey(size)}`)}
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -176,7 +204,7 @@ export function ReaderPreferencesSection() {
                 <SelectGroup>
                   {LINE_SPACING.map((spacing) => (
                     <SelectItem key={spacing} value={spacing}>
-                      {spacing}
+                      {t(`reader.lineSpacing.${getLineSpacingLocaleKey(spacing)}`)}
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -210,24 +238,24 @@ export function ReaderPreferencesSection() {
           <TabsList className="w-full">
             {(['sans-serif', 'serif', 'legible'] as const).map((category) => (
               <TabsTrigger className="capitalize" key={category} value={category}>
-                {t(`settings.readerPreferences.fontFamilyOptions.${category}`)}
+                {t(`reader.fontCategories.${category === 'sans-serif' ? 'sansSerif' : category}`)}
               </TabsTrigger>
             ))}
           </TabsList>
           {currentFonts.map((font) => (
             <TabsContent key={font.value} value={font.style}>
               <SelectionCard
-                checked={fontFamily.label === font.label}
-                description={font.description}
+                checked={fontFamily.name === font.value}
+                description={t(font.descriptionKey)}
                 icon={<span className={cn('text-xl font-bold', `font-${font.value}`)}>Aa</span>}
                 onChange={() =>
                   toggleFontFamily({
-                    label: font.label,
+                    label: font.value,
                     name: font.value,
                     style: font.style
                   })
                 }
-                title={font.label}
+                title={t(font.labelKey)}
                 value={font.value}
               >
                 {showFontPreview && (

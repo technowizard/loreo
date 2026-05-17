@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import { AccountSection } from '@/features/settings/components/account-section';
 import { DataSection } from '@/features/settings/components/data-section';
+import { LanguageSection } from '@/features/settings/components/language-section';
 import { ReaderPreferencesSection } from '@/features/settings/components/reader-preferences-section';
 import { SecuritySection } from '@/features/settings/components/security-section';
 
@@ -17,6 +18,7 @@ function SettingsPage() {
 
       <AccountSection />
       <SecuritySection />
+      <LanguageSection />
       <ReaderPreferencesSection />
       <DataSection />
     </div>

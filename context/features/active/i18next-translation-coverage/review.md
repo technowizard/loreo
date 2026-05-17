@@ -51,6 +51,37 @@
 - `id/common.json` still mirrors English values; it needs a later Indonesian copy pass.
 - Phase 2 only covers route metadata identified in the protected layout/navigation scope; later phases may add more route/page metadata keys.
 
+## Settings Reader Preferences Fix
+
+### Completed
+
+- Added the missing `settings.readerPreferences.previewText` locale key in English and Indonesian common locales.
+- Replaced hardcoded reader preference font family labels and descriptions in `theme-config.ts` with translation keys.
+- Updated `ReaderPreferencesSection` to translate font sizes, line spacing, font categories, and font family labels/descriptions.
+- Updated `reader-nav` to compare font family selections by stable value instead of translated label text.
+
+### Verification
+
+- RED: `bun test src/locales/common.test.ts` failed for missing `settings.readerPreferences.previewText` and the hardcoded font strings in `theme-config.ts`.
+- GREEN: `bun test src/locales/common.test.ts` passed: 398 tests, 792 assertions.
+- Typecheck: `bun run typecheck` passed.
+- Touched-file lint/format: `pnpm exec oxlint ... && pnpm exec oxfmt --check ...` passed for the modified settings files.
+
+## Settings Reader Preferences Namespace Alias
+
+### Completed
+
+- Added the missing `settings.readerPreferences.theme.*` locale keys so the theme cards in `ReaderPreferencesSection` resolve directly.
+- Added the missing `settings.readerPreferences.alignment.*` locale keys so the alignment cards use the same namespace as the component.
+- Added the missing `settings.readerPreferences.reset.title` and `settings.readerPreferences.reset.description` locale keys so the reset block matches the component path.
+
+### Verification
+
+- RED: `bun test src/locales/common.test.ts` failed on the newly added settings keys before they were added.
+- GREEN: `bun test src/locales/common.test.ts` passed: 408 tests, 812 assertions.
+- Typecheck: `bun run typecheck` passed.
+- Touched-file lint/format: `pnpm exec oxlint ... && pnpm exec oxfmt --check ...` passed for the modified locale files.
+
 ## Phase 3: Articles List Experience
 
 ### Completed
@@ -224,4 +255,55 @@
 ### Remaining Risks
 
 - `id/common.json` still mirrors English values; it needs a later Indonesian copy pass.
-- Reader navigation drawer copy (including all aria-labels) remains untranslated and deferred.
+- Reader navigation drawer copy was previously deferred, then fixed in the post-review follow-up below.
+
+## Final Feature Review
+
+### Completed
+
+- The settings language switch was changed from a button to a dropdown menu.
+- `useLanguage` now exposes `setLanguage(language)` so the menu can pick a specific locale while preserving `toggle()`.
+
+### Verification
+
+- `bun test src/features/settings/components/language-section.test.tsx src/locales/common.test.ts` passed: 409 tests, 820 assertions.
+- `bun run typecheck` passed.
+- `pnpm exec oxlint ... && pnpm exec oxfmt --check ...` passed for `apps/web/src/features/settings/components/language-section.tsx`, `apps/web/src/features/settings/components/language-section.test.tsx`, and `apps/web/src/hooks/use-language.ts`.
+
+### Fresh Verification
+
+- Locale regression: `bun test src/locales/common.test.ts` passed with 383 tests, 766 assertions.
+- Typecheck: `pnpm typecheck` passed for `apps/server` and `apps/web`.
+- Lint: `pnpm lint` failed in `oxfmt --check` because `apps/web/src/routeTree.gen.ts` has formatting differences. `oxlint` reported 0 warnings and 0 errors.
+
+### Findings
+
+- `apps/web/src/components/navigation/reader-nav.tsx` still had deferred hardcoded reader drawer copy and aria labels (`Back`, `Reader Settings`, `Font Size`, `Line Spacing`, `Font Family`, `Go back to articles`). This was fixed in the post-review follow-up below.
+- `apps/web/src/routeTree.gen.ts` blocks full repo formatting verification. It is generated and not part of the translation commits, but it prevents a clean `pnpm lint` result.
+- `apps/web/src/locales/id/common.json` mirrors English values by design for this feature, so locale parity exists but Indonesian copy quality is still outstanding.
+
+### Completion Recommendation
+
+- Treat the translation key coverage and type safety work as complete.
+- Do not archive/merge until deciding whether to handle generated route tree formatting in this branch or separate follow-up work.
+
+## Post-Review Follow-up: Reader Navigation Drawer
+
+### Completed
+
+- Added a regression test that reads `apps/web/src/components/navigation/reader-nav.tsx` and prevents the reviewed hardcoded reader drawer strings from returning.
+- Replaced reader navigation drawer visible labels and aria labels with existing `reader.*` translation keys.
+- Replaced reader navigation action toast formatter strings with existing `reader.actions.*` keys.
+- Translated reader drawer font size, line spacing, font category, and font family display labels without changing stored reader preference values.
+
+### Verification
+
+- RED: `bun test src/locales/common.test.ts` failed on the reader navigation source regression test before the component was updated.
+- GREEN: `bun test src/locales/common.test.ts` passed with 389 tests, 772 assertions.
+- Typecheck: `bun run typecheck` passed.
+- Touched-file lint/format: `pnpm exec oxlint apps/web/src/components/navigation/reader-nav.tsx apps/web/src/locales/common.test.ts && pnpm exec oxfmt --check apps/web/src/components/navigation/reader-nav.tsx apps/web/src/locales/common.test.ts` passed.
+
+### Remaining Risks
+
+- `id/common.json` still mirrors English values; it needs a later Indonesian copy pass.
+- Full `pnpm lint` is still expected to be blocked by existing `apps/web/src/routeTree.gen.ts` formatting until that generated file is handled.

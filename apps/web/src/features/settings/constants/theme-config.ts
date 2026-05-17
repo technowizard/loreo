@@ -1,78 +1,78 @@
 export const FONT_FAMILIES = {
   legible: [
     {
-      description: 'Designed for readability',
-      label: 'Atkinson Hyperlegible',
+      descriptionKey: 'reader.fontFamilies.atkinson.description',
+      labelKey: 'reader.fontFamilies.atkinson.label',
       style: 'legible',
       value: 'atkinson'
     },
     {
-      description: 'Smooth font, supports relaxed reading',
-      label: 'Lexend Deca',
+      descriptionKey: 'reader.fontFamilies.lexendDeca.description',
+      labelKey: 'reader.fontFamilies.lexendDeca.label',
       style: 'legible',
       value: 'lexend-deca'
     },
     {
-      description: 'Dyslexia-friendly font',
-      label: 'Open Dyslexic',
+      descriptionKey: 'reader.fontFamilies.dyslexic.description',
+      labelKey: 'reader.fontFamilies.dyslexic.label',
       style: 'legible',
       value: 'dyslexic'
     },
     {
-      description: 'Casual, handwritten-style font',
-      label: 'Comic Neue',
+      descriptionKey: 'reader.fontFamilies.comicNeue.description',
+      labelKey: 'reader.fontFamilies.comicNeue.label',
       style: 'legible',
       value: 'comic-neue'
     }
   ],
   sansSerif: [
     {
-      description: 'Clean, modern, highly readable',
-      label: 'Hanken Grotesk (Default)',
+      descriptionKey: 'reader.fontFamilies.default.description',
+      labelKey: 'reader.fontFamilies.default.label',
       style: 'sans-serif',
       value: 'default'
     },
     {
-      description: 'Clear font, easy on eyes',
-      label: 'Inter',
+      descriptionKey: 'reader.fontFamilies.inter.description',
+      labelKey: 'reader.fontFamilies.inter.label',
       style: 'sans-serif',
       value: 'inter'
     },
     {
-      description: 'Balanced font with human, technical feel',
-      label: 'IBM Plex Sans',
+      descriptionKey: 'reader.fontFamilies.plexSans.description',
+      labelKey: 'reader.fontFamilies.plexSans.label',
       style: 'sans-serif',
       value: 'plex-sans'
     },
     {
-      description: 'Calm, neutral font',
-      label: 'Public Sans',
+      descriptionKey: 'reader.fontFamilies.publicSans.description',
+      labelKey: 'reader.fontFamilies.publicSans.label',
       style: 'sans-serif',
       value: 'public-sans'
     }
   ],
   serif: [
     {
-      description: 'Warm font for long reading',
-      label: 'Lora',
+      descriptionKey: 'reader.fontFamilies.lora.description',
+      labelKey: 'reader.fontFamilies.lora.label',
       style: 'serif',
       value: 'lora'
     },
     {
-      description: 'Book-style font for long reading',
-      label: 'Literata',
+      descriptionKey: 'reader.fontFamilies.literata.description',
+      labelKey: 'reader.fontFamilies.literata.label',
       style: 'serif',
       value: 'literata'
     },
     {
-      description: 'Modern font suited for long reading',
-      label: 'Spectral',
+      descriptionKey: 'reader.fontFamilies.spectral.description',
+      labelKey: 'reader.fontFamilies.spectral.label',
       style: 'serif',
       value: 'spectral'
     },
     {
-      description: 'Lively font with a classic feel',
-      label: 'Alegreya',
+      descriptionKey: 'reader.fontFamilies.alegreya.description',
+      labelKey: 'reader.fontFamilies.alegreya.label',
       style: 'serif',
       value: 'alegreya'
     }

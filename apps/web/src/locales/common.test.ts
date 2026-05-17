@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 import { describe, expect, it } from 'vitest';
 
 import enCommon from './en/common.json';
@@ -136,6 +139,13 @@ const phaseFourKeys = [
 const phaseFiveKeys = [
   'settings.page.title',
   'settings.page.description',
+  'settings.language.title',
+  'settings.language.description',
+  'settings.language.currentLabel',
+  'settings.language.currentLanguage',
+  'settings.language.switchTo',
+  'settings.language.languages.en',
+  'settings.language.languages.id',
   'settings.account.title',
   'settings.account.description',
   'settings.account.changeAvatar',
@@ -168,19 +178,30 @@ const phaseFiveKeys = [
   'settings.readerPreferences.description',
   'settings.readerPreferences.themeLabel',
   'settings.readerPreferences.themeTooltip',
+  'settings.readerPreferences.theme.system',
+  'settings.readerPreferences.theme.light',
+  'settings.readerPreferences.theme.sepia',
+  'settings.readerPreferences.theme.dark',
   'settings.readerPreferences.typographyLabel',
   'settings.readerPreferences.fontSizeLabel',
   'settings.readerPreferences.lineSpacingLabel',
   'settings.readerPreferences.fontFamilyLabel',
   'settings.readerPreferences.showPreview',
   'settings.readerPreferences.hidePreview',
+  'settings.readerPreferences.previewText',
   'settings.readerPreferences.textAlignmentLabel',
   'settings.readerPreferences.textAlignment.default.title',
   'settings.readerPreferences.textAlignment.default.description',
   'settings.readerPreferences.textAlignment.justify.title',
   'settings.readerPreferences.textAlignment.justify.description',
+  'settings.readerPreferences.alignment.default.title',
+  'settings.readerPreferences.alignment.default.description',
+  'settings.readerPreferences.alignment.justify.title',
+  'settings.readerPreferences.alignment.justify.description',
   'settings.readerPreferences.resetPreferences.title',
   'settings.readerPreferences.resetPreferences.description',
+  'settings.readerPreferences.reset.title',
+  'settings.readerPreferences.reset.description',
   'settings.readerPreferences.resetToDefault',
   'settings.data.title',
   'settings.data.description',
@@ -319,6 +340,36 @@ describe('common locale phase 5 coverage', () => {
   });
 });
 
+describe('settings reader preferences strings', () => {
+  it('does not keep hardcoded font labels in theme config', () => {
+    const themeConfigSource = readFileSync(
+      resolve(process.cwd(), 'src/features/settings/constants/theme-config.ts'),
+      'utf8'
+    );
+
+    expect(themeConfigSource).not.toContain('Designed for readability');
+    expect(themeConfigSource).not.toContain('Hanken Grotesk (Default)');
+    expect(themeConfigSource).not.toContain('Atkinson Hyperlegible');
+    expect(themeConfigSource).not.toContain('Clean, modern, highly readable');
+  });
+});
+
+describe('tag input placeholder translation', () => {
+  it('passes the translated placeholder from the article dialogs', () => {
+    const addArticleDialogSource = readFileSync(
+      resolve(process.cwd(), 'src/features/articles/components/add-article-dialog.tsx'),
+      'utf8'
+    );
+    const editTagsDialogSource = readFileSync(
+      resolve(process.cwd(), 'src/features/articles/components/edit-tags-dialog.tsx'),
+      'utf8'
+    );
+
+    expect(addArticleDialogSource).toContain("placeholder={t('tags.tagInput.placeholder')}");
+    expect(editTagsDialogSource).toContain("placeholder={t('tags.tagInput.placeholder')}");
+  });
+});
+
 const phaseSevenKeys = [
   'import.wizard.cancel',
   'import.wizard.confirmCancelTitle',
@@ -433,6 +484,7 @@ const phaseEightKeys = [
   'reader.notes.save',
   'reader.notes.removeHighlight',
   'tags.tagInput.searchPlaceholder',
+  'tags.tagInput.placeholder',
   'tags.tagInput.createIn',
   'tags.tagInput.noTagsMatching',
   'tags.tagInput.noTagsIn',
@@ -490,5 +542,23 @@ describe('common locale phase 9 coverage', () => {
   it.each(phaseNineKeys)('defines %s in English and Indonesian locales', (key) => {
     expect(getValue(enCommon, key)).toEqual(expect.any(String));
     expect(getValue(idCommon, key)).toEqual(expect.any(String));
+  });
+});
+
+describe('reader navigation translation coverage', () => {
+  const readerNavSource = readFileSync(
+    resolve(import.meta.dirname, '../components/navigation/reader-nav.tsx'),
+    'utf8'
+  );
+
+  it.each([
+    'Go back to articles',
+    'Back',
+    'Reader Settings',
+    'Font Size',
+    'Line Spacing',
+    'Font Family'
+  ])('does not hardcode %s in reader navigation', (copy) => {
+    expect(readerNavSource).not.toContain(copy);
   });
 });

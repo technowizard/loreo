@@ -113,6 +113,7 @@ function EditTagsDialog({ initialTags, linkId, onOpenChange, open }: EditTagsDia
       groups={tagGroupsQuery.data?.result ?? []}
       onChange={handleTagsChange}
       onCreateTag={handleCreateTag}
+      placeholder={t('tags.tagInput.placeholder')}
       value={pendingTags}
     />
   );

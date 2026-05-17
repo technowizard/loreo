@@ -10,9 +10,13 @@ export function useLanguage() {
   const current = LANGUAGES.find((l) => i18n.language.startsWith(l)) ?? 'en';
   const next = current === 'en' ? 'id' : 'en';
 
-  function toggle() {
-    i18n.changeLanguage(next);
+  function setLanguage(language: Language) {
+    i18n.changeLanguage(language);
   }
 
-  return { current, next, toggle };
+  function toggle() {
+    setLanguage(next);
+  }
+
+  return { current, next, setLanguage, toggle };
 }

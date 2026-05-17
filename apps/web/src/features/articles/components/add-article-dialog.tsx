@@ -148,6 +148,7 @@ export function AddArticleDialog({
               groups={tagGroups}
               onChange={(value) => onFormChange('tags', value)}
               onCreateTag={({ groupId, name }) => handleCreateTag(name, groupId)}
+              placeholder={t('tags.tagInput.placeholder')}
               value={formData.tags}
             />
             <Button className="mt-2 w-full" type="submit">
