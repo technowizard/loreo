@@ -12,12 +12,15 @@
     "title": "Welcome back",
     "description": "Sign in to your account to continue",
     "email": "Email",
+    "emailPlaceholder": "you@example.com",
     "password": "Password",
     "submit": "Login",
     "forgotPassword": "Forgot Password",
     "signUp": "Create one",
     "signIn": "Sign in",
-    "dontHaveAccount": "Don't have an account?"
+    "dontHaveAccount": "Don't have an account?",
+    "invalidCredentials": "Invalid email or password",
+    "success": "Login successful"
   },
   "register": {
     "title": "Create your account",
@@ -29,8 +32,11 @@
     "password": "Password",
     "confirmPassword": "Confirm Password",
     "submit": "Create account",
+    "createAccount": "Create account",
     "alreadyHaveAccount": "Already have an account?",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "genericError": "An error occurred",
+    "success": "Account created. Welcome!"
   },
   "home": {
     "welcome": "Welcome to Loreo",
@@ -54,10 +60,20 @@
       "openAnyArticleAndStartReading": "Open any article and start reading"
     },
     "suggestions": "Suggestions",
+    "continueReading": "Continue Reading",
     "quickReads": "Quick reads",
     "longReads": "Long reads",
     "thisWeek": "This week",
     "mustRead": "Must read",
-    "recentlySaved": "Recently saved"
+    "recentlySaved": "Recently saved",
+    "pasteUrlToSaveFirstArticle": "Paste a URL to save your first article"
+  },
+  "routes": {
+    "login": {
+      "metaTitle": "Login | Loreo"
+    },
+    "register": {
+      "metaTitle": "Register | Loreo"
+    }
   }
 }

@@ -1,4 +1,5 @@
 import { useNavigate } from '@tanstack/react-router';
+import { useTranslation } from 'react-i18next';
 
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -13,6 +14,7 @@ type Props = {
 
 export function ContinueReadingSection({ data, isLoading }: Props) {
   const navigate = useNavigate();
+  const { t } = useTranslation('common');
 
   if (isLoading) {
     return <Skeleton className="h-25 w-full rounded-3xl" />;
@@ -23,7 +25,7 @@ export function ContinueReadingSection({ data, isLoading }: Props) {
 
   return (
     <>
-      <h1 className="text-foreground text-xl font-bold">Continue Reading</h1>
+      <h1 className="text-foreground text-xl font-bold">{t('home.continueReading')}</h1>
       <ContinueReadingCard
         coverImage={data.coverImage}
         onClick={() => navigate({ params: { id: data.id }, to: '/articles/$id' })}
