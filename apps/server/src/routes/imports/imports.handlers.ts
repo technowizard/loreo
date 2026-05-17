@@ -5,7 +5,7 @@ import { enqueueContentExtraction } from '@/queues/content-extraction.queue.js';
 import type { CsvImportJobData } from '@/queues/csv-import.queue.js';
 import { enqueueCsvImport } from '@/queues/csv-import.queue.js';
 
-import { getColumns, parseLine } from '@/lib/csv-parser.js';
+import { getColumns, parseLine, parseTags } from '@/lib/csv-parser.js';
 import { logger } from '@/lib/logger.js';
 import { errorResponse, HttpStatus, successResponse } from '@/lib/response.js';
 import type { AppRouteHandler } from '@/lib/types.js';
@@ -27,29 +27,6 @@ import type {
   RetryFailedImportRoute,
   UploadImportRoute
 } from './imports.routes.js';
-
-function detectTagSeparator(value: string): string {
-  if (!value) return ',';
-
-  const counts = {
-    '|': (value.match(/\|/g) || []).length,
-    ',': (value.match(/,/g) || []).length,
-    ';': (value.match(/;/g) || []).length
-  };
-
-  const sorted = Object.entries(counts).sort(([, a], [, b]) => b - a);
-  return sorted[0]?.[0] ?? ',';
-}
-
-function parseTags(value: string): string[] {
-  if (!value) return [];
-
-  const separator = detectTagSeparator(value);
-  return value
-    .split(separator)
-    .map((t) => t.trim())
-    .filter((t) => t.length > 0);
-}
 
 function mapSessionToResponse(session: ImportSessionData) {
   return {
@@ -211,7 +188,11 @@ export const previewImport: AppRouteHandler<PreviewImportRoute> = async (c) => {
         ? `~${Math.round(estimatedSeconds)} seconds`
         : `~${Math.round(estimatedSeconds / 60)} minutes`;
 
-    const response = successResponse({ preview: previewRows, totalRows, estimatedTime });
+    const response = successResponse({
+      preview: previewRows,
+      totalRows,
+      estimatedTime
+    });
     return c.json(response, response.status);
   } catch (error) {
     logger.error(`[import] Preview error: ${error}`);
@@ -449,7 +430,10 @@ export const cancelImportSession: AppRouteHandler<CancelImportSessionRoute> = as
       completedAt: new Date()
     });
 
-    const response = successResponse({ message: 'Import cancelled successfully', linksReset });
+    const response = successResponse({
+      message: 'Import cancelled successfully',
+      linksReset
+    });
     return c.json(response, response.status);
   } catch (error) {
     logger.error(`[import] Cancel error: ${error}`);
@@ -481,7 +465,9 @@ export const deleteImportSession: AppRouteHandler<DeleteImportSessionRoute> = as
 
     await importSessions.delete(id, user.id);
 
-    const response = successResponse({ message: 'Import session deleted successfully' });
+    const response = successResponse({
+      message: 'Import session deleted successfully'
+    });
     return c.json(response, response.status);
   } catch (error) {
     logger.error(`[import] Delete session error: ${error}`);
@@ -521,8 +507,13 @@ export const resumeImport: AppRouteHandler<ResumeImportRoute> = async (c) => {
       return c.json(response, response.status);
     }
 
-    await importSessions.updateStatus(id, user.id, { status: 'processing', completedAt: null });
-    await importSessions.updateExtractionStatus(id, user.id, { extractionStatus: 'in_progress' });
+    await importSessions.updateStatus(id, user.id, {
+      status: 'processing',
+      completedAt: null
+    });
+    await importSessions.updateExtractionStatus(id, user.id, {
+      extractionStatus: 'in_progress'
+    });
 
     const pendingLinks = await importSessions.findPendingLinksInSession(id, user.id, 1);
 

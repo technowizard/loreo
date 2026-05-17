@@ -86,3 +86,10 @@ export function createCursorCondition(
     params: [cursorData.createdAt, cursorData.createdAt, cursorData.id]
   };
 }
+
+export function pageRows<T>(rows: T[], limit: number): { items: T[]; hasMore: boolean } {
+  const hasMore = rows.length > limit;
+  const items = hasMore ? rows.slice(0, limit) : rows;
+
+  return { items, hasMore };
+}

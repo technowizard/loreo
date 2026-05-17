@@ -41,3 +41,26 @@ export function getColumns(content: string): string[] {
   }
   return Object.keys(records[0] || {});
 }
+
+export function detectTagSeparator(value: string): string {
+  if (!value) return ',';
+
+  const counts = {
+    '|': (value.match(/\|/g) || []).length,
+    ',': (value.match(/,/g) || []).length,
+    ';': (value.match(/;/g) || []).length
+  };
+
+  const sorted = Object.entries(counts).sort(([, a], [, b]) => b - a);
+  return sorted[0]?.[0] ?? ',';
+}
+
+export function parseTags(value: string): string[] {
+  if (!value) return [];
+
+  const separator = detectTagSeparator(value);
+  return value
+    .split(separator)
+    .map((tag) => tag.trim())
+    .filter((tag) => tag.length > 0);
+}

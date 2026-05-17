@@ -1,10 +1,10 @@
 import { and, desc, eq, inArray, lt, sql as sqlFn } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
-import { importSessionsTable, linksTable, linkTagsTable } from '@/db/schemas/index.js';
 import type * as schema from '@/db/schemas/index.js';
+import { importSessionsTable, linksTable, linkTagsTable } from '@/db/schemas/index.js';
 
-import { decodeCursor, extractCursor } from '@/lib/cursor.js';
+import { decodeCursor, extractCursor, pageRows } from '@/lib/cursor.js';
 import { logger } from '@/lib/logger.js';
 
 import type { CursorPaginationOptions, CursorQueryResult } from '@/types/pagination.js';
@@ -47,7 +47,12 @@ export interface ImportSessionsRepository {
   countBySession(
     sessionId: string,
     userId: string
-  ): Promise<{ completed: number; failed: number; pending: number; total: number }>;
+  ): Promise<{
+    completed: number;
+    failed: number;
+    pending: number;
+    total: number;
+  }>;
   create(data: CreateSessionData): Promise<ImportSessionData | null>;
   delete(id: string, userId: string): Promise<boolean>;
   findById(id: string, userId: string): Promise<ImportSessionData | null>;
@@ -60,7 +65,11 @@ export interface ImportSessionsRepository {
     sessionId: string,
     userId: string,
     options?: { cursor?: string; limit?: number; status?: string }
-  ): Promise<{ hasMore: boolean; links: LinkWithStatus[]; nextCursor: string | undefined }>;
+  ): Promise<{
+    hasMore: boolean;
+    links: LinkWithStatus[];
+    nextCursor: string | undefined;
+  }>;
   findPendingLinksInSession(
     sessionId: string,
     userId: string,
@@ -237,11 +246,13 @@ export function createDrizzleImportSessionsAdapter(db: DrizzleClient): ImportSes
 
       if (rows.length === 0) return { items: [], hasMore: false, nextCursor: undefined };
 
-      const hasMore = rows.length > limit;
-      const items = hasMore ? rows.slice(0, -1) : rows;
+      const { items, hasMore } = pageRows(rows, limit);
       const nextCursor = hasMore
         ? extractCursor(
-            items.map((item) => ({ createdAt: item.createdAt.toISOString(), id: item.id }))
+            items.map((item) => ({
+              createdAt: item.createdAt.toISOString(),
+              id: item.id
+            }))
           )
         : undefined;
 
@@ -327,9 +338,7 @@ export function createDrizzleImportSessionsAdapter(db: DrizzleClient): ImportSes
         .orderBy(desc(linksTable.createdAt))
         .limit(limit + 1);
 
-      const hasMore = rows.length > limit;
-      const resultRows = hasMore ? rows.slice(0, -1) : rows;
-
+      const { items: resultRows, hasMore } = pageRows(rows, limit);
       const links = resultRows.map((row) => ({
         id: row.id,
         title: row.title,
@@ -431,7 +440,11 @@ export function createDrizzleImportSessionsAdapter(db: DrizzleClient): ImportSes
 
       await db
         .update(linksTable)
-        .set({ processingStatus: 'pending', errorMessage: null, updatedAt: new Date() })
+        .set({
+          processingStatus: 'pending',
+          errorMessage: null,
+          updatedAt: new Date()
+        })
         .where(and(eq(linksTable.importSessionId, sessionId), inArray(linksTable.id, linkIds)));
 
       logger.info(

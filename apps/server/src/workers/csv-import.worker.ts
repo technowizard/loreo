@@ -8,7 +8,7 @@ import type { CsvImportJobData } from '@/queues/csv-import.queue.js';
 
 import { db } from '@/db/index.js';
 
-import { parseLine } from '@/lib/csv-parser.js';
+import { parseLine, parseTags } from '@/lib/csv-parser.js';
 import { createWorker } from '@/lib/job-queue.js';
 import { logger } from '@/lib/logger.js';
 import { isValidUrl } from '@/lib/url-validator.js';
@@ -81,29 +81,6 @@ async function csvImportJob(job: Job<CsvImportJobData>): Promise<{
 
     logger.info(`[${workerName}] Using tag group: ${tagName}`);
 
-    function detectTagSeparator(value: string): string {
-      if (!value) {
-        return ',';
-      }
-      const counts = {
-        '|': (value.match(/\|/g) || []).length,
-        ',': (value.match(/,/g) || []).length,
-        ';': (value.match(/;/g) || []).length
-      };
-      return Object.entries(counts).sort(([, a], [, b]) => b - a)[0]![0];
-    }
-
-    function parseTags(value: string): string[] {
-      if (!value) {
-        return [];
-      }
-      const separator = detectTagSeparator(value);
-      return value
-        .split(separator)
-        .map((t) => t.trim())
-        .filter((t) => t.length > 0);
-    }
-
     const existingUrls = new Set((await links.findAllUrls(userId)).map((url) => url.toLowerCase()));
 
     const allExistingTags = await tags.findTagsByUserId(userId);
@@ -165,7 +142,9 @@ async function csvImportJob(job: Job<CsvImportJobData>): Promise<{
 
           if (!url || !isValidUrl(url)) {
             failedCount++;
-            await importSessions.incrementCounts(importSessionId, userId, { failed: 1 });
+            await importSessions.incrementCounts(importSessionId, userId, {
+              failed: 1
+            });
             continue;
           }
 
@@ -173,7 +152,9 @@ async function csvImportJob(job: Job<CsvImportJobData>): Promise<{
 
           if (hasDuplicate) {
             skippedCount++;
-            await importSessions.incrementCounts(importSessionId, userId, { skipped: 1 });
+            await importSessions.incrementCounts(importSessionId, userId, {
+              skipped: 1
+            });
             logger.debug(`[${workerName}] Skipping duplicate URL: ${url}`);
             continue;
           }
@@ -228,11 +209,15 @@ async function csvImportJob(job: Job<CsvImportJobData>): Promise<{
             });
           } else {
             failedCount++;
-            await importSessions.incrementCounts(importSessionId, userId, { failed: 1 });
+            await importSessions.incrementCounts(importSessionId, userId, {
+              failed: 1
+            });
           }
         } catch (rowError) {
           failedCount++;
-          await importSessions.incrementCounts(importSessionId, userId, { failed: 1 });
+          await importSessions.incrementCounts(importSessionId, userId, {
+            failed: 1
+          });
           logger.error(`[${workerName}] Error processing row: ${rowError}`);
         }
       }
