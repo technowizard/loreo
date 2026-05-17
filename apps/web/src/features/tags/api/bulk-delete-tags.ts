@@ -6,7 +6,7 @@ import type { MutationConfig } from '@/lib/react-query';
 
 import type { ApiResult } from '@/types/api';
 
-import { tagsKeys } from './query-keys';
+import { tagsMutationMeta } from './query-keys';
 
 export const bulkDeleteTagsBodySchema = z.object({
   tagIds: z.array(z.string()).min(1, 'At least one tag ID is required')
@@ -39,5 +39,5 @@ export const useBulkDeleteTags = ({ mutationConfig }: UseBulkDeleteTagsOptions =
   useMutation({
     ...mutationConfig,
     mutationFn: bulkDeleteTags,
-    meta: { invalidates: [tagsKeys.all] }
+    meta: tagsMutationMeta
   });

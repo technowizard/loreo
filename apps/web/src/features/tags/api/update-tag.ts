@@ -7,7 +7,7 @@ import type { MutationConfig } from '@/lib/react-query';
 import type { ApiResult } from '@/types/api';
 import type { Tag } from '@/types/tags';
 
-import { tagsKeys } from './query-keys';
+import { tagsMutationMeta } from './query-keys';
 
 export const updateTagBodySchema = z.object({
   id: z.string().min(1, 'Tag ID is required'),
@@ -36,5 +36,5 @@ export const useUpdateTag = ({ mutationConfig }: UseUpdateTagOptions = {}) =>
   useMutation({
     ...mutationConfig,
     mutationFn: updateTag,
-    meta: { invalidates: [tagsKeys.all] }
+    meta: tagsMutationMeta
   });

@@ -26,6 +26,30 @@ interface MapFieldsProps {
   onMappingComplete?: () => void;
 }
 
+type MappingKey = 'url' | 'title' | 'tags' | 'timeAdded';
+
+type FieldToMap = {
+  key: MappingKey;
+  label: string;
+  required?: boolean;
+  helpText?: string;
+};
+
+const FIELDS_TO_MAP: FieldToMap[] = [
+  { key: 'url', label: 'Article URL', required: true },
+  { key: 'title', label: 'Title', required: true },
+  {
+    key: 'tags',
+    label: 'Tags',
+    helpText: 'Tags are optional and will be added to the article'
+  },
+  {
+    helpText: 'Time Added helps preserve the order of articles when importing',
+    key: 'timeAdded',
+    label: 'Time Added'
+  }
+];
+
 const populateFields = (columns: string[]) => {
   const uploadedColumns = columns.map((column) => ({
     label: column,
@@ -34,6 +58,33 @@ const populateFields = (columns: string[]) => {
 
   return [{ label: 'Do not map', value: null }, ...uploadedColumns];
 };
+
+function ColumnSelect({
+  fieldsToMap,
+  onValueChange,
+  value
+}: {
+  fieldsToMap: ReturnType<typeof populateFields>;
+  onValueChange: (value: string | null) => void;
+  value: string | null;
+}) {
+  return (
+    <Select items={fieldsToMap} onValueChange={onValueChange} value={value}>
+      <SelectTrigger className="w-full">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {fieldsToMap.map((column) => (
+            <SelectItem key={column.label} value={column.value}>
+              {column.label}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+}
 
 export function MapFields({ onMappingComplete }: MapFieldsProps) {
   const { mapping, onMappingChange, uploadedFile } = useImportArticles();
@@ -57,124 +108,29 @@ export function MapFields({ onMappingComplete }: MapFieldsProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow>
-              <TableCell className="flex items-center gap-2 py-4 text-sm font-semibold">
-                Article URL
-                <Badge variant="info">Required</Badge>
-              </TableCell>
-              <TableCell>
-                <Select
-                  items={fieldsToMap}
-                  onValueChange={(value) => onMappingChange('url', value)}
-                  value={mapping.url || null}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {fieldsToMap.map((column) => (
-                        <SelectItem key={column.label} value={column.value}>
-                          {column.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="flex items-center gap-2 py-4 text-sm font-semibold">
-                Title
-                <Badge variant="info">Required</Badge>
-              </TableCell>
-              <TableCell>
-                <Select
-                  items={fieldsToMap}
-                  onValueChange={(value) => onMappingChange('title', value)}
-                  value={mapping.title || null}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {fieldsToMap.map((column) => (
-                        <SelectItem key={column.label} value={column.value}>
-                          {column.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="flex items-center gap-2 py-4 text-sm font-semibold">
-                Tags
-                <Tooltip>
-                  <TooltipTrigger className="text-muted-foreground">
-                    <InfoIcon size={16} weight="fill" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    Tags are optional and will be added to the article
-                  </TooltipContent>
-                </Tooltip>
-              </TableCell>
-              <TableCell>
-                <Select
-                  items={fieldsToMap}
-                  onValueChange={(value) => onMappingChange('tags', value)}
-                  value={mapping.tags || null}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {fieldsToMap.map((column) => (
-                        <SelectItem key={column.label} value={column.value}>
-                          {column.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="flex items-center gap-2 py-4 text-sm font-semibold">
-                Time Added
-                <Tooltip>
-                  <TooltipTrigger className="text-muted-foreground">
-                    <InfoIcon size={16} weight="fill" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    Time Added helps preserve the order of articles when importing
-                  </TooltipContent>
-                </Tooltip>
-              </TableCell>
-              <TableCell>
-                <Select
-                  items={fieldsToMap}
-                  onValueChange={(value) => onMappingChange('timeAdded', value)}
-                  value={mapping.timeAdded || null}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {fieldsToMap.map((column) => (
-                        <SelectItem key={column.label} value={column.value}>
-                          {column.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </TableCell>
-            </TableRow>
+            {FIELDS_TO_MAP.map((field) => (
+              <TableRow key={field.key}>
+                <TableCell className="flex items-center gap-2 py-4 text-sm font-semibold">
+                  {field.label}
+                  {field.required ? <Badge variant="info">Required</Badge> : null}
+                  {field.helpText ? (
+                    <Tooltip>
+                      <TooltipTrigger className="text-muted-foreground">
+                        <InfoIcon size={16} weight="fill" />
+                      </TooltipTrigger>
+                      <TooltipContent>{field.helpText}</TooltipContent>
+                    </Tooltip>
+                  ) : null}
+                </TableCell>
+                <TableCell>
+                  <ColumnSelect
+                    fieldsToMap={fieldsToMap}
+                    onValueChange={(value) => onMappingChange(field.key, value)}
+                    value={mapping[field.key] || null}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </div>

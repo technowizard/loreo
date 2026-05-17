@@ -7,7 +7,7 @@ import type { MutationConfig } from '@/lib/react-query';
 import type { ApiResult } from '@/types/api';
 import type { Tag } from '@/types/tags';
 
-import { tagsKeys } from './query-keys';
+import { tagsMutationMeta } from './query-keys';
 
 export const moveTagBodySchema = z.object({
   tagId: z.string().min(1, 'Tag ID is required'),
@@ -35,5 +35,5 @@ export const useMoveTag = ({ mutationConfig }: UseMoveTagOptions = {}) =>
   useMutation({
     ...mutationConfig,
     mutationFn: moveTag,
-    meta: { invalidates: [tagsKeys.all] }
+    meta: tagsMutationMeta
   });

@@ -7,7 +7,7 @@ import type { MutationConfig } from '@/lib/react-query';
 import type { ApiResult } from '@/types/api';
 import type { TagGroup } from '@/types/tags';
 
-import { tagsKeys } from './query-keys';
+import { tagsMutationMeta } from './query-keys';
 
 export const createTagGroupBodySchema = z.object({
   name: z.string().min(1, 'Tag Group name is required'),
@@ -34,5 +34,5 @@ export const useCreateTagGroup = ({ mutationConfig }: UseCreateTagGroupOptions =
   useMutation({
     ...mutationConfig,
     mutationFn: createTagGroup,
-    meta: { invalidates: [tagsKeys.all] }
+    meta: tagsMutationMeta
   });

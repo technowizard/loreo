@@ -5,7 +5,7 @@ import type { MutationConfig } from '@/lib/react-query';
 
 import type { ApiResult } from '@/types/api';
 
-import { tagsKeys } from './query-keys';
+import { tagsMutationMeta } from './query-keys';
 
 const deleteTag = async ({
   groupId,
@@ -27,5 +27,5 @@ export const useDeleteTag = ({ mutationConfig }: UseDeleteTagOptions = {}) =>
   useMutation({
     ...mutationConfig,
     mutationFn: deleteTag,
-    meta: { invalidates: [tagsKeys.all] }
+    meta: tagsMutationMeta
   });

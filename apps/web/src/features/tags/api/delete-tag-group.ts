@@ -5,7 +5,7 @@ import type { MutationConfig } from '@/lib/react-query';
 
 import type { ApiResult } from '@/types/api';
 
-import { tagsKeys } from './query-keys';
+import { tagsMutationMeta } from './query-keys';
 
 const deleteTagGroup = async ({ id }: { id: string }): Promise<ApiResult<void>> => {
   const response = await apiClient.delete(`tags/groups/${id}`);
@@ -21,5 +21,5 @@ export const useDeleteTagGroup = ({ mutationConfig }: UseDeleteTagGroupOptions =
   useMutation({
     ...mutationConfig,
     mutationFn: deleteTagGroup,
-    meta: { invalidates: [tagsKeys.all] }
+    meta: tagsMutationMeta
   });

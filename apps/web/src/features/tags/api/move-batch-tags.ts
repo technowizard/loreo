@@ -6,7 +6,7 @@ import type { MutationConfig } from '@/lib/react-query';
 
 import type { ApiResult } from '@/types/api';
 
-import { tagsKeys } from './query-keys';
+import { tagsMutationMeta } from './query-keys';
 
 export const moveBatchTagsBodySchema = z.object({
   fromGroupId: z.string().optional(),
@@ -39,5 +39,5 @@ export const useMoveBatchTags = ({ mutationConfig }: UseMoveBatchTagsOptions = {
   useMutation({
     ...mutationConfig,
     mutationFn: moveBatchTags,
-    meta: { invalidates: [tagsKeys.all] }
+    meta: tagsMutationMeta
   });
