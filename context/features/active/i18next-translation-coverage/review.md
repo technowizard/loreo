@@ -148,3 +148,32 @@
 
 - `id/common.json` still mirrors English values; it needs a later Indonesian copy pass.
 - Phase 6 only covers tags management UI; some aria labels use interpolation.
+
+## Phase 7: Import Articles Workflow
+
+### Completed
+
+- Added phase 7 locale coverage tests for 326 keys across 9 groups (wizard, progress, upload, mapFields, review, progressDemo, extraction).
+- Added matching `import.*` locale blocks to English and Indonesian common locales.
+- Changed wizard-config.ts to export key-based STEP_LABELS, STEP_DESCRIPTIONS, and STEP_ERROR_MESSAGES arrays.
+- Translated `pages/import-articles.tsx` wizard shell (step labels/descriptions, cancel/back/continue/start buttons, confirm dialog, toasts, error messages).
+- Translated `pages/import-progress.tsx` (complete/importing screens, progress text, view extraction progress button).
+- Translated `upload-from-csv.tsx` (toast, aria labels, dropzone text, file hint, select/clear buttons, upload alerts).
+- Translated `map-fields.tsx` (table headings, field labels, required badge, do-not-map option, help text tooltips).
+- Translated `review-import.tsx` (summary, estimated time, data preview section, table headings, no-tags, more-count).
+- Translated `features/import-articles/components/import-progress.tsx` (demo-only completion/importing text).
+- Translated `extraction-progress.tsx` (title, completed/failed cards, status filter labels, load-more button).
+- Translated `extraction-status-card.tsx` (status badges, view button).
+
+### Verification
+
+- RED: 80 phase 7 locale tests failed before keys were added.
+- GREEN: `bun test src/locales/common.test.ts` passed: 326 tests, 652 assertions.
+- Typecheck: `bun run typecheck` passed.
+- Touched-file lint/format: `pnpm exec oxlint ... && pnpm exec oxfmt --check ...` passed.
+
+### Remaining Risks
+
+- `id/common.json` still mirrors English values; it needs a later Indonesian copy pass.
+- Some aria labels and tooltips on extraction progress page remain as inline static text.
+- Demo import-progress component content uses locale keys but is not functionally wired to real import state.

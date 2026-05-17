@@ -505,5 +505,102 @@
         "description": "Casual, handwritten-style font"
       }
     }
+  },
+  "import": {
+    "wizard": {
+      "cancel": "Cancel import",
+      "confirmCancelTitle": "Cancel import?",
+      "confirmCancelDescription": "Your progress will not be saved. Are you sure you want to cancel?",
+      "back": "Go Back",
+      "continue": "Continue",
+      "startImport": "Start Import",
+      "toastCancelled": "Import cancelled",
+      "toastFailed": "Import failed",
+      "failedTitle": "Oops! We encountered an error while importing your articles.",
+      "failedDescription": "This could be due to an issue with your CSV file. Check the import for any problematic rows.",
+      "stepUpload": "Upload your file",
+      "stepMap": "Map fields",
+      "stepReview": "Review",
+      "stepUploadDescription": "Select a CSV file to get started",
+      "stepMapDescription": "Match the columns in your file to article fields",
+      "stepReviewDescription": "Review your data before importing",
+      "errorUploadRequired": "Please upload a CSV file first",
+      "errorMapRequired": "Please map all required fields",
+      "errorNoData": "No data to import"
+    },
+    "progress": {
+      "completeTitle": "Import Complete!",
+      "completeDescription": "Your articles have been imported successfully.",
+      "importingTitle": "Importing your articles",
+      "importingDescription": "Please wait while we process your file.",
+      "processing": "Processing...",
+      "progressText": "Importing {{current}} of {{total}} articles",
+      "estimatedTime": "Estimated time remaining: {{time}}",
+      "viewExtractionProgress": "View extraction progress",
+      "goToArticles": "Go to articles",
+      "goHome": "Go home",
+      "importAnother": "Import another file"
+    },
+    "upload": {
+      "toastLoading": "Importing...",
+      "dropzoneAria": "Upload CSV file",
+      "dropzoneText": "Drag and drop your CSV file here, or click to browse",
+      "selectFile": "Select file...",
+      "clearFile": "Clear file",
+      "fileHint": "CSV files only. Max file size: 10MB.",
+      "tipsTitle": "Tips for a successful import",
+      "tipOne": "Your CSV file should have at least a column for URLs",
+      "tipTwo": "Optional columns include: title, tags, description",
+      "tipThree": "Make sure URLs start with http:// or https://",
+      "successTitle": "File ready to import",
+      "successDescription": "We found {{count}} articles in your file.",
+      "alertRowCount": "{{count}} articles found"
+    },
+    "mapFields": {
+      "title": "Map Fields",
+      "description": "Match your CSV columns to article fields",
+      "csvColumnHeading": "CSV Column",
+      "articleFieldHeading": "Article Field",
+      "fieldUrl": "URL",
+      "fieldTitle": "Title",
+      "fieldTags": "Tags",
+      "fieldDescription": "Description",
+      "fieldPublishedAt": "Published Date",
+      "fieldTimeAdded": "Time Added",
+      "required": "Required",
+      "doNotMap": "Don't import",
+      "helpText": "Select which column in your CSV corresponds to each article field"
+    },
+    "review": {
+      "title": "Review your data",
+      "description": "Check that everything looks correct before importing",
+      "summary": "{{count}} articles ready to import",
+      "estimatedTime": "Estimated time: {{time}}",
+      "tableHeadingRow": "Row",
+      "tableHeadingUrl": "URL",
+      "tableHeadingTitle": "Title",
+      "tableHeadingTags": "Tags",
+      "noTags": "No tags",
+      "moreCount": "+{{count}} more",
+      "startOver": "Start over"
+    },
+    "progressDemo": {
+      "completing": "Completing import...",
+      "importingDemo": "Importing demo articles..."
+    },
+    "extraction": {
+      "title": "Extraction Progress",
+      "statusAll": "All",
+      "statusCompleted": "Completed",
+      "statusFailed": "Failed",
+      "statusProcessing": "Processing",
+      "badgeCompleted": "Completed",
+      "badgeProcessing": "Processing",
+      "badgeFailed": "Failed",
+      "badgePending": "Pending",
+      "loadMore": "Load more",
+      "noResults": "No extraction results found",
+      "viewArticle": "View"
+    }
   }
 }

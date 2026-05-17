@@ -1,5 +1,6 @@
 import { ArrowRightIcon, ArrowsClockwiseIcon, CheckCircleIcon } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -7,6 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { ExtractionProgress } from './extraction-progress';
 
 export function ImportProgress() {
+  const { t } = useTranslation('common');
   const [progress, setProgress] = useState({
     extraction: 0,
     import: 0
@@ -68,10 +70,10 @@ export function ImportProgress() {
         <div className="border-success-100 bg-success-200 text-success-400 dark:border-success-900 dark:bg-success-800 dark:text-success-400 inline-flex size-12 items-center justify-center rounded-full">
           <CheckCircleIcon size={44} weight="fill" />
         </div>
-        <h1 className="text-foreground">Import Complete!</h1>
-        <div className="text-muted-foreground">All articles have been successfully imported.</div>
+        <h1 className="text-foreground">{t('import.progress.completeTitle')}</h1>
+        <div className="text-muted-foreground">{t('import.progress.completeDescription')}</div>
         <Button className="mt-4" onClick={() => setStatus('extraction')}>
-          View Extraction Progress
+          {t('import.progress.viewExtractionProgress')}
           <ArrowRightIcon size={16} weight="bold" />
         </Button>
       </div>
@@ -82,15 +84,12 @@ export function ImportProgress() {
     <div className="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center gap-6">
       <ArrowsClockwiseIcon className="animate-spin" size={36} />
       <div className="flex flex-col gap-2 text-center">
-        <h1 className="text-foreground">Importing articles</h1>
-        <div className="text-muted-foreground">
-          We&apos;re processing your file on the background. This may take a few minutes depending
-          on the number of articles.
-        </div>
+        <h1 className="text-foreground">{t('import.progress.importingTitle')}</h1>
+        <div className="text-muted-foreground">{t('import.progress.importingDescription')}</div>
       </div>
       <div className="w-full">
         <div className="flex items-center justify-between font-semibold">
-          <div>Processing 20 / 1000 links</div>
+          <div>{t('import.progress.progressText', { current: 20, total: 1000 })}</div>
           <div>{progress.import}%</div>
         </div>
         <Progress className="mt-2" value={progress.import} />

@@ -58,12 +58,12 @@
 
 ## Phase 7: Import Articles Workflow
 
-- [ ] Translate import wizard shell and controls.
-- [ ] Translate CSV upload/dropzone.
-- [ ] Translate field mapping.
-- [ ] Translate review step.
-- [ ] Translate progress and extraction status screens.
-- [ ] Verify import flows.
+- [x] Translate import wizard shell and controls.
+- [x] Translate CSV upload/dropzone.
+- [x] Translate field mapping.
+- [x] Translate review step.
+- [x] Translate progress and extraction status screens.
+- [x] Verify import flows.
 
 ## Phase 8: Shared UI, Validation, and Toast Cleanup
 

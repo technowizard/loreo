@@ -1,5 +1,6 @@
 import { InfoIcon } from '@phosphor-icons/react';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Badge } from '@/components/ui/badge';
 import {
@@ -30,41 +31,32 @@ type MappingKey = 'url' | 'title' | 'tags' | 'timeAdded';
 
 type FieldToMap = {
   key: MappingKey;
-  label: string;
+  labelKey: string;
   required?: boolean;
-  helpText?: string;
+  helpTextKey?: string;
 };
 
 const FIELDS_TO_MAP: FieldToMap[] = [
-  { key: 'url', label: 'Article URL', required: true },
-  { key: 'title', label: 'Title', required: true },
+  { key: 'url', labelKey: 'import.mapFields.fieldUrl', required: true },
+  { key: 'title', labelKey: 'import.mapFields.fieldTitle', required: true },
   {
     key: 'tags',
-    label: 'Tags',
-    helpText: 'Tags are optional and will be added to the article'
+    labelKey: 'import.mapFields.fieldTags',
+    helpTextKey: 'import.mapFields.helpText'
   },
   {
-    helpText: 'Time Added helps preserve the order of articles when importing',
+    helpTextKey: 'import.mapFields.helpText',
     key: 'timeAdded',
-    label: 'Time Added'
+    labelKey: 'import.mapFields.fieldTimeAdded'
   }
 ];
-
-const populateFields = (columns: string[]) => {
-  const uploadedColumns = columns.map((column) => ({
-    label: column,
-    value: column
-  }));
-
-  return [{ label: 'Do not map', value: null }, ...uploadedColumns];
-};
 
 function ColumnSelect({
   fieldsToMap,
   onValueChange,
   value
 }: {
-  fieldsToMap: ReturnType<typeof populateFields>;
+  fieldsToMap: { label: string; value: string | null }[];
   onValueChange: (value: string | null) => void;
   value: string | null;
 }) {
@@ -87,7 +79,17 @@ function ColumnSelect({
 }
 
 export function MapFields({ onMappingComplete }: MapFieldsProps) {
+  const { t } = useTranslation('common');
   const { mapping, onMappingChange, uploadedFile } = useImportArticles();
+
+  const populateFields = (columns: string[]) => {
+    const uploadedColumns = columns.map((column) => ({
+      label: column,
+      value: column
+    }));
+
+    return [{ label: t('import.mapFields.doNotMap'), value: null }, ...uploadedColumns];
+  };
 
   const fieldsToMap = populateFields(uploadedFile.columns);
 
@@ -103,22 +105,24 @@ export function MapFields({ onMappingComplete }: MapFieldsProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Expected Field</TableHead>
-              <TableHead>Map to Column</TableHead>
+              <TableHead>{t('import.mapFields.articleFieldHeading')}</TableHead>
+              <TableHead>{t('import.mapFields.csvColumnHeading')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {FIELDS_TO_MAP.map((field) => (
               <TableRow key={field.key}>
                 <TableCell className="flex items-center gap-2 py-4 text-sm font-semibold">
-                  {field.label}
-                  {field.required ? <Badge variant="info">Required</Badge> : null}
-                  {field.helpText ? (
+                  {t(field.labelKey)}
+                  {field.required ? (
+                    <Badge variant="info">{t('import.mapFields.required')}</Badge>
+                  ) : null}
+                  {field.helpTextKey ? (
                     <Tooltip>
                       <TooltipTrigger className="text-muted-foreground">
                         <InfoIcon size={16} weight="fill" />
                       </TooltipTrigger>
-                      <TooltipContent>{field.helpText}</TooltipContent>
+                      <TooltipContent>{t(field.helpTextKey)}</TooltipContent>
                     </Tooltip>
                   ) : null}
                 </TableCell>

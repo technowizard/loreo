@@ -2,9 +2,10 @@ import {
   ArrowsClockwiseIcon,
   CheckCircleIcon,
   ClockIcon,
-  WarningCircleIcon,
-  type Icon
+  type Icon,
+  WarningCircleIcon
 } from '@phosphor-icons/react';
+import { useTranslation } from 'react-i18next';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,22 +23,24 @@ interface ExtractionStatusCardProps {
   onViewArticle: () => void;
 }
 
-const renderStatusBadge = (status: string) => {
+const renderStatusBadge = (status: string, t: (key: string) => string) => {
   switch (status) {
     case 'completed':
-      return <Badge variant="success">Completed</Badge>;
+      return <Badge variant="success">{t('import.extraction.badgeCompleted')}</Badge>;
     case 'processing':
-      return <Badge variant="info">Processing</Badge>;
+      return <Badge variant="info">{t('import.extraction.badgeProcessing')}</Badge>;
     case 'failed':
-      return <Badge variant="danger">Failed</Badge>;
+      return <Badge variant="danger">{t('import.extraction.badgeFailed')}</Badge>;
     case 'pending':
-      return <Badge variant="secondary">Pending</Badge>;
+      return <Badge variant="secondary">{t('import.extraction.badgePending')}</Badge>;
     default:
       return <Badge variant="outline">{status}</Badge>;
   }
 };
 
 export function ExtractionStatusCard({ link, onViewArticle }: ExtractionStatusCardProps) {
+  const { t } = useTranslation('common');
+
   const getStatusIconStyle = () => {
     switch (link.status) {
       case 'completed':
@@ -87,7 +90,7 @@ export function ExtractionStatusCard({ link, onViewArticle }: ExtractionStatusCa
         </div>
         <div className="flex flex-col gap-4 sm:flex-row">
           <div className="flex flex-row space-y-1 space-x-2 sm:flex-col sm:items-end sm:space-x-0">
-            {renderStatusBadge(link.status)}
+            {renderStatusBadge(link.status, t)}
             {link.status === 'failed' && (
               <div className="text-danger-500 dark:text-danger-400 text-sm">
                 {link.errorMessage}
@@ -97,7 +100,7 @@ export function ExtractionStatusCard({ link, onViewArticle }: ExtractionStatusCa
           {link.status === 'failed' && (
             <div className="flex w-full flex-col space-y-2 sm:w-fit sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2">
               <Button onClick={onViewArticle} variant="outline">
-                View
+                {t('import.extraction.viewArticle')}
               </Button>
             </div>
           )}
