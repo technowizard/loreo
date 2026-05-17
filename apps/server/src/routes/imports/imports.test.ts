@@ -9,13 +9,11 @@ import { createInMemoryHighlightsAdapter } from '@/tests/in-memory/highlights.js
 import { createInMemoryImportSessionsAdapter } from '@/tests/in-memory/import-sessions.js';
 import { createInMemoryLinksAdapter } from '@/tests/in-memory/links.js';
 import { createInMemoryTagsAdapter } from '@/tests/in-memory/tags.js';
+import { authCookieFor, makeTestUser } from '@/tests/route-harness.js';
 
 import { createTestApp } from '@/lib/create-app.js';
-import { generateToken } from '@/lib/jwt.js';
 import { HttpStatus } from '@/lib/response.js';
 import type { Repos } from '@/lib/types.js';
-
-import type { UserWithoutPassword } from '@/types/auth.js';
 
 import router from './imports.index.js';
 
@@ -40,30 +38,19 @@ vi.mock('@/middlewares/rate-limit', () => ({
   importExecuteRateLimit: async (_c: unknown, next: () => Promise<void>) => next()
 }));
 
-const TEST_USER: UserWithoutPassword = {
-  id: '00000000-0000-0000-0000-000000000001',
-  email: 'imports-test@example.com',
-  name: 'Test User',
-  avatar: null,
-  role: 'user',
-  settings: {},
-  deletedAt: null,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString()
-};
+const TEST_USER = makeTestUser({ email: 'imports-test@example.com' });
 
-const ADMIN_USER: UserWithoutPassword = {
-  ...TEST_USER,
+const ADMIN_USER = makeTestUser({
   id: '00000000-0000-0000-0000-000000000002',
   email: 'admin-imports-test@example.com',
   role: 'admin'
-};
+});
 
 const UNKNOWN_ID = '00000000-0000-0000-0000-000000000000';
 const SESSION_ID = '00000000-0000-0000-0000-000000000010';
 
-const authCookie = `token=${await generateToken(TEST_USER.id, TEST_USER.email)}`;
-const adminCookie = `token=${await generateToken(ADMIN_USER.id, ADMIN_USER.email)}`;
+const authCookie = await authCookieFor(TEST_USER);
+const adminCookie = await authCookieFor(ADMIN_USER);
 
 // A real temp CSV file used by execute/preview tests
 const TEST_CSV_ID = `test-imports-${Date.now()}`;
@@ -131,7 +118,9 @@ describe('imports routes', () => {
     });
 
     it('uploads a valid CSV and returns file metadata', async () => {
-      const file = new File([TEST_CSV_CONTENT], 'links.csv', { type: 'text/csv' });
+      const file = new File([TEST_CSV_CONTENT], 'links.csv', {
+        type: 'text/csv'
+      });
       const response = await client.imports.upload.$post(
         { form: { file } },
         { headers: { Cookie: authCookie } }
@@ -159,7 +148,12 @@ describe('imports routes', () => {
 
     it('returns 404 for unknown fileId', async () => {
       const response = await client.imports.preview.$post(
-        { json: { fileId: 'nonexistent-file-id', mapping: { url: 'url', title: 'title' } } },
+        {
+          json: {
+            fileId: 'nonexistent-file-id',
+            mapping: { url: 'url', title: 'title' }
+          }
+        },
         { headers: { Cookie: authCookie } }
       );
       expect(response.status).toBe(HttpStatus.NOT_FOUND);
@@ -167,7 +161,12 @@ describe('imports routes', () => {
 
     it('returns preview rows for a valid CSV file', async () => {
       const response = await client.imports.preview.$post(
-        { json: { fileId: TEST_CSV_ID, mapping: { url: 'url', title: 'title' } } },
+        {
+          json: {
+            fileId: TEST_CSV_ID,
+            mapping: { url: 'url', title: 'title' }
+          }
+        },
         { headers: { Cookie: authCookie } }
       );
       expect(response.status).toBe(HttpStatus.OK);
@@ -249,7 +248,10 @@ describe('imports routes', () => {
     });
 
     it('returns seeded sessions for the user', async () => {
-      seedSession(SESSION_ID, TEST_USER.id, { filename: 'my-links.csv', totalRows: 10 });
+      seedSession(SESSION_ID, TEST_USER.id, {
+        filename: 'my-links.csv',
+        totalRows: 10
+      });
       const response = await client.imports.sessions.$get(
         { query: {} },
         { headers: { Cookie: authCookie } }
@@ -266,7 +268,9 @@ describe('imports routes', () => {
 
   describe('GET /api/imports/sessions/:id', () => {
     it('returns 401 without auth', async () => {
-      const response = await client.imports.sessions[':id'].$get({ param: { id: UNKNOWN_ID } });
+      const response = await client.imports.sessions[':id'].$get({
+        param: { id: UNKNOWN_ID }
+      });
       expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
     });
 
@@ -279,7 +283,10 @@ describe('imports routes', () => {
     });
 
     it('returns session details', async () => {
-      seedSession(SESSION_ID, TEST_USER.id, { filename: 'details.csv', totalRows: 5 });
+      seedSession(SESSION_ID, TEST_USER.id, {
+        filename: 'details.csv',
+        totalRows: 5
+      });
       const response = await client.imports.sessions[':id'].$get(
         { param: { id: SESSION_ID } },
         { headers: { Cookie: authCookie } }
@@ -462,7 +469,9 @@ describe('imports routes', () => {
 
   describe('POST /api/imports/cleanup', () => {
     it('returns 401 without auth', async () => {
-      const response = await client.imports.cleanup.$post({ json: { daysOld: 90 } });
+      const response = await client.imports.cleanup.$post({
+        json: { daysOld: 90 }
+      });
       expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
     });
 
