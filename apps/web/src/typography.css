@@ -31,6 +31,21 @@
     --prose-hr-color: color-mix(in oklab, var(--color-white) 10%, transparent);
     --prose-blockquote-border-color: var(--color-zinc-600);
   }
+
+  &:where(.sepia-theme, .sepia-theme *) {
+    --prose-color: var(--color-sepia-300);
+    --prose-heading-color: var(--color-sepia-950);
+    --prose-strong-color: var(--color-sepia-950);
+    --prose-link-color: var(--color-sepia-950);
+    --prose-code-color: var(--color-sepia-950);
+    --prose-marker-color: color-mix(in oklab, var(--color-sepia-300) 35%, transparent);
+    --prose-link-underline-color: var(--color-sepia-400);
+    --prose-th-borders: var(--color-sepia-600);
+    --prose-td-borders: var(--color-sepia-700);
+    --prose-hr-color: color-mix(in oklab, var(--color-sepia-950) 10%, transparent);
+    --prose-blockquote-border-color: var(--color-sepia-600);
+  }
+
   @media (prefers-color-scheme: dark) {
     &:where(.system, .system *) {
       --prose-color: var(--color-zinc-300);
@@ -51,7 +66,7 @@
   font-size: var(--text-sm);
   line-height: 2;
 
-  *:where(:not(.not-prose, .not-prose *)) + *:where(:not(.not-prose, .not-prose *)) {
+  *:where(:not(.not-prose, .not-prose *))+*:where(:not(.not-prose, .not-prose *)) {
     margin-top: calc(var(--spacing) * 6);
   }
 
@@ -83,7 +98,7 @@
     margin-top: calc(var(--spacing) * 8);
   }
 
-  h2 + h3:where(:not(.not-prose, .not-prose *)) {
+  h2+h3:where(:not(.not-prose, .not-prose *)) {
     margin-top: calc(var(--spacing) * 6);
   }
 
@@ -97,6 +112,7 @@
 
   :is(h2, h3, h4):where(:not(.not-prose, .not-prose *)) {
     scroll-margin-top: calc(var(--spacing) * 32);
+
     @variant lg {
       scroll-margin-top: calc(var(--spacing) * 18);
     }
@@ -111,7 +127,7 @@
     padding-left: calc(var(--spacing) * 3);
   }
 
-  ol li + li:where(:not(.not-prose, .not-prose *)) {
+  ol li+li:where(:not(.not-prose, .not-prose *)) {
     margin-top: calc(var(--spacing) * 4);
   }
 
@@ -129,7 +145,7 @@
     padding-left: calc(var(--spacing) * 3);
   }
 
-  ul li + li:where(:not(.not-prose, .not-prose *)) {
+  ul li+li:where(:not(.not-prose, .not-prose *)) {
     margin-top: calc(var(--spacing) * 4);
   }
 
@@ -144,6 +160,7 @@
     text-underline-offset: 3px;
     text-decoration-color: var(--prose-link-underline-color);
     text-decoration-thickness: 1px;
+
     & code {
       font-weight: var(--font-weight-semibold);
     }
@@ -194,7 +211,7 @@
     scrollbar-width: thin;
   }
 
-  pre code * + *:where(:not(.not-prose, .not-prose *)) {
+  pre code *+*:where(:not(.not-prose, .not-prose *)) {
     margin-top: 0;
   }
 
@@ -293,7 +310,8 @@
   hr:where(:not(.not-prose, .not-prose *)) {
     border-color: var(--prose-hr-color);
     margin-block: --spacing(16);
-    & + h2 {
+
+    &+h2 {
       margin-top: --spacing(16);
     }
   }
