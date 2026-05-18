@@ -50,7 +50,7 @@ export default function ArticleTypography({ className, ...props }: ArticleTypogr
         'prose-figcaption:text-center prose-strong:text-foreground prose-img:mx-auto prose-img:rounded-lg',
 
         "[&_blockquote_p]:before:content-[''] [&_blockquote_p]:after:content-['']",
-        '[&_blockquote]:border-l-zinc-950',
+        '[&_blockquote]:border-l-primary-500 sepia-theme:[&_blockquote]:border-l-sepia-600 dark:[&_blockquote]:border-l-primary-400',
 
         'marker:text-foreground',
 

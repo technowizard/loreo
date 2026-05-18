@@ -23,7 +23,9 @@ export function AuthBrandPanel() {
 
       <div className="relative flex flex-1 flex-col items-center justify-center gap-7 px-10 py-12">
         <div className="flex flex-col items-center gap-3">
-          <img alt="Loreo" className="size-16 drop-shadow-lg" src="/logo.svg" />
+          <div className="bg-white flex size-16 items-center justify-center rounded-xl shadow-sm">
+            <img alt="Loreo" className="size-14 drop-shadow-lg" src="/logo.svg" />
+          </div>
           <span className="text-[2.5rem] font-bold leading-none tracking-tight text-white drop-shadow">
             Loreo
           </span>
@@ -146,7 +148,9 @@ export function MobileBrandHeader() {
     <div className="relative flex items-center justify-center overflow-hidden bg-linear-to-r from-[oklch(0.44_0.18_248)] to-[oklch(0.30_0.14_244)] px-6 py-5 lg:hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle,oklch(1_0_0/0.06)_1px,transparent_1px)] bg-size-[20px_20px]" />
       <div className="relative flex items-center gap-3">
-        <img alt="Loreo" className="size-9 drop-shadow" src="/logo.svg" />
+        <div className="bg-white flex size-10 items-center justify-center rounded-lg shadow-sm">
+          <img alt="Loreo" className="size-8 drop-shadow" src="/logo.svg" />
+        </div>
         <span className="text-2xl font-bold tracking-tight text-white">Loreo</span>
       </div>
     </div>

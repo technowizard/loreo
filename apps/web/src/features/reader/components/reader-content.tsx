@@ -39,7 +39,7 @@ export function ReaderContent({
   return (
     <div ref={containerRef} style={{ position: 'relative' }}>
       <div
-        className="bg-primary-400 absolute left-0 z-10 w-1 rounded-r-full transition-all duration-700 ease-out sm:rounded-full"
+        className="bg-primary-400 sepia-theme:bg-sepia-400 absolute left-0 z-10 w-1 rounded-r-full transition-all duration-700 ease-out sm:rounded-full"
         ref={indicatorRef}
         style={{
           marginLeft: '-16px',

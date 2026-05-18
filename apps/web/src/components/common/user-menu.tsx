@@ -66,6 +66,7 @@ export function UserMenu({ align = 'end', contentClassName, trigger }: UserMenuP
     mutationConfig: {
       onSuccess: () => {
         queryClient.clear();
+        localStorage.clear();
         navigate({ to: '/login' });
       }
     }
@@ -132,7 +133,7 @@ export function UserMenu({ align = 'end', contentClassName, trigger }: UserMenuP
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem className="h-11 sm:h-8" onClick={handleLogout}>
+        <DropdownMenuItem className="h-11 sm:h-8" onClick={handleLogout} variant="destructive">
           <SignOutIcon className="mr-2 size-4" />
           {t('userMenu.logOut')}
         </DropdownMenuItem>

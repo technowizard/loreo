@@ -5,8 +5,7 @@ import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
+  DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 
@@ -56,13 +55,11 @@ export function LanguageSection() {
               <CaretDownIcon className="size-4" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-40">
-              <DropdownMenuRadioGroup onValueChange={handleLanguageChange} value={current}>
-                {languages.map((language) => (
-                  <DropdownMenuRadioItem key={language} value={language}>
-                    {t(`settings.language.languages.${language}`)}
-                  </DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
+              {languages.map((language) => (
+                <DropdownMenuItem key={language} onClick={() => handleLanguageChange(language)}>
+                  {t(`settings.language.languages.${language}`)}
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
