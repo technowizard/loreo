@@ -26,14 +26,14 @@ services:
       retries: 5
 
   loreo-browser:
-    image: ghcr.io/technowizard17/loreo-browser:latest
+    image: ghcr.io/technowizard/loreo-browser:latest
     restart: always
     expose:
       - '4444'
     shm_size: '1g'
 
   loreo-server:
-    image: ghcr.io/technowizard17/loreo-server:latest
+    image: ghcr.io/technowizard/loreo-server:latest
     restart: always
     ports:
       - '3000:3000'
@@ -50,7 +50,7 @@ services:
       REDIS_PORT: 6379
       STORAGE_PROVIDER: local-docker
       STORAGE_PATH: /app/data/storage
-      PUBLIC_URL: ${PUBLIC_URL:-http://localhost:3000}
+      PUBLIC_URL: ${PUBLIC_URL:-http://localhost:3001}
       BROWSER_URL: ws://loreo-browser:4444/camoufox
     volumes:
       - storage_data:/app/data/storage
@@ -63,10 +63,15 @@ services:
         condition: service_started
 
   loreo-web:
-    image: ghcr.io/technowizard17/loreo-web:latest
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile.prod
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3001}
+    image: ghcr.io/technowizard/loreo-web:latest
     restart: always
     ports:
-      - '80:80'
+      - '3001:80'
     depends_on:
       - loreo-server
 
