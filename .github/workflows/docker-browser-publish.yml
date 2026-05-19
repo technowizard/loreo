@@ -1,32 +1,23 @@
-name: Docker Publish Apps
+name: Docker Publish Browser
 
 on:
   pull_request:
     branches: [main]
     paths:
-      - .github/workflows/docker-publish.yml
-      - apps/**
-      - '!apps/server/Dockerfile.browser'
-      - packages/**
-      - package.json
-      - pnpm-lock.yaml
-      - pnpm-workspace.yaml
+      - .github/workflows/docker-browser-publish.yml
+      - apps/server/Dockerfile.browser
   push:
     branches: [main]
     tags: ['v*.*.*']
     paths:
-      - .github/workflows/docker-publish.yml
-      - apps/**
-      - '!apps/server/Dockerfile.browser'
-      - packages/**
-      - package.json
-      - pnpm-lock.yaml
-      - pnpm-workspace.yaml
+      - .github/workflows/docker-browser-publish.yml
+      - apps/server/Dockerfile.browser
   workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
   IMAGE_OWNER: technowizard
+  IMAGE_NAME: loreo-browser
 
 permissions:
   contents: read
@@ -34,20 +25,9 @@ permissions:
 
 jobs:
   docker:
-    name: Build ${{ matrix.image }}
+    name: Build loreo-browser
     runs-on: ubuntu-latest
     timeout-minutes: 90
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - image: loreo-web
-            dockerfile: apps/web/Dockerfile.prod
-            build-args: |
-              VITE_API_URL=${{ vars.VITE_API_URL || 'http://localhost:3001' }}
-          - image: loreo-server
-            dockerfile: apps/server/Dockerfile.prod
-            build-args: ''
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -73,7 +53,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/${{ matrix.image }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -86,11 +66,10 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ${{ matrix.dockerfile }}
+          file: apps/server/Dockerfile.browser
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: ${{ matrix.build-args }}
-          cache-from: type=gha,scope=${{ matrix.image }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.image }}
+          cache-from: type=gha,scope=${{ env.IMAGE_NAME }}
+          cache-to: type=gha,mode=max,scope=${{ env.IMAGE_NAME }}
