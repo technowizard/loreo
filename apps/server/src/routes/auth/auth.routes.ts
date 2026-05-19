@@ -210,9 +210,13 @@ export const uploadAvatar = createRoute({
     body: {
       content: {
         'multipart/form-data': {
-          schema: z.object({
-            file: z.custom<File>()
-          })
+          schema: {
+            type: 'object',
+            required: ['file'],
+            properties: {
+              file: { type: 'string', format: 'binary' }
+            }
+          }
         }
       },
       required: true
