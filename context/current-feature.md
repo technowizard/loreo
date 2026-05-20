@@ -7,7 +7,7 @@
 
 ## Current Focus
 
-- Phase 7 next: production secrets and deployment docs.
+- Phase 8 next: frontend smoke tests.
 
 ## Notes
 

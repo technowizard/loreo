@@ -48,8 +48,8 @@ pnpm build
 
 ```bash
 docker build -f apps/server/Dockerfile.prod -t loreo-server:release .
-docker build -f apps/web/Dockerfile.prod --build-arg VITE_API_URL=<production-api-url> -t loreo-web:release .
-docker build -f apps/server/Dockerfile.browser -t loreo-browser:release apps/server
+docker build -f apps/web/Dockerfile.prod --build-arg VITE_API_URL=<production-web-origin> -t loreo-web:release .
+docker build -f apps/server/Dockerfile.browser -t loreo-browser:release .
 docker compose -f docker-compose.prod.yml up -d
 ```
 
@@ -66,7 +66,6 @@ docker compose -f docker-compose.prod.yml up -d
 - [ ] Confirm local file storage cannot read outside the configured storage root.
 - [ ] Confirm auth register and login routes have rate limiting enabled.
 - [ ] Decide whether DNS and redirect-aware SSRF hardening is required before this release.
-- [ ] Confirm browser extraction is isolated from host/private networks and cloud metadata endpoints.
 - [ ] Confirm browser extraction is isolated from host/private networks and cloud metadata endpoints, and that Compose network separation is not treated as the only control.
 
 ## 6. GitHub readiness

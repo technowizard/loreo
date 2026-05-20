@@ -73,6 +73,7 @@ The initial release has a higher bar than the initial GitHub commit. Treat these
   - `JWT_SECRET`,
   - database password,
   - S3 credentials if used.
+- Document the same-origin production shape so `PUBLIC_URL`, `VITE_API_URL`, and `CORS_ORIGINS` all point at the deployed web origin.
 - Add `SECURITY.md` with vulnerability reporting instructions.
 - Review production CORS origins and cookie settings against the real deployment domain.
 
@@ -85,9 +86,9 @@ The initial release has a higher bar than the initial GitHub commit. Treat these
   - link creation/listing flow if practical.
 - Keep test DB reset serial. The current test migration script drops and recreates `public`, so concurrent test commands against the same database can collide.
 - Publish GHCR images used by `docker-compose.prod.yml`:
-  - `ghcr.io/technowizard17/loreo-browser`,
-  - `ghcr.io/technowizard17/loreo-server`,
-  - `ghcr.io/technowizard17/loreo-web`.
+  - `ghcr.io/technowizard/loreo-browser`,
+  - `ghcr.io/technowizard/loreo-server`,
+  - `ghcr.io/technowizard/loreo-web`.
 - Add or document an image publishing workflow.
 - Smoke test production Compose from a fresh clone using only documented commands.
 - Decide release versioning and changelog process before tagging `v0.1.0`.

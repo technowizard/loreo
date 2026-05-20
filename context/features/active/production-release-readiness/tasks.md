@@ -69,13 +69,13 @@ Implement the high and medium readiness items from `brief.md` and `plan.md`. Do 
 
 ## Phase 7: Production Secrets And Deployment Docs
 
-- [ ] Decide whether to enforce minimum `JWT_SECRET` and database password lengths at runtime or document requirements only.
-- [ ] Update env examples and deployment docs to require strong deployment-specific values.
-- [ ] Verify `PUBLIC_URL`, `VITE_API_URL`, and `CORS_ORIGINS` docs match the same-origin nginx proxy production shape.
-- [ ] Review cookie/CORS notes against the intended production domain model.
-- [ ] Add `SECURITY.md` with vulnerability reporting instructions.
-- [ ] Update `docs/READINESS.md` and `docs/RELEASE_CHECKLIST.md` to reflect completed and remaining readiness items.
-- [ ] Fix the release checklist browser Docker build context if still incorrect.
+- [x] Decide whether to enforce minimum `JWT_SECRET` and database password lengths at runtime or document requirements only.
+- [x] Update env examples and deployment docs to require strong deployment-specific values.
+- [x] Verify `PUBLIC_URL`, `VITE_API_URL`, and `CORS_ORIGINS` docs match the same-origin nginx proxy production shape.
+- [x] Review cookie/CORS notes against the intended production domain model.
+- [x] Add `SECURITY.md` with vulnerability reporting instructions.
+- [x] Update `docs/READINESS.md` and `docs/RELEASE_CHECKLIST.md` to reflect completed and remaining readiness items.
+- [x] Fix the release checklist browser Docker build context if still incorrect.
 
 ## Phase 8: Frontend Smoke Tests
 
