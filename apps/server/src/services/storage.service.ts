@@ -214,7 +214,7 @@ class LocalStorageAdapter implements IStorageService {
     imageUrl: string,
     metadata?: Record<string, string>
   ): Promise<UploadResult | null> {
-    if (!isValidUrl(imageUrl)) {
+    if (!(await isValidUrl(imageUrl))) {
       logger.warn(`Rejected image URL: ${imageUrl}`);
       return null;
     }
@@ -404,7 +404,7 @@ class S3StorageAdapter implements IStorageService {
     metadata?: Record<string, string>
   ): Promise<UploadResult | null> {
     try {
-      if (!isValidUrl(imageUrl)) {
+      if (!(await isValidUrl(imageUrl))) {
         logger.warn(`Rejected image URL: ${imageUrl}`);
         return null;
       }

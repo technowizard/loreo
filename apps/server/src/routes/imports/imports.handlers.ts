@@ -138,47 +138,49 @@ export const previewImport: AppRouteHandler<PreviewImportRoute> = async (c) => {
       (firstLine.toLowerCase().includes('url') || firstLine.toLowerCase().includes('title'));
     const dataLines = hasHeader ? lines.slice(1) : lines;
 
-    const previewRows = dataLines.slice(0, 5).map((line) => {
-      const columns = parseLine(line).map((c) => c.trim().replaceAll(/^"|"$/g, ''));
-      const headerColumns = hasHeader
-        ? firstLine.split(',').map((c) => c.trim().replaceAll(/^"|"$/g, '').toLowerCase())
-        : [];
+    const previewRows = await Promise.all(
+      dataLines.slice(0, 5).map(async (line) => {
+        const columns = parseLine(line).map((c) => c.trim().replaceAll(/^"|"$/g, ''));
+        const headerColumns = hasHeader
+          ? firstLine.split(',').map((c) => c.trim().replaceAll(/^"|"$/g, '').toLowerCase())
+          : [];
 
-      const urlColIndex = mapping?.url
-        ? headerColumns.indexOf(mapping.url.toLowerCase())
-        : headerColumns.findIndex((c) => c === 'url' || c === 'href' || c === 'link');
-      const titleColIndex = mapping?.title
-        ? headerColumns.indexOf(mapping.title.toLowerCase())
-        : headerColumns.findIndex((c) => c === 'title' || c === 'name');
-      const tagsColIndex = mapping?.tags
-        ? headerColumns.indexOf(mapping.tags.toLowerCase())
-        : headerColumns.findIndex((c) => c === 'tags' || c === 'tag_list');
-      const timeAddedColIndex = mapping?.timeAdded
-        ? headerColumns.indexOf(mapping.timeAdded.toLowerCase())
-        : headerColumns.findIndex((c) => c === 'time_added' || c === 'added_at');
+        const urlColIndex = mapping?.url
+          ? headerColumns.indexOf(mapping.url.toLowerCase())
+          : headerColumns.findIndex((c) => c === 'url' || c === 'href' || c === 'link');
+        const titleColIndex = mapping?.title
+          ? headerColumns.indexOf(mapping.title.toLowerCase())
+          : headerColumns.findIndex((c) => c === 'title' || c === 'name');
+        const tagsColIndex = mapping?.tags
+          ? headerColumns.indexOf(mapping.tags.toLowerCase())
+          : headerColumns.findIndex((c) => c === 'tags' || c === 'tag_list');
+        const timeAddedColIndex = mapping?.timeAdded
+          ? headerColumns.indexOf(mapping.timeAdded.toLowerCase())
+          : headerColumns.findIndex((c) => c === 'time_added' || c === 'added_at');
 
-      const url = urlColIndex >= 0 ? columns[urlColIndex] : columns[0];
-      const title = titleColIndex >= 0 ? columns[titleColIndex] : columns[1] || '';
-      const tagsStr = tagsColIndex >= 0 ? columns[tagsColIndex] : '';
-      const timeAddedStr = timeAddedColIndex >= 0 ? columns[timeAddedColIndex] : '';
+        const url = urlColIndex >= 0 ? columns[urlColIndex] : columns[0];
+        const title = titleColIndex >= 0 ? columns[titleColIndex] : columns[1] || '';
+        const tagsStr = tagsColIndex >= 0 ? columns[tagsColIndex] : '';
+        const timeAddedStr = timeAddedColIndex >= 0 ? columns[timeAddedColIndex] : '';
 
-      const errors: string[] = [];
-      let isValid = true;
+        const errors: string[] = [];
+        let isValid = true;
 
-      if (!url || !isValidUrl(url)) {
-        errors.push('Invalid or missing URL');
-        isValid = false;
-      }
+        if (!url || !(await isValidUrl(url))) {
+          errors.push('Invalid or missing URL');
+          isValid = false;
+        }
 
-      return {
-        url: url || undefined,
-        title: title || undefined,
-        tags: tagsStr ? parseTags(tagsStr) : undefined,
-        timeAdded: timeAddedStr ? Number(timeAddedStr) : undefined,
-        isValid,
-        errors: errors.length > 0 ? errors : undefined
-      };
-    });
+        return {
+          url: url || undefined,
+          title: title || undefined,
+          tags: tagsStr ? parseTags(tagsStr) : undefined,
+          timeAdded: timeAddedStr ? Number(timeAddedStr) : undefined,
+          isValid,
+          errors: errors.length > 0 ? errors : undefined
+        };
+      })
+    );
 
     const totalRows = dataLines.length;
     const batches = Math.ceil(totalRows / 20);

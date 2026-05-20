@@ -140,7 +140,7 @@ async function csvImportJob(job: Job<CsvImportJobData>): Promise<{
           const tagsValue = tagsIndex >= 0 ? (columns[tagsIndex] ?? '') : '';
           const timeAddedValue = timeAddedIndex >= 0 ? Number(columns[timeAddedIndex]) : new Date();
 
-          if (!url || !isValidUrl(url)) {
+          if (!url || !(await isValidUrl(url))) {
             failedCount++;
             await importSessions.incrementCounts(importSessionId, userId, {
               failed: 1
