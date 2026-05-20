@@ -1,0 +1,9 @@
+{
+  "name": "loreo-browser",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "camoufox-js": "^0.10.2",
+    "playwright-core": "1.53.2"
+  }
+}
