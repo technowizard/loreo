@@ -21,15 +21,15 @@ Implement the high and medium readiness items from `brief.md` and `plan.md`. Do 
 
 ## Phase 2: Redirect-Safe Fetching
 
-- [ ] Add failing tests for redirect target revalidation.
-  - [ ] Public URL redirecting to private/loopback target is rejected.
-  - [ ] Allowed redirect chain stays accepted within a small redirect limit.
-  - [ ] Excessive redirect chains fail safely.
-- [ ] Add a redirect-aware fetch helper or option for SSRF-sensitive downloads.
-  - [ ] Disable automatic redirect following where needed.
-  - [ ] Revalidate each `Location` target before continuing.
-  - [ ] Preserve timeout and user-agent behavior used by image downloads.
-- [ ] Run the redirect/url validator tests.
+- [x] Add failing tests for redirect target revalidation.
+  - [x] Public URL redirecting to private/loopback target is rejected.
+  - [x] Allowed redirect chain stays accepted within a small redirect limit.
+  - [x] Excessive redirect chains fail safely.
+- [x] Add a redirect-aware fetch helper or option for SSRF-sensitive downloads.
+  - [x] Disable automatic redirect following where needed.
+  - [x] Revalidate each `Location` target before continuing.
+  - [x] Preserve timeout and user-agent behavior used by image downloads.
+- [x] Run the redirect/url validator tests.
 
 ## Phase 3: Apply Guard To Server URL Entry Points
 

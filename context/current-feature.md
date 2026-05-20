@@ -7,7 +7,7 @@
 
 ## Current Focus
 
-- Phase 1 started: SSRF guard foundation.
+- Phase 2 completed: redirect-safe fetching for SSRF-sensitive downloads.
 
 ## Notes
 
