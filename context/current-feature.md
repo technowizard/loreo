@@ -7,7 +7,7 @@
 
 ## Current Focus
 
-- Phase 6 next: Docker/browser isolation guidance.
+- Phase 7 next: production secrets and deployment docs.
 
 ## Notes
 

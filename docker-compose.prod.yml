@@ -8,6 +8,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER}']
       interval: 5s
@@ -19,6 +21,8 @@ services:
     restart: always
     volumes:
       - redis_data:/data
+    networks:
+      - backend
     healthcheck:
       test: [CMD, redis-cli, ping]
       interval: 10s
@@ -31,6 +35,8 @@ services:
     expose:
       - '4444'
     shm_size: '1g'
+    networks:
+      - browser
 
   loreo-server:
     image: ghcr.io/technowizard/loreo-server:latest
@@ -54,6 +60,10 @@ services:
       BROWSER_URL: ws://loreo-browser:4444/camoufox
     volumes:
       - storage_data:/app/data/storage
+    networks:
+      - backend
+      - browser
+      - frontend
     depends_on:
       loreo-postgres:
         condition: service_healthy
@@ -72,6 +82,8 @@ services:
     restart: always
     ports:
       - '3001:80'
+    networks:
+      - frontend
     depends_on:
       - loreo-server
 
@@ -79,3 +91,9 @@ volumes:
   postgres_data:
   redis_data:
   storage_data:
+
+networks:
+  backend:
+    internal: true
+  frontend:
+  browser:

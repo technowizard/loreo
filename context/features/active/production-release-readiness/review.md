@@ -7,6 +7,7 @@
 - Phase 3 is complete. The server URL entry points and content extraction worker now validate URLs before creating links or navigating the browser.
 - Phase 4 is complete. Remote image downloads now pass through URL validation and redirect revalidation before storage writes.
 - Phase 5 is complete. Browser request URLs are now checked before the crawler context allows navigation or subresource requests.
+- Phase 6 is complete. The production Compose stack now keeps browser-only traffic separate from backend services and documents the limits of Compose-level isolation.
 
 ## Changed Files
 
@@ -28,6 +29,9 @@
 - `apps/server/src/lib/browser-request-guard.ts` - added a helper for blocking unsafe browser request URLs.
 - `apps/server/src/lib/browser-request-guard.test.ts` - added a focused rejection/allowance test for browser request URLs.
 - `apps/server/src/services/browser.service.ts` - installs browser context request interception and blocks unsafe requests.
+- `docker-compose.prod.yml` - split production services across backend, frontend, and browser networks so the browser does not share Postgres/Redis.
+- `docs/READINESS.md` - documented the browser network split and clarified Compose isolation limits.
+- `docs/RELEASE_CHECKLIST.md` - added a reminder that Compose network separation is only one control.
 
 ## Verification Results
 
@@ -39,6 +43,7 @@
 - `pnpm --filter server test src/lib/browser-request-guard.test.ts` - pass.
 - `pnpm --filter server typecheck` - pass.
 - `pnpm lint` - root lint still fails because of pre-existing unrelated formatting issues in `apps/server/browser/server.js`, `apps/web/src/locales/en/common.json`, `apps/web/src/locales/id/common.json`, `apps/web/src/routeTree.gen.ts`, `apps/web/src/typography.css`, and `docs/browser-image-optimization.md`.
+- `docker compose --env-file .env.example -f docker-compose.prod.yml config` - pass.
 
 ## Drift Check
 
@@ -48,9 +53,9 @@
 
 ## Remaining Risks
 
-- Phase 6 still remains: Docker/browser isolation guidance.
+- Phase 7 still remains: production secrets and deployment docs.
 - The repo has unrelated pre-existing worktree changes that were intentionally left untouched.
 
 ## Completion Summary
 
-Completed the SSRF guard foundation, redirect-safe fetching, the browser-navigation backstop, remote image download safety, and browser request blocking by making URL validation async and DNS-aware, adding redirect revalidation for SSRF-sensitive downloads, validating article URLs before browser navigation, routing remote image downloads through validated fetches, blocking unsafe browser requests in the crawler context, and verifying the new behavior with focused tests and server typecheck.
+Completed the SSRF guard foundation, redirect-safe fetching, the browser-navigation backstop, remote image download safety, browser request blocking, and browser/network isolation by making URL validation async and DNS-aware, adding redirect revalidation for SSRF-sensitive downloads, validating article URLs before browser navigation, routing remote image downloads through validated fetches, blocking unsafe browser requests in the crawler context, splitting production Compose networks so the browser does not share backend services, and verifying the new behavior with focused tests, typecheck, and Compose config validation.

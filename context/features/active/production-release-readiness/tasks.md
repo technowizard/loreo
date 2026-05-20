@@ -61,11 +61,11 @@ Implement the high and medium readiness items from `brief.md` and `plan.md`. Do 
 
 ## Phase 6: Docker Browser Isolation Guidance
 
-- [ ] Review `docker-compose.prod.yml` service networks and add safe explicit network membership if it does not break local production testing.
-- [ ] Confirm browser port `4444` remains un-published to the host.
-- [ ] Document what Compose can and cannot enforce for browser egress.
-- [ ] Document the stronger production recommendation: separate browser sandbox or egress proxy that blocks private ranges and metadata endpoints.
-- [ ] Run `docker compose --env-file .env.example -f docker-compose.prod.yml config`.
+- [x] Review `docker-compose.prod.yml` service networks and add safe explicit network membership if it does not break local production testing.
+- [x] Confirm browser port `4444` remains un-published to the host.
+- [x] Document what Compose can and cannot enforce for browser egress.
+- [x] Document the stronger production recommendation: separate browser sandbox or egress proxy that blocks private ranges and metadata endpoints.
+- [x] Run `docker compose --env-file .env.example -f docker-compose.prod.yml config`.
 
 ## Phase 7: Production Secrets And Deployment Docs
 
