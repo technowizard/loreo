@@ -37,6 +37,10 @@ export const create = createRoute({
       successResponseSchema(selectUsersSchema, HttpStatus.CREATED),
       'User Registration Success'
     ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
+    ),
     [HttpStatus.BAD_REQUEST]: jsonContent(
       errorResponseSchema(HttpStatus.BAD_REQUEST),
       'Registration failed'
@@ -124,6 +128,10 @@ export const updateEmail = createRoute({
       successResponseSchema(selectUsersSchema, HttpStatus.OK),
       'Email updated successfully'
     ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
+    ),
     [HttpStatus.BAD_REQUEST]: jsonContent(
       errorResponseSchema(HttpStatus.BAD_REQUEST),
       'Email update failed'
@@ -154,6 +162,10 @@ export const changePassword = createRoute({
     [HttpStatus.OK]: jsonContent(
       createMessageObjectSchema('Password changed successfully'),
       'Password changed'
+    ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
     ),
     [HttpStatus.BAD_REQUEST]: jsonContent(
       errorResponseSchema(HttpStatus.BAD_REQUEST),
@@ -190,6 +202,10 @@ export const updateSettings = createRoute({
   },
   responses: {
     [HttpStatus.OK]: jsonContent(userSettingsSchema, 'Settings updated successfully'),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
+    ),
     [HttpStatus.BAD_REQUEST]: jsonContent(
       errorResponseSchema(HttpStatus.BAD_REQUEST),
       'Settings update failed'
@@ -230,6 +246,10 @@ export const uploadAvatar = createRoute({
       }),
       'Avatar uploaded successfully'
     ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
+    ),
     [HttpStatus.BAD_REQUEST]: jsonContent(
       errorResponseSchema(HttpStatus.BAD_REQUEST),
       'Avatar upload failed'
@@ -258,6 +278,10 @@ export const updateAccount = createRoute({
     [HttpStatus.OK]: jsonContent(
       successResponseSchema(selectUsersSchema, HttpStatus.OK),
       'Account updated successfully'
+    ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
     ),
     [HttpStatus.BAD_REQUEST]: jsonContent(
       errorResponseSchema(HttpStatus.BAD_REQUEST),

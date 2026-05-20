@@ -3,6 +3,7 @@ import { setCookie } from 'hono/cookie';
 import { defaultUserSettings, userSettingsSchema } from '@/db/schemas/user-settings.js';
 
 import type { AppRouteHandler } from '../../lib/types.js';
+import { demoModeForbiddenResponse, isDemoMode } from '@/lib/demo-mode.js';
 import { env } from '@/lib/env-config.js';
 import { generateToken } from '@/lib/jwt.js';
 import { passwordManager } from '@/lib/password-manager.js';
@@ -32,6 +33,11 @@ const cookieOptions = {
 } as const;
 
 export const create: AppRouteHandler<CreateRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const { email, password, confirmPassword, name } = c.req.valid('json');
   const { auth } = c.get('repos');
 
@@ -156,6 +162,11 @@ export const getUser: AppRouteHandler<GetUserRoute> = async (c) => {
 };
 
 export const updateEmail: AppRouteHandler<UpdateEmailRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { currentPassword, newEmail } = c.req.valid('json');
 
@@ -193,6 +204,11 @@ export const updateEmail: AppRouteHandler<UpdateEmailRoute> = async (c) => {
 };
 
 export const changePassword: AppRouteHandler<ChangePasswordRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { currentPassword, newPassword, confirmNewPassword } = c.req.valid('json');
 
@@ -221,11 +237,21 @@ export const getSettings: AppRouteHandler<GetSettingsRoute> = async (c) => {
     return c.json(response, response.status);
   }
 
+  if (isDemoMode()) {
+    const settings = userSettingsSchema.parse(user.settings ?? defaultUserSettings);
+    return c.json(settings, HttpStatus.OK);
+  }
+
   const settings = await authService.getOwnSettings(user.id);
   return c.json(settings, HttpStatus.OK);
 };
 
 export const updateSettings: AppRouteHandler<UpdateSettingsRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const settings = c.req.valid('json');
 
@@ -245,6 +271,11 @@ export const updateSettings: AppRouteHandler<UpdateSettingsRoute> = async (c) =>
 };
 
 export const uploadAvatar: AppRouteHandler<UploadAvatarRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
 
   if (!user) {
@@ -286,6 +317,11 @@ export const uploadAvatar: AppRouteHandler<UploadAvatarRoute> = async (c) => {
 };
 
 export const updateAccount: AppRouteHandler<UpdateAccountRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { name } = c.req.valid('json');
 

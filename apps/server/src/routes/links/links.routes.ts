@@ -101,6 +101,10 @@ export const createLink = createRoute({
       ),
       'User Registration Success'
     ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
+    ),
     [HttpStatus.BAD_REQUEST]: jsonContent(errorResponseSchema(HttpStatus.BAD_REQUEST), ''),
     [HttpStatus.CONFLICT]: jsonContent(
       errorResponseSchema(HttpStatus.CONFLICT),
@@ -133,6 +137,10 @@ export const refetchLink = createRoute({
       ),
       'Link enqueued for reprocessing'
     ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
+    ),
     [HttpStatus.NOT_FOUND]: jsonContent(errorResponseSchema(HttpStatus.NOT_FOUND), ''),
     [HttpStatus.INTERNAL_SERVER_ERROR]: jsonContent(
       errorResponseSchema(HttpStatus.INTERNAL_SERVER_ERROR),
@@ -162,6 +170,10 @@ export const updateLink = createRoute({
   },
   responses: {
     [HttpStatus.OK]: jsonContent(successResponseSchema(selectLinksSchema), 'Link update success'),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
+    ),
     [HttpStatus.BAD_REQUEST]: jsonContent(errorResponseSchema(HttpStatus.BAD_REQUEST), ''),
     [HttpStatus.NOT_FOUND]: jsonContent(errorResponseSchema(HttpStatus.NOT_FOUND), ''),
     [HttpStatus.INTERNAL_SERVER_ERROR]: jsonContent(
@@ -183,6 +195,10 @@ export const deleteLink = createRoute({
     [HttpStatus.OK]: jsonContent(
       successResponseSchema(z.object({ id: z.string() })),
       'Link deleted successfully'
+    ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
     ),
     [HttpStatus.BAD_REQUEST]: jsonContent(errorResponseSchema(HttpStatus.BAD_REQUEST), ''),
     [HttpStatus.NOT_FOUND]: jsonContent(errorResponseSchema(HttpStatus.NOT_FOUND), '')
@@ -221,6 +237,10 @@ export const updateLinkTags = createRoute({
         )
       ),
       'Link tags updated successfully'
+    ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
     ),
     [HttpStatus.BAD_REQUEST]: jsonContent(
       errorResponseSchema(HttpStatus.BAD_REQUEST),

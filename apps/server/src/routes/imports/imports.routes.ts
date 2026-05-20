@@ -117,6 +117,10 @@ export const uploadImport = createRoute({
       successResponseSchema(UploadResponseSchema),
       'File uploaded successfully'
     ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
+    ),
     [HttpStatus.BAD_REQUEST]: jsonContent(
       errorResponseSchema(HttpStatus.BAD_REQUEST),
       'Invalid file or request'
@@ -147,6 +151,10 @@ export const previewImport = createRoute({
   },
   responses: {
     [HttpStatus.OK]: jsonContent(successResponseSchema(PreviewResponseSchema), 'Preview data'),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
+    ),
     [HttpStatus.BAD_REQUEST]: jsonContent(
       errorResponseSchema(HttpStatus.BAD_REQUEST),
       'Invalid request'
@@ -179,6 +187,10 @@ export const executeImport = createRoute({
     [HttpStatus.ACCEPTED]: jsonContent(
       successResponseSchema(ExecuteResponseSchema),
       'Import job queued'
+    ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
     ),
     [HttpStatus.BAD_REQUEST]: jsonContent(
       errorResponseSchema(HttpStatus.BAD_REQUEST),
@@ -298,6 +310,10 @@ export const cancelImportSession = createRoute({
       ),
       'Import cancelled successfully'
     ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
+    ),
     [HttpStatus.NOT_FOUND]: jsonContent(
       errorResponseSchema(HttpStatus.NOT_FOUND),
       'Session not found'
@@ -323,6 +339,10 @@ export const deleteImportSession = createRoute({
     [HttpStatus.OK]: jsonContent(
       successResponseSchema(z.object({ message: z.string() })),
       'Import session deleted successfully'
+    ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
     ),
     [HttpStatus.BAD_REQUEST]: jsonContent(
       errorResponseSchema(HttpStatus.BAD_REQUEST),
@@ -358,6 +378,10 @@ export const resumeImport = createRoute({
         })
       ),
       'Import resumed successfully'
+    ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
     ),
     [HttpStatus.NOT_FOUND]: jsonContent(
       errorResponseSchema(HttpStatus.NOT_FOUND),
@@ -437,6 +461,10 @@ export const retryFailedImport = createRoute({
         })
       ),
       'Failed extractions re-queued'
+    ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
     ),
     [HttpStatus.NOT_FOUND]: jsonContent(
       errorResponseSchema(HttpStatus.NOT_FOUND),

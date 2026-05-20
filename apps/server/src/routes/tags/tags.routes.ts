@@ -60,6 +60,10 @@ export const createTagGroup = createRoute({
       successResponseSchema(selectTagGroupsSchema, HttpStatus.CREATED),
       'Create Tag Group Success'
     ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
+    ),
     [HttpStatus.BAD_REQUEST]: jsonContent(errorResponseSchema(HttpStatus.BAD_REQUEST), ''),
     [HttpStatus.CONFLICT]: jsonContent(errorResponseSchema(HttpStatus.CONFLICT), ''),
     [HttpStatus.INTERNAL_SERVER_ERROR]: jsonContent(
@@ -90,6 +94,10 @@ export const updateTagGroup = createRoute({
       successResponseSchema(insertTagGroupsSchema),
       'Update Tag Group Success'
     ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
+    ),
     [HttpStatus.BAD_REQUEST]: jsonContent(errorResponseSchema(HttpStatus.BAD_REQUEST), ''),
     [HttpStatus.NOT_FOUND]: jsonContent(errorResponseSchema(HttpStatus.NOT_FOUND), ''),
     [HttpStatus.INTERNAL_SERVER_ERROR]: jsonContent(
@@ -111,6 +119,10 @@ export const deleteTagGroup = createRoute({
     [HttpStatus.OK]: jsonContent(
       successResponseSchema(z.object({ id: z.string() })),
       'User Registration Success'
+    ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
     ),
     [HttpStatus.NOT_FOUND]: jsonContent(errorResponseSchema(HttpStatus.NOT_FOUND), ''),
     [HttpStatus.CONFLICT]: jsonContent(errorResponseSchema(HttpStatus.CONFLICT), ''),
@@ -171,6 +183,10 @@ export const createTag = createRoute({
       successResponseSchema(selectTagsSchema, HttpStatus.CREATED),
       'Create Tag Success'
     ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
+    ),
     [HttpStatus.BAD_REQUEST]: jsonContent(errorResponseSchema(HttpStatus.BAD_REQUEST), ''),
     [HttpStatus.CONFLICT]: jsonContent(errorResponseSchema(HttpStatus.CONFLICT), ''),
     [HttpStatus.INTERNAL_SERVER_ERROR]: jsonContent(
@@ -197,6 +213,10 @@ export const updateTag = createRoute({
   },
   responses: {
     [HttpStatus.OK]: jsonContent(successResponseSchema(selectTagsSchema), 'Update Tag Success'),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
+    ),
     [HttpStatus.BAD_REQUEST]: jsonContent(errorResponseSchema(HttpStatus.BAD_REQUEST), ''),
     [HttpStatus.NOT_FOUND]: jsonContent(errorResponseSchema(HttpStatus.NOT_FOUND), ''),
     [HttpStatus.CONFLICT]: jsonContent(errorResponseSchema(HttpStatus.CONFLICT), ''),
@@ -217,6 +237,10 @@ export const deleteTag = createRoute({
   },
   responses: {
     [HttpStatus.OK]: jsonContent(successResponseSchema(z.null()), 'User Registration Success'),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
+    ),
     [HttpStatus.NOT_FOUND]: jsonContent(errorResponseSchema(HttpStatus.NOT_FOUND), ''),
     [HttpStatus.INTERNAL_SERVER_ERROR]: jsonContent(
       errorResponseSchema(HttpStatus.INTERNAL_SERVER_ERROR),
@@ -241,6 +265,10 @@ export const moveTag = createRoute({
   },
   responses: {
     [HttpStatus.OK]: jsonContent(successResponseSchema(selectTagsSchema), 'Tag moved successfully'),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
+    ),
     [HttpStatus.BAD_REQUEST]: jsonContent(
       errorResponseSchema(HttpStatus.BAD_REQUEST),
       'Invalid target group'
@@ -280,6 +308,10 @@ export const bulkDeleteTags = createRoute({
       ),
       'Tags deleted successfully'
     ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
+    ),
     [HttpStatus.BAD_REQUEST]: jsonContent(
       errorResponseSchema(HttpStatus.BAD_REQUEST),
       'Invalid request'
@@ -314,6 +346,10 @@ export const bulkMoveTags = createRoute({
         })
       ),
       'Tags moved successfully'
+    ),
+    [HttpStatus.FORBIDDEN]: jsonContent(
+      errorResponseSchema(HttpStatus.FORBIDDEN),
+      'Demo mode blocked'
     ),
     [HttpStatus.BAD_REQUEST]: jsonContent(
       errorResponseSchema(HttpStatus.BAD_REQUEST),
