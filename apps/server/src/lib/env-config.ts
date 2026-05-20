@@ -13,6 +13,11 @@ const envSchema = z.object({
 
   NODE_ENV: z.enum(['development', 'production', 'test']).default('production'),
 
+  DEMO_MODE: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((value) => value === 'true'),
+
   CORS_ORIGINS: z.union([z.url(), z.literal('*')]).default('http://localhost:3001'),
 
   JWT_SECRET: z.string(), // min 32 chars
@@ -87,6 +92,7 @@ export type Env = z.infer<typeof envSchema>;
 export const env = {
   ...envData,
   DATABASE_URL,
+  isDemo: envData.DEMO_MODE,
   isDevelopment: envData.NODE_ENV === 'development',
   isProduction: envData.NODE_ENV === 'production',
   isTest: envData.NODE_ENV === 'test'
