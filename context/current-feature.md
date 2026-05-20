@@ -7,7 +7,7 @@
 
 ## Current Focus
 
-- Phase 5 next: browser extraction backstop.
+- Phase 6 next: Docker/browser isolation guidance.
 
 ## Notes
 

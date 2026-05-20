@@ -6,6 +6,7 @@
 - Phase 2 is complete. Redirect-following downloads now revalidate each redirect target, reject private/loopback redirect destinations, and stop after a small redirect budget.
 - Phase 3 is complete. The server URL entry points and content extraction worker now validate URLs before creating links or navigating the browser.
 - Phase 4 is complete. Remote image downloads now pass through URL validation and redirect revalidation before storage writes.
+- Phase 5 is complete. Browser request URLs are now checked before the crawler context allows navigation or subresource requests.
 
 ## Changed Files
 
@@ -24,6 +25,9 @@
 - `apps/server/src/workers/content-extraction.worker.ts` - validates article URLs before calling the browser service.
 - `apps/server/src/services/storage.service.ts` - routes remote image downloads through URL validation and redirect-safe fetches for both local and S3 adapters.
 - `apps/server/src/routes/files/files.test.ts` - covers rejection of a private-network remote image URL.
+- `apps/server/src/lib/browser-request-guard.ts` - added a helper for blocking unsafe browser request URLs.
+- `apps/server/src/lib/browser-request-guard.test.ts` - added a focused rejection/allowance test for browser request URLs.
+- `apps/server/src/services/browser.service.ts` - installs browser context request interception and blocks unsafe requests.
 
 ## Verification Results
 
@@ -32,6 +36,7 @@
 - `pnpm --filter server test src/lib/article-url-guard.test.ts` - pass.
 - `pnpm --filter server test src/lib/api-client.test.ts` - pass.
 - `pnpm --filter server test src/routes/files/files.test.ts` - pass.
+- `pnpm --filter server test src/lib/browser-request-guard.test.ts` - pass.
 - `pnpm --filter server typecheck` - pass.
 - `pnpm lint` - root lint still fails because of pre-existing unrelated formatting issues in `apps/server/browser/server.js`, `apps/web/src/locales/en/common.json`, `apps/web/src/locales/id/common.json`, `apps/web/src/routeTree.gen.ts`, `apps/web/src/typography.css`, and `docs/browser-image-optimization.md`.
 
@@ -43,9 +48,9 @@
 
 ## Remaining Risks
 
-- Phase 5 still remains: browser extraction backstop.
+- Phase 6 still remains: Docker/browser isolation guidance.
 - The repo has unrelated pre-existing worktree changes that were intentionally left untouched.
 
 ## Completion Summary
 
-Completed the SSRF guard foundation, redirect-safe fetching, the browser-navigation backstop, and remote image download safety by making URL validation async and DNS-aware, adding redirect revalidation for SSRF-sensitive downloads, validating article URLs before browser navigation, routing remote image downloads through validated fetches, and verifying the new behavior with focused tests and server typecheck.
+Completed the SSRF guard foundation, redirect-safe fetching, the browser-navigation backstop, remote image download safety, and browser request blocking by making URL validation async and DNS-aware, adding redirect revalidation for SSRF-sensitive downloads, validating article URLs before browser navigation, routing remote image downloads through validated fetches, blocking unsafe browser requests in the crawler context, and verifying the new behavior with focused tests and server typecheck.

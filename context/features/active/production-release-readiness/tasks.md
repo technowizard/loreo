@@ -50,14 +50,14 @@ Implement the high and medium readiness items from `brief.md` and `plan.md`. Do 
 
 ## Phase 5: Browser Extraction Backstop
 
-- [ ] Add a testable helper for browser request URL blocking.
-  - [ ] Reject internal/private URL requests.
-  - [ ] Allow normal public asset/document requests.
-- [ ] Update `apps/server/src/services/browser.service.ts` to install browser context request interception.
-  - [ ] Block private/internal navigation and subresource requests.
-  - [ ] Keep logging useful without exposing sensitive internal host details.
-  - [ ] Make clear in code/docs this is defense-in-depth, not full infrastructure isolation.
-- [ ] Run browser service/request-blocking tests where practical.
+- [x] Add a testable helper for browser request URL blocking.
+  - [x] Reject internal/private URL requests.
+  - [x] Allow normal public asset/document requests.
+- [x] Update `apps/server/src/services/browser.service.ts` to install browser context request interception.
+  - [x] Block private/internal navigation and subresource requests.
+  - [x] Keep logging useful without exposing sensitive internal host details.
+  - [x] Make clear in code/docs this is defense-in-depth, not full infrastructure isolation.
+- [x] Run browser service/request-blocking tests where practical.
 
 ## Phase 6: Docker Browser Isolation Guidance
 
