@@ -1,4 +1,8 @@
-FROM python:3.12-slim
+FROM node:22-slim
+
+ARG TARGETARCH
+ARG CAMOUFOX_VERSION=135.0.1
+ARG CAMOUFOX_RELEASE=beta.24
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -9,32 +13,47 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxt6 \
     libx11-xcb1 \
     libasound2 \
+    libegl1-mesa \
     libgl1-mesa-dri \
-    libglx-mesa0 \
-    libegl-mesa0 \
     libgbm1 \
     fonts-liberation \
+    ca-certificates \
+    curl \
+    unzip \
+    \
+    && apt-get remove -y libz3-4 2>/dev/null || true \
+    && apt-get autoremove -y \
+    && rm -rf /usr/share/icons/Adwaita \
+    \
     && rm -rf /var/lib/apt/lists/*
 
-# Required for software WebGL rendering (no GPU in Docker)
 ENV LIBGL_ALWAYS_SOFTWARE=1
 
-# camoufox==0.4.11 passes "proxy":null which playwright>=1.54 rejects. Pin playwright to last good version.
-RUN pip install --no-cache-dir "playwright==1.53.0" "camoufox[geoip]"
-RUN python -m camoufox fetch
+RUN set -eux; \
+    case "${TARGETARCH}" in \
+      amd64) CAMOUFOX_ARCH="x86_64"; LIB_DIR="x86_64-linux-gnu" ;; \
+      arm64) CAMOUFOX_ARCH="arm64"; LIB_DIR="aarch64-linux-gnu" ;; \
+      *) echo "Unsupported: ${TARGETARCH}" && exit 1 ;; \
+    esac; \
+    mkdir -p /root/.cache/camoufox; \
+    curl -fSL "https://github.com/daijro/camoufox/releases/download/v${CAMOUFOX_VERSION}-${CAMOUFOX_RELEASE}/camoufox-${CAMOUFOX_VERSION}-${CAMOUFOX_RELEASE}-lin.${CAMOUFOX_ARCH}.zip" \
+      -o /tmp/camoufox.zip; \
+    unzip -q /tmp/camoufox.zip -d /root/.cache/camoufox || true; \
+    if [ ! -f /root/.cache/camoufox/camoufox-bin ]; then \
+      cd /root/.cache/camoufox && ls camoufox-*/ >/dev/null 2>&1 && mv camoufox-*/* . 2>/dev/null || true; \
+    fi; \
+    test -f /root/.cache/camoufox/camoufox-bin; \
+    chmod -R 755 /root/.cache/camoufox; \
+    echo "{\"version\":\"${CAMOUFOX_VERSION}\",\"release\":\"${CAMOUFOX_RELEASE}\"}" > /root/.cache/camoufox/version.json; \
+    rm -rf /root/.cache/camoufox/fonts/macos /root/.cache/camoufox/fonts/windows /tmp/camoufox.zip
+
+WORKDIR /app
+
+COPY apps/server/browser/package.json apps/server/browser/package-lock.json* ./
+RUN npm install --omit=dev
+
+COPY apps/server/browser/server.js ./
 
 EXPOSE 4444
 
-CMD ["python", "-c", "\
-from camoufox.server import launch_server; \
-launch_server(\
-  headless=True,\
-  port=4444,\
-  ws_path='camoufox',\
-  firefox_user_prefs={\
-    'browser.sessionhistory.max_entries': 0,\
-    'browser.sessionhistory.max_total_viewers': 0,\
-    'javascript.options.mem.gc_incremental_slice_ms': 10,\
-  }\
-) \
-"]
+CMD ["node", "server.js"]
