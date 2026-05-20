@@ -79,10 +79,10 @@ Implement the high and medium readiness items from `brief.md` and `plan.md`. Do 
 
 ## Phase 8: Frontend Smoke Tests
 
-- [ ] Add smoke test for app/auth shell rendering without crashing.
-- [ ] Add one critical auth or link-management smoke test using existing Vitest/jsdom/MSW setup.
-- [ ] Avoid adding new E2E infrastructure in this feature.
-- [ ] Run `pnpm --filter web test`.
+- [x] Add smoke test for app/auth shell rendering without crashing.
+- [x] Add one critical auth or link-management smoke test using existing Vitest/jsdom/MSW setup.
+- [x] Avoid adding new E2E infrastructure in this feature.
+- [x] Run `pnpm --filter web test`.
 
 ## Phase 9: Full Verification And Review
 

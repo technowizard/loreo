@@ -7,7 +7,7 @@
 
 ## Current Focus
 
-- Phase 8 next: frontend smoke tests.
+- Phase 9 next: full verification and review.
 
 ## Notes
 
