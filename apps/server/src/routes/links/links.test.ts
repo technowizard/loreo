@@ -224,13 +224,13 @@ describe('links routes', () => {
 
     it('accepts a new URL and enqueues extraction', async () => {
       const response = await client.links.$post(
-        { json: { url: 'https://new-article.example.com/post' } },
+        { json: { url: 'https://example.com/new-article/post' } },
         { headers: { Cookie: authCookie } }
       );
       expect(response.status).toBe(HttpStatus.ACCEPTED);
       if (response.status === HttpStatus.ACCEPTED) {
         const json = await response.json();
-        expect(json.result.url).toBe('https://new-article.example.com/post');
+        expect(json.result.url).toBe('https://example.com/new-article/post');
         expect(json.result.id).toBeTruthy();
       }
     });

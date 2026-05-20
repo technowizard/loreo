@@ -160,7 +160,7 @@ export const createLink: AppRouteHandler<CreateLinkRoute> = async (c) => {
       return c.json(response, response.status);
     }
 
-    if (!isValidUrl(url)) {
+    if (!(await isValidUrl(url))) {
       const response = errorResponse('URL is not allowed', HttpStatus.BAD_REQUEST);
       return c.json(response, response.status);
     }

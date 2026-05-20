@@ -1,6 +1,7 @@
 import { Mutex } from 'async-mutex';
-import { firefox, type Browser, type BrowserContext } from 'playwright-core';
+import { type Browser, type BrowserContext, firefox } from 'playwright-core';
 
+import { isAllowedBrowserRequestUrl } from '@/lib/browser-request-guard.js';
 import { env } from '@/lib/env-config.js';
 import { logger } from '@/lib/logger.js';
 import { detectPaywall } from '@/lib/paywall-detector.js';
@@ -38,7 +39,19 @@ class BrowserService {
   }
 
   async createContext(browser: Browser): Promise<BrowserContext> {
-    return await browser.newContext();
+    const context = await browser.newContext();
+
+    await context.route('**/*', async (route) => {
+      if (await isAllowedBrowserRequestUrl(route.request().url())) {
+        await route.continue();
+        return;
+      }
+
+      logger.warn('[Crawler] Blocked unsafe browser request');
+      await route.abort();
+    });
+
+    return context;
   }
 
   async ensureBrowser(): Promise<Browser> {

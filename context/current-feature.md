@@ -1,18 +1,18 @@
 # Current Feature
 
-**Slug:** notification-store-toast-dispatch
-**Status:** Implemented
-**Path:** `context/features/active/notification-store-toast-dispatch/`
-**Branch:** main
+**Slug:** production-release-readiness
+**Status:** In Progress
+**Path:** `context/features/active/production-release-readiness/`
+**Branch:** feature/production-release-readiness
 
 ## Current Focus
 
-- Execute the prepared tasks for routing simple one-shot auth and quick-add toasts through the notification store.
+- Phase 9 complete: full verification and review recorded.
 
 ## Notes
 
-- Existing store implementation: `apps/web/src/stores/notifications.ts`
-- Existing bridge component: `apps/web/src/components/common/notifications.tsx`
-- Reference plan: `docs/plans/2026-05-17-web-refactor-quick-wins.md`, Task 2
-- Keep `toast.loading` and `toast.dismiss` direct for now because the store does not model loading lifecycles.
-- Task list: `context/features/active/notification-store-toast-dispatch/tasks.md`
+- Source readiness docs: `docs/READINESS.md` and `docs/RELEASE_CHECKLIST.md`
+- High-priority scope: SSRF hardening, browser isolation, strong production secrets/env guidance.
+- Medium-priority scope: `SECURITY.md`, frontend smoke tests, public/fresh-clone release smoke test, CORS/cookie production review.
+- Explicitly skipped per user request: CI workflow setup.
+- Previous implemented feature remains at `context/features/active/notification-store-toast-dispatch/`.

@@ -1,6 +1,13 @@
+import { isValidUrl } from './url-validator.js';
+
 type METHODS = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 type RequestBody = File | string | URLSearchParams | FormData | object | undefined;
+type RedirectFetchOptions = {
+  headers?: object;
+  timeoutMs?: number;
+  maxRedirects?: number;
+};
 
 // used for user agent rotation
 const userAgents = [
@@ -32,6 +39,52 @@ function buildPayload(method: METHODS, body?: RequestBody, headers = {}): Reques
   }
 
   return payload;
+}
+
+function isRedirectStatus(status: number): boolean {
+  return [301, 302, 303, 307, 308].includes(status);
+}
+
+export async function fetchWithValidatedRedirects(
+  url: string,
+  { headers = {}, timeoutMs = 30_000, maxRedirects = 5 }: RedirectFetchOptions = {}
+): Promise<Response> {
+  let currentUrl = url;
+  let redirectCount = 0;
+
+  while (true) {
+    if (!(await isValidUrl(currentUrl))) {
+      throw new Error(`Rejected URL: ${currentUrl}`);
+    }
+
+    const payload = buildPayload('GET', undefined, headers);
+    const response = await fetch(currentUrl, {
+      ...payload,
+      redirect: 'manual',
+      signal: AbortSignal.timeout(timeoutMs)
+    });
+
+    if (!isRedirectStatus(response.status)) {
+      return response;
+    }
+
+    redirectCount += 1;
+    if (redirectCount > maxRedirects) {
+      throw new Error(`Too many redirects while fetching ${url}`);
+    }
+
+    const location = response.headers.get('location');
+    if (!location) {
+      throw new Error(`Redirect response missing Location header for ${currentUrl}`);
+    }
+
+    const nextUrl = new URL(location, currentUrl).toString();
+    if (!(await isValidUrl(nextUrl))) {
+      throw new Error(`Unsafe redirect target rejected: ${nextUrl}`);
+    }
+
+    currentUrl = nextUrl;
+  }
 }
 
 export const apiClient = {

@@ -11,7 +11,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
-import { apiClient, rotatedUserAgent } from '@/lib/api-client.js';
+import { fetchWithValidatedRedirects, rotatedUserAgent } from '@/lib/api-client.js';
 import { env } from '@/lib/env-config.js';
 import { generateId } from '@/lib/generate-id.js';
 import { logger } from '@/lib/logger.js';
@@ -214,7 +214,7 @@ class LocalStorageAdapter implements IStorageService {
     imageUrl: string,
     metadata?: Record<string, string>
   ): Promise<UploadResult | null> {
-    if (!isValidUrl(imageUrl)) {
+    if (!(await isValidUrl(imageUrl))) {
       logger.warn(`Rejected image URL: ${imageUrl}`);
       return null;
     }
@@ -223,9 +223,9 @@ class LocalStorageAdapter implements IStorageService {
       try {
         logger.info(`Downloading image from URL: ${imageUrl} (attempt ${attempt})`);
 
-        const response = await apiClient.get(imageUrl, {
+        const response = await fetchWithValidatedRedirects(imageUrl, {
           headers: { 'User-Agent': rotatedUserAgent },
-          signal: AbortSignal.timeout(5000)
+          timeoutMs: 5000
         });
 
         if (!response.ok) {
@@ -404,14 +404,14 @@ class S3StorageAdapter implements IStorageService {
     metadata?: Record<string, string>
   ): Promise<UploadResult | null> {
     try {
-      if (!isValidUrl(imageUrl)) {
+      if (!(await isValidUrl(imageUrl))) {
         logger.warn(`Rejected image URL: ${imageUrl}`);
         return null;
       }
 
-      const response = await apiClient.get(imageUrl, {
+      const response = await fetchWithValidatedRedirects(imageUrl, {
         headers: { 'User-Agent': rotatedUserAgent },
-        signal: AbortSignal.timeout(5000)
+        timeoutMs: 5000
       });
 
       if (!response.ok) {
