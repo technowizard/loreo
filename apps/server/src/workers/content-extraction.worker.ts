@@ -6,6 +6,7 @@ import { enqueueContentExtraction } from '@/queues/content-extraction.queue.js';
 
 import { db } from '@/db/index.js';
 
+import { assertSafeArticleUrl } from '@/lib/article-url-guard.js';
 import { createWorker } from '@/lib/job-queue.js';
 import { logger } from '@/lib/logger.js';
 import { estimateReadingTime } from '@/lib/reading-time.js';
@@ -121,6 +122,8 @@ async function contentExtractionJob(job: Job<ContentExtractionJobData>): Promise
 
   try {
     await job.updateProgress(5);
+
+    await assertSafeArticleUrl(articleUrl);
 
     const { html: htmlContent, isPaywalled } = await browserService.crawlPage(articleUrl);
 

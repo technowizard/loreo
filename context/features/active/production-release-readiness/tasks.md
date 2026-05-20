@@ -33,12 +33,12 @@ Implement the high and medium readiness items from `brief.md` and `plan.md`. Do 
 
 ## Phase 3: Apply Guard To Server URL Entry Points
 
-- [ ] Update `apps/server/src/routes/links/links.handlers.ts` to await the deeper URL guard before creating links.
-- [ ] Update `apps/server/src/routes/imports/imports.handlers.ts` to validate CSV preview/import URLs with the deeper guard.
-- [ ] Update `apps/server/src/workers/csv-import.worker.ts` to validate imported URLs with the deeper guard before creating links.
-- [ ] Update `apps/server/src/workers/content-extraction.worker.ts` to validate article URLs before browser navigation.
-- [ ] Update tests around link creation/import validation.
-- [ ] Run relevant server route/worker tests.
+- [x] Update `apps/server/src/routes/links/links.handlers.ts` to await the deeper URL guard before creating links.
+- [x] Update `apps/server/src/routes/imports/imports.handlers.ts` to validate CSV preview/import URLs with the deeper guard.
+- [x] Update `apps/server/src/workers/csv-import.worker.ts` to validate imported URLs with the deeper guard before creating links.
+- [x] Update `apps/server/src/workers/content-extraction.worker.ts` to validate article URLs before browser navigation.
+- [x] Update tests around link creation/import validation.
+- [x] Run relevant server route/worker tests.
 
 ## Phase 4: Apply Guard To Remote Image Downloads
 

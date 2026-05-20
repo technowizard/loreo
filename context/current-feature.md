@@ -7,7 +7,7 @@
 
 ## Current Focus
 
-- Phase 2 completed: redirect-safe fetching for SSRF-sensitive downloads.
+- Phase 4 next: remote image download safety.
 
 ## Notes
 
