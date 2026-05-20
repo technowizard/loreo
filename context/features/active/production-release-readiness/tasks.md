@@ -42,11 +42,11 @@ Implement the high and medium readiness items from `brief.md` and `plan.md`. Do 
 
 ## Phase 4: Apply Guard To Remote Image Downloads
 
-- [ ] Update `apps/server/src/services/storage.service.ts` to use the deeper URL guard before remote image downloads.
-- [ ] Route image downloads through the redirect-safe fetch path.
-- [ ] Ensure both local and S3 storage adapters use equivalent remote image URL safety.
-- [ ] Update `apps/server/src/routes/files/files.test.ts` or storage tests for unsafe image URL and unsafe redirect rejection.
-- [ ] Run remote image/storage related tests.
+- [x] Update `apps/server/src/services/storage.service.ts` to use the deeper URL guard before remote image downloads.
+- [x] Route image downloads through the redirect-safe fetch path.
+- [x] Ensure both local and S3 storage adapters use equivalent remote image URL safety.
+- [x] Update `apps/server/src/routes/files/files.test.ts` or storage tests for unsafe image URL and unsafe redirect rejection.
+- [x] Run remote image/storage related tests.
 
 ## Phase 5: Browser Extraction Backstop
 

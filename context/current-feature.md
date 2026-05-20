@@ -7,7 +7,7 @@
 
 ## Current Focus
 
-- Phase 4 next: remote image download safety.
+- Phase 5 next: browser extraction backstop.
 
 ## Notes
 
