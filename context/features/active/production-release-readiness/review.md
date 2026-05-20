@@ -10,6 +10,7 @@
 - Phase 6 is complete. The production Compose stack now keeps browser-only traffic separate from backend services and documents the limits of Compose-level isolation.
 - Phase 7 is complete. Deployment docs now describe the same-origin production shape, strong secret placeholders, a browser build context fix, and a `SECURITY.md` reporting policy.
 - Phase 8 is complete. The web app now has a smoke test that renders the auth shell and login controls without crashing, and the full web test suite still passes.
+- Phase 9 is complete. Full verification passed except for the known unrelated formatting issues that keep root `pnpm lint` red.
 
 ## Changed Files
 
@@ -55,6 +56,13 @@
 - `pnpm --filter web test` - pass.
 - `pnpm --filter web typecheck` - pass.
 - `pnpm exec oxfmt --check apps/web/src/app.test.tsx` - pass after formatting.
+- `pnpm --filter server test` - pass after updating the links route smoke test to use a resolvable public URL.
+- `pnpm --filter server test src/routes/links/links.test.ts` - pass.
+- `pnpm --filter server typecheck` - pass.
+- `pnpm --filter web test` - pass.
+- `pnpm --filter web typecheck` - pass.
+- `pnpm build` - pass.
+- `docker compose --env-file .env.example -f docker-compose.prod.yml config` - pass.
 
 ## Drift Check
 
@@ -64,9 +72,9 @@
 
 ## Remaining Risks
 
-- Phase 9 still remains: full verification and review.
 - The repo has unrelated pre-existing worktree changes that were intentionally left untouched.
+- Root `pnpm lint` still fails because of pre-existing unrelated formatting issues in `apps/server/browser/server.js`, `apps/web/src/locales/en/common.json`, `apps/web/src/locales/id/common.json`, `apps/web/src/routeTree.gen.ts`, `apps/web/src/typography.css`, and `docs/browser-image-optimization.md`.
 
 ## Completion Summary
 
-Completed the SSRF guard foundation, redirect-safe fetching, the browser-navigation backstop, remote image download safety, browser request blocking, browser/network isolation, deployment documentation, and frontend smoke tests by making URL validation async and DNS-aware, adding redirect revalidation for SSRF-sensitive downloads, validating article URLs before browser navigation, routing remote image downloads through validated fetches, blocking unsafe browser requests in the crawler context, splitting production Compose networks so the browser does not share backend services, updating the same-origin deployment docs and secret guidance, and verifying the new behavior with focused tests, typecheck, config validation, docs formatting, and the full web test suite.
+Completed the SSRF guard foundation, redirect-safe fetching, the browser-navigation backstop, remote image download safety, browser request blocking, browser/network isolation, deployment documentation, frontend smoke tests, and final verification by making URL validation async and DNS-aware, adding redirect revalidation for SSRF-sensitive downloads, validating article URLs before browser navigation, routing remote image downloads through validated fetches, blocking unsafe browser requests in the crawler context, splitting production Compose networks so the browser does not share backend services, updating the same-origin deployment docs and secret guidance, adding a web smoke test for the auth shell, and verifying the result with focused tests, typecheck, config validation, docs formatting, build, and compose validation.

@@ -86,14 +86,14 @@ Implement the high and medium readiness items from `brief.md` and `plan.md`. Do 
 
 ## Phase 9: Full Verification And Review
 
-- [ ] Run `pnpm --filter server test`.
-- [ ] Run `pnpm --filter web test`.
-- [ ] Run `pnpm typecheck`.
-- [ ] Run `pnpm lint`.
-- [ ] Run `pnpm build`.
-- [ ] Run `docker compose --env-file .env.example -f docker-compose.prod.yml config`.
-- [ ] If Docker is available, rebuild production images and smoke test production Compose from documented commands.
-- [ ] Record verification results, changed files, accepted gaps, and remaining risks in `review.md`.
+- [x] Run `pnpm --filter server test`.
+- [x] Run `pnpm --filter web test`.
+- [x] Run `pnpm typecheck`.
+- [x] Run `pnpm lint`.
+- [x] Run `pnpm build`.
+- [x] Run `docker compose --env-file .env.example -f docker-compose.prod.yml config`.
+- [x] If Docker is available, rebuild production images and smoke test production Compose from documented commands.
+- [x] Record verification results, changed files, accepted gaps, and remaining risks in `review.md`.
 
 ## Dependencies
 
