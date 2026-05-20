@@ -4,6 +4,7 @@
 
 - Phase 1 complete: demo env parsing, shared demo helper, and test isolation helper added.
 - Phase 2 complete: demo-mode route enforcement added for auth, links, imports, tags, and highlights coverage verified.
+- Phase 3 complete: demo-mode worker and queue safety added for content extraction and CSV import.
 
 ## Changed Files
 
@@ -22,6 +23,10 @@
 - `apps/server/src/routes/imports/imports.demo.test.ts` - added demo-mode imports route coverage.
 - `apps/server/src/routes/tags/tags.demo.test.ts` - added demo-mode tags route coverage.
 - `apps/server/src/routes/highlights/highlights.demo.test.ts` - added hybrid highlight behavior coverage.
+- `apps/server/src/workers/content-extraction.worker.ts` - added demo-mode early exit before crawl, writes, and follow-up enqueueing.
+- `apps/server/src/workers/csv-import.worker.ts` - added demo-mode early exit before CSV import work and extraction enqueueing.
+- `apps/server/src/workers/content-extraction.worker.test.ts` - added demo-mode worker regression coverage.
+- `apps/server/src/workers/csv-import.worker.test.ts` - added demo-mode worker regression coverage.
 
 ## Verification Results
 
@@ -29,6 +34,8 @@
 - `pnpm --filter server typecheck` - pass, no output beyond `tsc --noEmit`.
 - `pnpm --filter server typecheck` after phase 2 route/test fixes - pass.
 - `pnpm --filter server test` after phase 2 route/test fixes - pass, 21 files / 168 tests total, 0 failures.
+- `pnpm --filter server test -- src/workers/content-extraction.worker.test.ts src/workers/csv-import.worker.test.ts` - pass, 23 files / 170 tests total, 0 failures.
+- `pnpm --filter server typecheck` after worker guard/test fixes - pass.
 
 ## Drift Check
 
@@ -38,7 +45,8 @@
 ## Remaining Risks
 
 - Worker exits, demo reset, web UX, and deployment notes remain for later phases.
+- Demo reset, web UX, and deployment notes remain for later phases.
 
 ## Completion Summary
 
-Phase 1 scaffolded the demo-mode contract and the env isolation helper needed for later route tests. Phase 2 enforced the demo-mode server route policy and verified the hybrid highlight behavior.
+Phase 1 scaffolded the demo-mode contract and the env isolation helper needed for later route tests. Phase 2 enforced the demo-mode server route policy and verified the hybrid highlight behavior. Phase 3 stopped background workers from doing real work in demo mode and locked that down with isolated regression tests.

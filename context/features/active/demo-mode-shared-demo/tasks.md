@@ -30,12 +30,12 @@ Dependencies: Phase 1.
 
 Dependencies: Phase 1.
 
-- [ ] Add an early demo-mode exit in `apps/server/src/workers/content-extraction.worker.ts` before any status update, crawl, image upload, database write, or follow-up enqueue.
-- [ ] Add an early demo-mode exit in `apps/server/src/workers/csv-import.worker.ts` before any CSV read, import-session mutation, tag/link creation, or extraction enqueue.
-- [ ] Ensure demo-blocked link/import route paths cannot enqueue extraction/import jobs before returning `403`.
-- [ ] Add worker or helper tests proving demo mode exits before expensive or mutating collaborators are called.
-- [ ] Verify with targeted worker tests if available, plus `pnpm --filter server typecheck`.
-- [ ] Record verification results in `review.md`.
+- [x] Add an early demo-mode exit in `apps/server/src/workers/content-extraction.worker.ts` before any status update, crawl, image upload, database write, or follow-up enqueue.
+- [x] Add an early demo-mode exit in `apps/server/src/workers/csv-import.worker.ts` before any CSV read, import-session mutation, tag/link creation, or extraction enqueue.
+- [x] Ensure demo-blocked link/import route paths cannot enqueue extraction/import jobs before returning `403`.
+- [x] Add worker or helper tests proving demo mode exits before expensive or mutating collaborators are called.
+- [x] Verify with targeted worker tests if available, plus `pnpm --filter server typecheck`.
+- [x] Record verification results in `review.md`.
 
 ## Phase 4: Demo Seed And Reset
 

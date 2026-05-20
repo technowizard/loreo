@@ -9,6 +9,7 @@ import type { CsvImportJobData } from '@/queues/csv-import.queue.js';
 import { db } from '@/db/index.js';
 
 import { parseLine, parseTags } from '@/lib/csv-parser.js';
+import { isDemoMode } from '@/lib/demo-mode.js';
 import { createWorker } from '@/lib/job-queue.js';
 import { logger } from '@/lib/logger.js';
 import { isValidUrl } from '@/lib/url-validator.js';
@@ -53,6 +54,17 @@ async function csvImportJob(job: Job<CsvImportJobData>): Promise<{
   failedCount: number;
   status: string;
 }> {
+  if (isDemoMode()) {
+    logger.info(`[${workerName}] Skipping CSV import job ${job.id} in demo mode`);
+
+    return {
+      importedCount: 0,
+      skippedCount: 0,
+      failedCount: 0,
+      status: 'skipped'
+    };
+  }
+
   const { importSessionId, userId, filePath, fieldMapping, tagName } = job.data;
 
   logger.info(`[${workerName}] Starting CSV import job ${job.id} for session ${importSessionId}`);
