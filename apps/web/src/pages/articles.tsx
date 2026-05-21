@@ -1,11 +1,14 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import { getRecentlyCompletedLinkIds } from '@/features/articles/utils/get-completed-link-ids';
 
 import { useDeleteLink } from '@/features/articles/api/delete-link';
+import { getLinkQueryOptions } from '@/features/articles/api/get-link';
 import { useGetLinks } from '@/features/articles/api/get-links';
 import { useRefetchLink } from '@/features/articles/api/refetch-link';
 import { useUpdateLink } from '@/features/articles/api/update-link';
@@ -27,7 +30,7 @@ import { cn } from '@/lib/utils';
 
 import { useNotificationsStore } from '@/stores/notifications';
 
-import type { UpdateLinkBody } from '@/types/links';
+import type { StreamlinedLink, UpdateLinkBody } from '@/types/links';
 import type { Tag, TagGroup } from '@/types/tags';
 
 const filterTypeMap = new Map<string, string>();
@@ -44,6 +47,7 @@ function ArticleListSkeleton() {
 
 function ArticlesPage() {
   const { isDesktop, isMobile, isTablet } = useMediaQuery();
+  const queryClient = useQueryClient();
   const notifySuccess = useNotificationsStore.useSuccess();
   const { t } = useTranslation('common');
 
@@ -127,6 +131,7 @@ function ArticlesPage() {
   const infiniteLinksQuery = useGetLinks({ filters: activeFilter });
   const tagsQuery = useGetTags();
   const tagGroupsQuery = useGetTagGroups();
+  const previousLinksRef = useRef<Array<Pick<StreamlinedLink, 'id' | 'processingStatus'>>>([]);
 
   const updateLinkMutation = useUpdateLink({
     mutationConfig: {
@@ -188,6 +193,31 @@ function ArticlesPage() {
   const links = infiniteLinksQuery.data;
   const tags = tagsQuery.data?.result;
   const tagGroups = tagGroupsQuery.data?.result;
+
+  useEffect(() => {
+    if (!links?.length) {
+      previousLinksRef.current = [];
+      return;
+    }
+
+    const recentlyCompletedLinkIds = getRecentlyCompletedLinkIds(previousLinksRef.current, links);
+
+    if (recentlyCompletedLinkIds.length > 0) {
+      void Promise.all(
+        recentlyCompletedLinkIds.map(async (id) => {
+          await queryClient.invalidateQueries({
+            queryKey: getLinkQueryOptions(id).queryKey
+          });
+          await queryClient.prefetchQuery(getLinkQueryOptions(id));
+        })
+      );
+    }
+
+    previousLinksRef.current = links.map(({ id, processingStatus }) => ({
+      id,
+      processingStatus
+    }));
+  }, [links, queryClient]);
 
   const groupedTags = useMemo(() => {
     const groupMap = tagGroups?.reduce(
