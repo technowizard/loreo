@@ -221,9 +221,13 @@ function ImportArticlesPage() {
 
       {/* Navigation */}
       <div className="flex items-center justify-between border-t pt-6">
-        <Button onClick={handleCancel} variant="ghost">
-          {t('import.wizard.cancel')}
-        </Button>
+        <div className="flex">
+          {step !== STEP_UPLOAD && (
+            <Button onClick={handleCancel} variant="ghost">
+              {t('import.wizard.cancel')}
+            </Button>
+          )}
+        </div>
 
         <div className="flex gap-2">
           {step > STEP_UPLOAD && (

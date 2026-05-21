@@ -191,7 +191,11 @@ export function UploadFromCsv({ onUploadComplete }: UploadFromCsvProps) {
           <InfoIcon />
           <AlertTitle className="text-lg font-bold">{t('import.upload.successTitle')}</AlertTitle>
           <AlertDescription>
-            <p>{t('import.upload.successDescription')}</p>
+            <ul className="list-inside list-disc space-y-2 text-sm">
+              <li>We&apos;ll scan the file to help you map URLs, titles, and tags</li>
+              <li>Articles will be added to your library in the background</li>
+              <li>Large imports might take a while to complete content fetching</li>
+            </ul>
           </AlertDescription>
         </Alert>
       ) : (

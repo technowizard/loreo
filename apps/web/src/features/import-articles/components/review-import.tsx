@@ -34,10 +34,12 @@ export function ReviewImport({ onReviewComplete }: ReviewImportProps) {
         <Card className="flex-1">
           <CardHeader>
             <CardContent>
-              <h3>{t('import.review.summary', { count: uploadedFile.totalRows })}</h3>
+              <h3>{t('import.review.summary')}</h3>
               <p className="mt-2 text-lg font-semibold">
-                <span className="text-primary text-3xl font-bold">{uploadedFile.totalRows}</span>{' '}
-                {t('import.review.summary', { count: uploadedFile.totalRows })}
+                <span className="text-primary dark:text-primary-400 text-3xl font-bold">
+                  {uploadedFile.totalRows}
+                </span>{' '}
+                {t('import.review.articlesToImport')}
               </p>
             </CardContent>
           </CardHeader>
@@ -62,7 +64,9 @@ export function ReviewImport({ onReviewComplete }: ReviewImportProps) {
                 </Tooltip>
               </div>
               <p className="mt-2 text-lg font-semibold">
-                <span className="text-primary text-3xl font-bold">{preview.estimatedTime}</span>
+                <span className="text-primary dark:text-primary-400 text-3xl font-bold">
+                  {preview.estimatedTime}
+                </span>
               </p>
             </CardContent>
           </CardHeader>
@@ -95,7 +99,7 @@ export function ReviewImport({ onReviewComplete }: ReviewImportProps) {
                 {preview.tags ? (
                   <TableCell className="inline-flex items-center gap-2">
                     {preview.tags.slice(0, 3).map((tag) => (
-                      <Tag key={tag} tag={{ color: 'blue', name: tag }} />
+                      <Tag key={tag} tag={{ color: '#3B82F6', name: tag }} />
                     ))}
                     {preview.tags.length > 3 && (
                       <span className="text-foreground text-sm">
