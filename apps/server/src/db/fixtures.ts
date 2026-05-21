@@ -119,7 +119,7 @@ export const DEMO_LINKS: LinkSeed[] = [
 
 export const DEMO_RESET_USER = {
   id: '00000000-0000-0000-0000-000000000001',
-  email: 'demo@loreo.app',
+  email: 'demo@loreo.test',
   name: 'Demo Reader',
   settings: defaultUserSettings
 };
