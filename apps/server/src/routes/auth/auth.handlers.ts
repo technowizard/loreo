@@ -27,7 +27,7 @@ import type {
 
 const cookieOptions = {
   httpOnly: true,
-  sameSite: env.isProduction ? 'strict' : 'lax',
+  sameSite: env.isProduction ? 'none' : 'lax',
   secure: env.isProduction,
   path: '/'
 } as const;
