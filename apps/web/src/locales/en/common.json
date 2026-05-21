@@ -35,7 +35,10 @@
     "signIn": "Sign in",
     "dontHaveAccount": "Don't have an account?",
     "invalidCredentials": "Invalid email or password",
-    "success": "Login successful"
+    "success": "Login successful",
+    "tryDemo": "Try Demo",
+    "demoGuidance": "Shared demo account: demo@loreo.app / demo-password.",
+    "demoSignUpDisabled": "Demo mode disables registration. Use the shared demo account instead."
   },
   "register": {
     "title": "Create your account",
@@ -51,7 +54,12 @@
     "alreadyHaveAccount": "Already have an account?",
     "signIn": "Sign in",
     "genericError": "An error occurred",
-    "success": "Account created. Welcome!"
+    "success": "Account created. Welcome!",
+    "demoDisabled": {
+      "title": "Registration is disabled in demo mode",
+      "description": "Use the shared demo account to explore seeded content, highlights, and reader settings.",
+      "goToLogin": "Go to login"
+    }
   },
   "home": {
     "welcome": "Welcome to Loreo",
@@ -141,6 +149,12 @@
     },
     "importProgress": {
       "metaTitle": "Import Progress | Loreo"
+    }
+  },
+  "demo": {
+    "banner": {
+      "title": "Demo mode",
+      "description": "Seeded data resets periodically. Imports, tag management, and link changes are disabled by the server."
     }
   },
   "articles": {
@@ -284,6 +298,7 @@
     "readerPreferences": {
       "title": "Reader Preferences",
       "description": "Customize how articles look when you read them",
+      "demoNote": "Demo mode keeps these preferences local to this browser, so your changes won't update the shared demo account.",
       "themeLabel": "Theme",
       "themeTooltip": "Applies to both the app interface and article reader",
       "theme": {

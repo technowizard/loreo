@@ -53,14 +53,14 @@ Dependencies: Phases 1 and 2.
 
 Dependencies: Phase 1 for contract shape; can run after server guard behavior is clear.
 
-- [ ] Add `VITE_DEMO_MODE` parsing to `apps/web/src/lib/env.ts` and expose `env.isDemo` for UX only.
-- [ ] Add a compact authenticated demo banner in the protected app shell, likely through `apps/web/src/components/layouts/main.tsx` and a new banner component.
-- [ ] Add demo login guidance and a `Try Demo` action in `apps/web/src/features/auth/components/login-form.tsx` using the existing login endpoint.
-- [ ] Hide or disable register navigation and direct registration UI in demo mode.
-- [ ] Keep reader preference controls local-only in demo mode using the existing Zustand-persisted reader config; avoid shared account settings writes.
-- [ ] Ensure copy clearly explains that server-side restrictions protect the shared demo.
-- [ ] Verify with `pnpm --filter web typecheck` and existing web tests if affected components have coverage.
-- [ ] Record verification results in `review.md`.
+- [x] Add `VITE_DEMO_MODE` parsing to `apps/web/src/lib/env.ts` and expose `env.isDemo` for UX only.
+- [x] Add a compact authenticated demo banner in the protected app shell, likely through `apps/web/src/components/layouts/main.tsx` and a new banner component.
+- [x] Add demo login guidance and a `Try Demo` action in `apps/web/src/features/auth/components/login-form.tsx` using the existing login endpoint.
+- [x] Hide or disable register navigation and direct registration UI in demo mode.
+- [x] Keep reader preference controls local-only in demo mode using the existing Zustand-persisted reader config; avoid shared account settings writes.
+- [x] Ensure copy clearly explains that server-side restrictions protect the shared demo.
+- [x] Verify with `pnpm --filter web typecheck` and existing web tests if affected components have coverage.
+- [x] Record verification results in `review.md`.
 
 ## Phase 6: Web Disabled Entry Points
 

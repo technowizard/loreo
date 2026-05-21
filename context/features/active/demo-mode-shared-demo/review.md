@@ -6,6 +6,7 @@
 - Phase 2 complete: demo-mode route enforcement added for auth, links, imports, tags, and highlights coverage verified.
 - Phase 3 complete: demo-mode worker and queue safety added for content extraction and CSV import.
 - Phase 4 complete: demo seed/reset data, safety checks, and reset command added.
+- Phase 5 complete: web demo UX banner, demo login guidance, registration blocking, and reader note added.
 
 ## Changed Files
 
@@ -33,6 +34,15 @@
 - `apps/server/src/lib/demo-reset.test.ts` - added safety guard coverage for the reset helper.
 - `apps/server/scripts/demo-reset.ts` - added demo reset truncate-and-reseed command.
 - `apps/server/package.json` - added `demo:reset` script.
+- `apps/web/src/lib/env.ts` - added strict `VITE_DEMO_MODE` parsing and `env.isDemo`.
+- `apps/web/src/components/layouts/demo-banner.tsx` - added compact demo banner for authenticated shell.
+- `apps/web/src/components/layouts/main.tsx` - rendered demo banner in the protected shell.
+- `apps/web/src/features/auth/components/login-form.tsx` - added `Try Demo`, demo guidance, and hidden register navigation in demo mode.
+- `apps/web/src/pages/register.tsx` - blocked direct registration with a demo-only notice.
+- `apps/web/src/features/settings/components/reader-preferences-section.tsx` - added local-only reader preference note for demo mode.
+- `apps/web/src/lib/env.test.ts` - added web demo flag parser coverage.
+- `apps/web/src/locales/en/common.json` - added demo-mode copy.
+- `apps/web/src/locales/id/common.json` - added demo-mode copy.
 
 ## Verification Results
 
@@ -44,6 +54,8 @@
 - `pnpm --filter server typecheck` after worker guard/test fixes - pass.
 - `pnpm --filter server typecheck` after phase 4 seed/reset changes - pass.
 - `pnpm --filter server exec vitest run src/lib/demo-reset.test.ts` - pass, 1 file / 3 tests, with the server test migration setup running successfully beforehand.
+- `pnpm --filter web typecheck` - pass.
+- `pnpm --filter web exec vitest run src/app.test.tsx src/lib/env.test.ts` - pass, 2 files / 3 tests total.
 
 ## Drift Check
 
@@ -53,9 +65,9 @@
 ## Remaining Risks
 
 - Worker exits, demo reset, web UX, and deployment notes remain for later phases.
-- Web UX and deployment notes remain for later phases.
 - The reset command was not executed against a live demo database here, so repeat-run verification still needs a real demo target even though the script is truncate-and-reseed deterministic.
+- Deployment notes remain for later phases.
 
 ## Completion Summary
 
-Phase 1 scaffolded the demo-mode contract and the env isolation helper needed for later route tests. Phase 2 enforced the demo-mode server route policy and verified the hybrid highlight behavior. Phase 3 stopped background workers from doing real work in demo mode and locked that down with isolated regression tests. Phase 4 added seeded demo content for the TurboFan article, highlight notes, demo tag groups/tags, and an idempotent reset command guarded against non-demo execution.
+Phase 1 scaffolded the demo-mode contract and the env isolation helper needed for later route tests. Phase 2 enforced the demo-mode server route policy and verified the hybrid highlight behavior. Phase 3 stopped background workers from doing real work in demo mode and locked that down with isolated regression tests. Phase 4 added seeded demo content for the TurboFan article, highlight notes, demo tag groups/tags, and an idempotent reset command guarded against non-demo execution. Phase 5 added the demo-facing web shell treatment, demo login affordances, registration blocking, and an explicit reader-settings note while keeping the server as the source of truth.
