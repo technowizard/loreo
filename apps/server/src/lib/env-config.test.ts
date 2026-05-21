@@ -32,6 +32,20 @@ describe('env-config', () => {
     expect(env.DEMO_MODE).toBe(true);
   });
 
+  it('uses DATABASE_URL directly when provided', async () => {
+    const { env } = await importWithEnv(
+      {
+        DATABASE_URL: 'postgresql://demo:secret@db.example.com:5432/loreo?sslmode=require',
+        JWT_SECRET: 'secret'
+      },
+      () => import('./env-config.js')
+    );
+
+    expect(env.DATABASE_URL).toBe(
+      'postgresql://demo:secret@db.example.com:5432/loreo?sslmode=require'
+    );
+  });
+
   it('rejects unsupported demo mode values', async () => {
     await expect(
       importWithEnv(
