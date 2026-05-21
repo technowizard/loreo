@@ -20,6 +20,7 @@ import { useReaderActions } from '@/features/reader/hooks/use-reader-actions';
 import { useReadingSession } from '@/features/reader/hooks/use-reading-session';
 import { useGetTagGroups } from '@/features/tags/api/get-tag-groups';
 
+import { env } from '@/lib/env';
 import { cn, formatReadingTime, getUrlName } from '@/lib/utils';
 
 const DEFAULT_TAG_COLOR = '#6B7280';
@@ -40,6 +41,7 @@ function ArticleReaderPage() {
   }, [tagGroups]);
 
   const actions = useReaderActions(id, {
+    disabled: env.isDemo,
     formatUpdateMessage: (body) => {
       if (body.readingProgress !== undefined || body.timeSpentReading !== undefined) return false;
       if (body.isFavorite !== undefined)
@@ -55,7 +57,7 @@ function ArticleReaderPage() {
   const { progress, restorablePosition, restore } = useReadingSession({
     linkId: id,
     link: article,
-    onSaveProgress: (data) => actions.updateLink(id, data)
+    onSaveProgress: env.isDemo ? () => {} : (data) => actions.updateLink(id, data)
   });
 
   const { shouldShowFloating } = useProgressIndicator();
@@ -202,18 +204,22 @@ function ArticleReaderPage() {
       <div className="flex flex-col space-y-4">
         <h3 className="text-xl font-bold">{t('reader.whatsNext')}</h3>
         <div className="flex flex-col space-y-4">
-          <Button className="flex-1" onClick={handleFavoriteArticle}>
-            <StarIcon
-              className={cn('size-4', article.isFavorite && 'fill-yellow-500')}
-              weight={article.isFavorite ? 'fill' : 'bold'}
-            />
-            {article.isFavorite ? t('reader.actions.favorited') : t('reader.actions.favorite')}
-          </Button>
-          <div className="inline-flex items-center space-x-2">
-            <Button className="flex-1" onClick={handleArchiveArticle} variant="outline">
-              <ArchiveIcon className="size-4" />
-              {t('reader.actions.archiveAndMarkRead')}
+          {!env.isDemo && (
+            <Button className="flex-1" onClick={handleFavoriteArticle}>
+              <StarIcon
+                className={cn('size-4', article.isFavorite && 'fill-yellow-500')}
+                weight={article.isFavorite ? 'fill' : 'bold'}
+              />
+              {article.isFavorite ? t('reader.actions.favorited') : t('reader.actions.favorite')}
             </Button>
+          )}
+          <div className="inline-flex items-center space-x-2">
+            {!env.isDemo && (
+              <Button className="flex-1" onClick={handleArchiveArticle} variant="outline">
+                <ArchiveIcon className="size-4" />
+                {t('reader.actions.archiveAndMarkRead')}
+              </Button>
+            )}
 
             <Button
               className="flex-1"

@@ -29,6 +29,7 @@ import type { TagGroup } from '@/types/tags';
 
 type TagGroupCardProps = {
   group: TagGroup;
+  isDemo?: boolean;
   onAddFirstTag: () => void;
   onDelete: () => void;
   onEdit: () => void;
@@ -38,6 +39,7 @@ type TagGroupCardProps = {
 
 export function TagGroupCard({
   group,
+  isDemo = false,
   onAddFirstTag,
   onDelete,
   onEdit,
@@ -64,59 +66,61 @@ export function TagGroupCard({
         {group.description && (
           <CardDescription className="line-clamp-1">{group.description}</CardDescription>
         )}
-        <CardAction>
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <Button
-                  aria-label={t('tags.groupCard.actions.manageAria', {
-                    name: group.name
-                  })}
-                  size="icon"
-                  variant="ghost"
-                >
-                  <DotsThreeIcon className="size-4" weight="bold" />
-                </Button>
-              }
-            />
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                className="h-11 sm:h-8"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit();
-                }}
-              >
-                <PencilSimpleIcon className="size-4" />
-                {t('tags.groupCard.actions.editGroup')}
-              </DropdownMenuItem>
-              {tagCount > 0 && (
+        {!isDemo && (
+          <CardAction>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button
+                    aria-label={t('tags.groupCard.actions.manageAria', {
+                      name: group.name
+                    })}
+                    size="icon"
+                    variant="ghost"
+                  >
+                    <DotsThreeIcon className="size-4" weight="bold" />
+                  </Button>
+                }
+              />
+              <DropdownMenuContent align="end">
                 <DropdownMenuItem
                   className="h-11 sm:h-8"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onMoveAll();
+                    onEdit();
                   }}
                 >
-                  <ArrowsLeftRightIcon className="size-4" />
-                  {t('tags.groupCard.actions.moveAllTags')}
+                  <PencilSimpleIcon className="size-4" />
+                  {t('tags.groupCard.actions.editGroup')}
                 </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="h-11 sm:h-8"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete();
-                }}
-                variant="destructive"
-              >
-                <TrashIcon className="size-4" />
-                {t('tags.groupCard.actions.deleteGroup')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </CardAction>
+                {tagCount > 0 && (
+                  <DropdownMenuItem
+                    className="h-11 sm:h-8"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onMoveAll();
+                    }}
+                  >
+                    <ArrowsLeftRightIcon className="size-4" />
+                    {t('tags.groupCard.actions.moveAllTags')}
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="h-11 sm:h-8"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete();
+                  }}
+                  variant="destructive"
+                >
+                  <TrashIcon className="size-4" />
+                  {t('tags.groupCard.actions.deleteGroup')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </CardAction>
+        )}
       </CardHeader>
 
       <CardContent className="flex min-h-16 flex-col gap-2">
@@ -146,6 +150,8 @@ export function TagGroupCard({
               {t('tags.groupCard.manageTags')}
             </button>
           </>
+        ) : isDemo ? (
+          <p className="text-muted-foreground text-sm">{t('demo.banner.description')}</p>
         ) : (
           <Button
             className="w-full"

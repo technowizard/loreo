@@ -1,6 +1,7 @@
 import type { ContentExtractionJobData } from '@/queues/content-extraction.queue.js';
 import { enqueueContentExtraction } from '@/queues/content-extraction.queue.js';
 
+import { demoModeForbiddenResponse, isDemoMode } from '@/lib/demo-mode.js';
 import { logger } from '@/lib/logger.js';
 import { toCursorPaginatedResponse } from '@/lib/pagination.js';
 import { errorResponse, HttpStatus, successResponse } from '@/lib/response.js';
@@ -149,6 +150,11 @@ export const getUpcomingLinks: AppRouteHandler<GetUpcomingLinksRoute> = async (c
 };
 
 export const createLink: AppRouteHandler<CreateLinkRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { links } = c.get('repos');
 
@@ -255,6 +261,11 @@ export const createLink: AppRouteHandler<CreateLinkRoute> = async (c) => {
 };
 
 export const deleteLink: AppRouteHandler<DeleteLinkRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { id } = c.req.valid('param');
   const { links } = c.get('repos');
@@ -284,6 +295,11 @@ export const deleteLink: AppRouteHandler<DeleteLinkRoute> = async (c) => {
 };
 
 export const updateLink: AppRouteHandler<UpdateLinkRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { id } = c.req.valid('param');
   const body = c.req.valid('json');
@@ -355,6 +371,11 @@ export const updateLink: AppRouteHandler<UpdateLinkRoute> = async (c) => {
 };
 
 export const refetchLink: AppRouteHandler<RefetchLinkRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { id } = c.req.valid('param');
   const { links } = c.get('repos');
@@ -438,6 +459,11 @@ export const searchLinks: AppRouteHandler<SearchLinksRoute> = async (c) => {
 };
 
 export const updateLinkTags: AppRouteHandler<UpdateLinkTagsRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { id } = c.req.valid('param');
   const { tags: inputTags } = c.req.valid('json');

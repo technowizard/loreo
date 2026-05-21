@@ -15,10 +15,11 @@ import { formatFileSize } from '@/lib/utils';
 import { useNotificationsStore } from '@/stores/notifications';
 
 interface UploadFromCsvProps {
+  disabled?: boolean;
   onUploadComplete?: () => void;
 }
 
-export function UploadFromCsv({ onUploadComplete }: UploadFromCsvProps) {
+export function UploadFromCsv({ disabled = false, onUploadComplete }: UploadFromCsvProps) {
   const { t } = useTranslation('common');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const notifyError = useNotificationsStore.useError();
@@ -46,6 +47,11 @@ export function UploadFromCsv({ onUploadComplete }: UploadFromCsvProps) {
 
   const handleFileSelect = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (disabled) {
+        event.preventDefault();
+        return;
+      }
+
       const file = event.target.files?.[0];
 
       if (!file) {
@@ -59,38 +65,71 @@ export function UploadFromCsv({ onUploadComplete }: UploadFromCsvProps) {
       uploadCSVMutation.mutate(file);
       onUploadComplete?.();
     },
-    [onSelectedFileChange, onUploadComplete, uploadCSVMutation]
+    [disabled, onSelectedFileChange, onUploadComplete, uploadCSVMutation]
   );
 
   const handleButtonClick = useCallback(() => {
+    if (disabled) {
+      return;
+    }
+
     fileInputRef.current?.click();
-  }, []);
+  }, [disabled]);
 
   const handleClearFile = useCallback(
     (event: React.MouseEvent) => {
+      if (disabled) {
+        return;
+      }
+
       event.stopPropagation();
       resetUploadedFile();
     },
-    [resetUploadedFile]
+    [disabled, resetUploadedFile]
   );
 
-  const handleDragEnter = useCallback((event: React.DragEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-  }, []);
+  const handleDragEnter = useCallback(
+    (event: React.DragEvent) => {
+      if (disabled) {
+        return;
+      }
 
-  const handleDragLeave = useCallback((event: React.DragEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-  }, []);
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    [disabled]
+  );
 
-  const handleDragOver = useCallback((event: React.DragEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-  }, []);
+  const handleDragLeave = useCallback(
+    (event: React.DragEvent) => {
+      if (disabled) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    [disabled]
+  );
+
+  const handleDragOver = useCallback(
+    (event: React.DragEvent) => {
+      if (disabled) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    [disabled]
+  );
 
   const handleDrop = useCallback(
     (event: React.DragEvent) => {
+      if (disabled) {
+        return;
+      }
+
       event.preventDefault();
       event.stopPropagation();
 
@@ -108,17 +147,21 @@ export function UploadFromCsv({ onUploadComplete }: UploadFromCsvProps) {
         }
       }
     },
-    [notifyError, onSelectedFileChange, onUploadComplete, uploadCSVMutation]
+    [disabled, notifyError, onSelectedFileChange, onUploadComplete, uploadCSVMutation]
   );
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
+      if (disabled) {
+        return;
+      }
+
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
         handleButtonClick();
       }
     },
-    [handleButtonClick]
+    [disabled, handleButtonClick]
   );
 
   const formattedSize = formatFileSize(uploadedFile.size);
@@ -191,7 +234,11 @@ export function UploadFromCsv({ onUploadComplete }: UploadFromCsvProps) {
           <InfoIcon />
           <AlertTitle className="text-lg font-bold">{t('import.upload.successTitle')}</AlertTitle>
           <AlertDescription>
-            <p>{t('import.upload.successDescription')}</p>
+            <ul className="list-inside list-disc space-y-2 text-sm">
+              <li>We&apos;ll scan the file to help you map URLs, titles, and tags</li>
+              <li>Articles will be added to your library in the background</li>
+              <li>Large imports might take a while to complete content fetching</li>
+            </ul>
           </AlertDescription>
         </Alert>
       ) : (

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
+import { env } from '@/lib/env';
 import { cn } from '@/lib/utils';
 
 import { useNotificationsStore } from '@/stores/notifications';
@@ -41,6 +42,16 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'form'>)
     email: '',
     password: ''
   });
+
+  const handleTryDemo = () => {
+    const demoCredentials = {
+      email: 'demo@loreo.test',
+      password: 'demo-password'
+    } satisfies LoginInput;
+
+    setFormData(demoCredentials);
+    onSubmit(demoCredentials);
+  };
 
   const onSubmit = (data: LoginInput) => {
     login.mutate(data);
@@ -86,17 +97,31 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'form'>)
           {login.isPending && <SpinnerIcon className="mr-2 animate-spin" size={16} />}
           {t('login.signIn')}
         </Button>
+        {env.isDemo && (
+          <div className="space-y-2">
+            <Button className="w-full" onClick={handleTryDemo} type="button" variant="secondary">
+              {t('login.tryDemo')}
+            </Button>
+            <p className="text-muted-foreground text-center text-xs leading-5">
+              {t('login.demoGuidance')}
+            </p>
+          </div>
+        )}
       </div>
-      <div className="text-center text-sm">
-        {t('login.dontHaveAccount')}{' '}
-        <button
-          className="underline underline-offset-4"
-          onClick={() => navigate({ to: '/register' })}
-          type="button"
-        >
-          {t('login.signUp')}
-        </button>
-      </div>
+      {env.isDemo ? (
+        <p className="text-muted-foreground text-center text-sm">{t('login.demoSignUpDisabled')}</p>
+      ) : (
+        <div className="text-center text-sm">
+          {t('login.dontHaveAccount')}{' '}
+          <button
+            className="underline underline-offset-4"
+            onClick={() => navigate({ to: '/register' })}
+            type="button"
+          >
+            {t('login.signUp')}
+          </button>
+        </div>
+      )}
     </form>
   );
 }

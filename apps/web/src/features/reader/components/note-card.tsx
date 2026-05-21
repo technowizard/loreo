@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils';
 
 import type { Highlight } from '@/types/highlights';
 
+import { HIGHLIGHT_COLORS } from './highlighter/colors';
+
 interface NoteCardProps {
   color: string;
   highlight: string;
@@ -33,6 +35,8 @@ export function NoteCard({
   const [isEditing, setIsEditing] = useState(false);
   const [noteText, setNoteText] = useState(note || '');
   const cardRef = useRef<HTMLDivElement>(null);
+  const selectedColor =
+    HIGHLIGHT_COLORS.find(({ value }) => value === color) ?? HIGHLIGHT_COLORS[0];
 
   useEffect(() => {
     if (isSelected) {
@@ -64,27 +68,25 @@ export function NoteCard({
             'ring-primary-500/80 sepia-theme:ring-sepia-500 ring-offset-background ring-2 ring-offset-4'
         )}
       >
-        <div className="border-l-2 border-blue-400 pl-2">
+        <div className="border-l-2 pl-2" style={{ borderLeftColor: selectedColor.markBorder }}>
           <div className="z-1 italic">&quot;{highlight}&quot;</div>
         </div>
 
         <div className="flex items-center justify-between">
           <div className="font-semibold">{t('reader.notes.highlightColor')}</div>
           <div className="inline-flex gap-2">
-            {[
-              { bg: 'bg-blue-300', color: 'blue' },
-              { bg: 'bg-green-300', color: 'green' },
-              { bg: 'bg-orange-300', color: 'orange' },
-              { bg: 'bg-pink-300', color: 'pink' },
-              { bg: 'bg-red-300', color: 'red' }
-            ].map(({ bg, color: c }) => (
+            {HIGHLIGHT_COLORS.map(({ swatch, label, value }) => (
               <button
-                className={`size-6 rounded-full ${bg} ${color === c ? 'ring-primary ring-2 ring-offset-2' : ''}`}
-                key={c}
+                aria-label={`Highlight in ${label}`}
+                className={`size-6 rounded-full ${color === value ? 'ring-primary ring-2 ring-offset-2' : ''}`}
+                key={value}
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleColorClick(c);
+                  handleColorClick(value);
                 }}
+                style={{ backgroundColor: swatch }}
+                title={`Highlight in ${label}`}
+                type="button"
               />
             ))}
           </div>

@@ -110,6 +110,7 @@ export function ArticleCard({
         handleDeleteLink={handleDeleteLink}
         handleRefetchLink={handleRefetchLink}
         handleUpdateLink={handleUpdateLink}
+        enableActions={enableActions}
         link={link}
         tagGroups={tagGroups}
         variant={variant}
@@ -531,23 +532,25 @@ function ListCardCompact({
             )}
 
             <div className="-mr-2 -mt-1 flex shrink-0 items-center">
-              <Button
-                aria-label={t('articles.card.actions.toggleFavorite')}
-                className="relative size-9 after:absolute after:-inset-1 after:content-['']"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  handleUpdateLink?.(id, { isFavorite: !link.isFavorite });
-                }}
-                size="icon"
-                variant="ghost"
-              >
-                <StarIcon
-                  className={link.isFavorite ? 'fill-yellow-500' : 'text-muted-foreground'}
-                  size={14}
-                  weight={link.isFavorite ? 'fill' : 'bold'}
-                />
-              </Button>
+              {enableActions && (
+                <Button
+                  aria-label={t('articles.card.actions.toggleFavorite')}
+                  className="relative size-9 after:absolute after:-inset-1 after:content-['']"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    handleUpdateLink?.(id, { isFavorite: !link.isFavorite });
+                  }}
+                  size="icon"
+                  variant="ghost"
+                >
+                  <StarIcon
+                    className={link.isFavorite ? 'fill-yellow-500' : 'text-muted-foreground'}
+                    size={14}
+                    weight={link.isFavorite ? 'fill' : 'bold'}
+                  />
+                </Button>
+              )}
               {enableActions && (
                 <DropdownMenu>
                   <DropdownMenuTrigger
@@ -874,25 +877,27 @@ function ListCardDesktop({
           <div className="absolute top-6 right-6 z-10">
             <div className="relative flex h-8 items-center gap-2">
               <div className="bg-background flex items-center gap-2">
-                <Button
-                  aria-label={link.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-                  className="border size-9 rounded-full transition-colors hover:bg-zinc-100"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    handleUpdateLink?.(id, {
-                      isFavorite: !link.isFavorite
-                    });
-                  }}
-                  size="icon"
-                  variant="ghost"
-                >
-                  <StarIcon
-                    className={link.isFavorite ? 'fill-yellow-500' : 'text-gray-500'}
-                    size={16}
-                    weight={link.isFavorite ? 'fill' : 'bold'}
-                  />
-                </Button>
+                {enableActions && (
+                  <Button
+                    aria-label={link.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                    className="border size-9 rounded-full transition-colors hover:bg-zinc-100"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      handleUpdateLink?.(id, {
+                        isFavorite: !link.isFavorite
+                      });
+                    }}
+                    size="icon"
+                    variant="ghost"
+                  >
+                    <StarIcon
+                      className={link.isFavorite ? 'fill-yellow-500' : 'text-gray-500'}
+                      size={16}
+                      weight={link.isFavorite ? 'fill' : 'bold'}
+                    />
+                  </Button>
+                )}
               </div>
 
               <DropdownMenu>

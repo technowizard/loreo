@@ -35,7 +35,10 @@
     "signIn": "Masuk",
     "dontHaveAccount": "Belum punya akun?",
     "invalidCredentials": "Email atau kata sandi tidak valid",
-    "success": "Berhasil masuk"
+    "success": "Berhasil masuk",
+    "tryDemo": "Coba Demo",
+    "demoGuidance": "Akun demo bersama: demo@loreo.test / demo-password.",
+    "demoSignUpDisabled": "Mode demo menonaktifkan pendaftaran. Gunakan akun demo bersama sebagai gantinya."
   },
   "register": {
     "title": "Buat akunmu",
@@ -51,7 +54,12 @@
     "alreadyHaveAccount": "Sudah punya akun?",
     "signIn": "Masuk",
     "genericError": "Terjadi kesalahan",
-    "success": "Akun berhasil dibuat. Selamat datang!"
+    "success": "Akun berhasil dibuat. Selamat datang!",
+    "demoDisabled": {
+      "title": "Pendaftaran dinonaktifkan di mode demo",
+      "description": "Gunakan akun demo bersama untuk menjelajahi konten, sorotan, dan pengaturan pembaca yang sudah disiapkan.",
+      "goToLogin": "Ke halaman masuk"
+    }
   },
   "home": {
     "welcome": "Selamat datang di Loreo",
@@ -141,6 +149,12 @@
     },
     "importProgress": {
       "metaTitle": "Progres Impor | Loreo"
+    }
+  },
+  "demo": {
+    "banner": {
+      "title": "Mode demo",
+      "description": "Data bawaan disetel ulang secara berkala. Impor, pengelolaan tag, dan perubahan tautan dinonaktifkan oleh server."
     }
   },
   "articles": {
@@ -284,6 +298,7 @@
     "readerPreferences": {
       "title": "Preferensi Pembaca",
       "description": "Sesuaikan tampilan artikel saat kamu membacanya",
+      "demoNote": "Mode demo menyimpan preferensi ini hanya di browser ini, jadi perubahanmu tidak memperbarui akun demo bersama.",
       "themeLabel": "Tema",
       "themeTooltip": "Berlaku untuk antarmuka aplikasi dan pembaca artikel",
       "theme": {
@@ -692,8 +707,9 @@
     "review": {
       "title": "Tinjau datamu",
       "description": "Periksa apakah semuanya sudah benar sebelum mengimpor",
-      "summary": "{{count}} artikel siap diimpor",
-      "estimatedTime": "Perkiraan waktu: {{time}}",
+      "summary": "Ringkasan",
+      "articlesToImport": "artikel yang akan diimpor",
+      "estimatedTime": "Perkiraan waktu",
       "tableHeadingRow": "Baris",
       "tableHeadingUrl": "URL",
       "tableHeadingTitle": "Judul",

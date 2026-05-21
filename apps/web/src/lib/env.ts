@@ -1,7 +1,11 @@
 import * as z from 'zod';
 
 const envSchema = z.object({
-  API_URL: z.string()
+  API_URL: z.string(),
+  DEMO_MODE: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((value) => value === 'true')
 });
 
 const envVars = Object.entries(import.meta.env).reduce<Record<string, string>>((acc, curr) => {
@@ -29,6 +33,7 @@ const envData = parsedEnv.data;
 
 export const env = {
   ...envData,
+  isDemo: envData.DEMO_MODE,
   isDevelopment: import.meta.env.MODE === 'development',
   isProduction: import.meta.env.MODE === 'production'
 };

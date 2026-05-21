@@ -7,6 +7,7 @@ import { enqueueContentExtraction } from '@/queues/content-extraction.queue.js';
 import { db } from '@/db/index.js';
 
 import { assertSafeArticleUrl } from '@/lib/article-url-guard.js';
+import { isDemoMode } from '@/lib/demo-mode.js';
 import { createWorker } from '@/lib/job-queue.js';
 import { logger } from '@/lib/logger.js';
 import { estimateReadingTime } from '@/lib/reading-time.js';
@@ -77,6 +78,12 @@ async function contentExtractionJob(job: Job<ContentExtractionJobData>): Promise
   imagesProcessed?: number;
   status: string;
 }> {
+  if (isDemoMode()) {
+    logger.info(`[${workerName}] Skipping content extraction job ${job.id} in demo mode`);
+
+    return { status: 'skipped' };
+  }
+
   const { linkId, url: articleUrl, user } = job.data;
 
   // overall job timeout: 5 minutes
@@ -365,8 +372,10 @@ contentExtractionWorker.on('error', (error: Error) => {
   logger.error(`[${workerName}] Error in content-extraction worker: ${JSON.stringify(error)}`);
 });
 
-logger.info(
-  `[${workerName}] Content extraction worker started and listening for jobs on 'content-extraction' queue.`
-);
+if (!isDemoMode()) {
+  logger.info(
+    `[${workerName}] Content extraction worker started and listening for jobs on 'content-extraction' queue.`
+  );
+}
 
 export default contentExtractionWorker;

@@ -26,6 +26,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 import { useThemeConfig } from '@/hooks/use-theme-config';
 
+import { env } from '@/lib/env';
 import { cn } from '@/lib/utils';
 
 import { FONT_SIZES, getFontsByCategory, LINE_SPACING } from '../constants/theme-config';
@@ -118,6 +119,11 @@ export function ReaderPreferencesSection() {
       description={t('settings.readerPreferences.description')}
       title={t('settings.readerPreferences.title')}
     >
+      {env.isDemo && (
+        <div className="border-border bg-muted/30 text-muted-foreground mb-4 rounded-2xl border px-4 py-3 text-sm">
+          {t('settings.readerPreferences.demoNote')}
+        </div>
+      )}
       <SettingsRow>
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">{t('settings.readerPreferences.themeLabel')}</span>

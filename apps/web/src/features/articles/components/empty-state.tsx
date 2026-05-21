@@ -14,10 +14,11 @@ import { Button } from '@/components/ui/button';
 interface EmptyStateProps {
   filter: string;
   hasSearch: boolean;
+  isDemo?: boolean;
   onAddArticle: () => void;
 }
 
-export function EmptyState({ filter, hasSearch, onAddArticle }: EmptyStateProps) {
+export function EmptyState({ filter, hasSearch, isDemo = false, onAddArticle }: EmptyStateProps) {
   const shouldReduceMotion = useReducedMotion();
   const { t } = useTranslation('common');
 
@@ -105,7 +106,7 @@ export function EmptyState({ filter, hasSearch, onAddArticle }: EmptyStateProps)
           initial={shouldReduceMotion ? undefined : { opacity: 0, y: 10 }}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          <Button className="group" onClick={onAddArticle} size="lg">
+          <Button className="group" disabled={isDemo} onClick={onAddArticle} size="lg">
             <PlusIcon className="mr-2 h-4 w-4 transition-transform duration-200 motion-safe:group-hover:rotate-90" />
             {content.action}
           </Button>

@@ -25,6 +25,7 @@ import type { MoveTagsDialogState } from './move-tags-dialog';
 
 type GroupTagsSheetProps = {
   bulkDeletePending: boolean;
+  isDemo?: boolean;
   group: TagGroup | null;
   isSelectMode: boolean;
   onAddTag: () => void;
@@ -41,6 +42,7 @@ type GroupTagsSheetProps = {
 
 export function GroupTagsSheet({
   bulkDeletePending,
+  isDemo = false,
   group,
   isSelectMode,
   onAddTag,
@@ -78,24 +80,30 @@ export function GroupTagsSheet({
             <span className="text-sm font-medium">
               {t('tags.sheet.tagsCount', { count: tagCount })}
             </span>
-            <div className="flex items-center gap-2">
-              {tagCount > 0 && (
-                <Button
-                  onClick={() => (isSelectMode ? onClearSelection() : onSelectMode(true))}
-                  size="sm"
-                  variant={isSelectMode ? 'secondary' : 'ghost'}
-                >
-                  {isSelectMode ? t('tags.sheet.cancel') : t('tags.sheet.select')}
+            {!isDemo && (
+              <div className="flex items-center gap-2">
+                {tagCount > 0 && (
+                  <Button
+                    onClick={() => (isSelectMode ? onClearSelection() : onSelectMode(true))}
+                    size="sm"
+                    variant={isSelectMode ? 'secondary' : 'ghost'}
+                  >
+                    {isSelectMode ? t('tags.sheet.cancel') : t('tags.sheet.select')}
+                  </Button>
+                )}
+                <Button onClick={onAddTag} size="sm" variant="outline">
+                  <PlusIcon className="mr-1 size-3" />
+                  {t('tags.sheet.addTag')}
                 </Button>
-              )}
-              <Button onClick={onAddTag} size="sm" variant="outline">
-                <PlusIcon className="mr-1 size-3" />
-                {t('tags.sheet.addTag')}
-              </Button>
-            </div>
+              </div>
+            )}
           </div>
 
-          {selectedTagIds.size > 0 && (
+          {isDemo && (
+            <p className="text-muted-foreground text-sm">{t('demo.banner.description')}</p>
+          )}
+
+          {!isDemo && selectedTagIds.size > 0 && (
             <div className="bg-secondary flex items-center gap-2 rounded-md px-3 py-2">
               <span className="flex-1 text-sm font-medium">
                 {t('tags.sheet.selectedCount', { count: selectedTagIds.size })}
@@ -152,7 +160,7 @@ export function GroupTagsSheet({
                   )}
                   <div className="flex flex-1 items-center justify-between">
                     <Tag tag={{ color: group.color, name: tag.name }} />
-                    {!isSelectMode && (
+                    {!isSelectMode && !isDemo && (
                       <div className="flex items-center gap-1">
                         <Button
                           aria-label={t('tags.sheet.moveAria', {

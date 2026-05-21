@@ -6,6 +6,7 @@ import type { CsvImportJobData } from '@/queues/csv-import.queue.js';
 import { enqueueCsvImport } from '@/queues/csv-import.queue.js';
 
 import { getColumns, parseLine, parseTags } from '@/lib/csv-parser.js';
+import { demoModeForbiddenResponse, isDemoMode } from '@/lib/demo-mode.js';
 import { logger } from '@/lib/logger.js';
 import { errorResponse, HttpStatus, successResponse } from '@/lib/response.js';
 import type { AppRouteHandler } from '@/lib/types.js';
@@ -65,6 +66,11 @@ async function getFilePath(fileId: string): Promise<string | null> {
 }
 
 export const uploadImport: AppRouteHandler<UploadImportRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   try {
     const formData = c.req.valid('form');
     const file = formData.file;
@@ -119,6 +125,11 @@ export const uploadImport: AppRouteHandler<UploadImportRoute> = async (c) => {
 };
 
 export const previewImport: AppRouteHandler<PreviewImportRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const body = await c.req.json();
   const { fileId, mapping } = body;
 
@@ -204,6 +215,11 @@ export const previewImport: AppRouteHandler<PreviewImportRoute> = async (c) => {
 };
 
 export const executeImport: AppRouteHandler<ExecuteImportRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { importSessions, tags } = c.get('repos');
   const { fileId, mapping, options } = c.req.valid('json');
@@ -413,6 +429,11 @@ export const getImportSession: AppRouteHandler<GetImportSessionRoute> = async (c
 };
 
 export const cancelImportSession: AppRouteHandler<CancelImportSessionRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { id } = c.req.valid('param');
   const { importSessions } = c.get('repos');
@@ -445,6 +466,11 @@ export const cancelImportSession: AppRouteHandler<CancelImportSessionRoute> = as
 };
 
 export const deleteImportSession: AppRouteHandler<DeleteImportSessionRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { id } = c.req.valid('param');
   const { importSessions } = c.get('repos');
@@ -482,6 +508,11 @@ export const deleteImportSession: AppRouteHandler<DeleteImportSessionRoute> = as
 };
 
 export const resumeImport: AppRouteHandler<ResumeImportRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { id } = c.req.valid('param');
   const { importSessions } = c.get('repos');
@@ -588,6 +619,11 @@ export const getSessionLinks: AppRouteHandler<GetSessionLinksRoute> = async (c) 
 };
 
 export const retryFailedImport: AppRouteHandler<RetryFailedImportRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { id } = c.req.valid('param');
   const { importSessions } = c.get('repos');
@@ -671,6 +707,11 @@ async function cleanupOrphanedTempFiles(): Promise<number> {
 }
 
 export const cleanupOldSessions: AppRouteHandler<CleanupOldSessionsRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { importSessions } = c.get('repos');
   const { daysOld } = c.req.valid('json');

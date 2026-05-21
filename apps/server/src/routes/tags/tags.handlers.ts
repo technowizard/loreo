@@ -1,4 +1,5 @@
 import { mapDbError, tagGroupDbErrorRules } from '@/lib/db-error.js';
+import { demoModeForbiddenResponse, isDemoMode } from '@/lib/demo-mode.js';
 import { logger } from '@/lib/logger.js';
 import { errorResponse, HttpStatus, successResponse } from '@/lib/response.js';
 import type { AppRouteHandler } from '@/lib/types.js';
@@ -68,6 +69,11 @@ export const getTagsByGroup: AppRouteHandler<GetTagsByGroupRoute> = async (c) =>
 };
 
 export const createTag: AppRouteHandler<CreateTagRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { groupId, name } = c.req.valid('json');
   const { tags } = c.get('repos');
@@ -99,6 +105,11 @@ export const createTag: AppRouteHandler<CreateTagRoute> = async (c) => {
 };
 
 export const updateTag: AppRouteHandler<UpdateTagRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { tagId } = c.req.valid('param');
   const body = c.req.valid('json');
@@ -148,6 +159,11 @@ export const updateTag: AppRouteHandler<UpdateTagRoute> = async (c) => {
 };
 
 export const deleteTag: AppRouteHandler<DeleteTagRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { tagId } = c.req.valid('param');
   const { tags } = c.get('repos');
@@ -177,6 +193,11 @@ export const deleteTag: AppRouteHandler<DeleteTagRoute> = async (c) => {
 };
 
 export const createTagGroup: AppRouteHandler<CreateTagGroupRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { tags } = c.get('repos');
 
@@ -210,6 +231,11 @@ export const createTagGroup: AppRouteHandler<CreateTagGroupRoute> = async (c) =>
 };
 
 export const updateTagGroup: AppRouteHandler<UpdateTagGroupRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { tags } = c.get('repos');
 
@@ -234,6 +260,11 @@ export const updateTagGroup: AppRouteHandler<UpdateTagGroupRoute> = async (c) =>
 };
 
 export const deleteTagGroup: AppRouteHandler<DeleteTagGroupRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { tags } = c.get('repos');
 
@@ -257,6 +288,11 @@ export const deleteTagGroup: AppRouteHandler<DeleteTagGroupRoute> = async (c) =>
 };
 
 export const moveTag: AppRouteHandler<MoveTagRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { tagId } = c.req.valid('param');
   const { targetGroupId } = c.req.valid('json');
@@ -293,6 +329,11 @@ export const moveTag: AppRouteHandler<MoveTagRoute> = async (c) => {
 };
 
 export const bulkDeleteTags: AppRouteHandler<BulkDeleteTagsRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { tagIds } = c.req.valid('json');
   const { tags } = c.get('repos');
@@ -318,6 +359,11 @@ export const bulkDeleteTags: AppRouteHandler<BulkDeleteTagsRoute> = async (c) =>
 };
 
 export const bulkMoveTags: AppRouteHandler<BulkMoveTagsRoute> = async (c) => {
+  if (isDemoMode()) {
+    const response = demoModeForbiddenResponse();
+    return c.json(response, response.status);
+  }
+
   const user = c.get('user');
   const { fromGroupId, tagIds, toGroupId } = c.req.valid('json');
   const { tags } = c.get('repos');

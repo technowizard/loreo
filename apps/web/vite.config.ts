@@ -7,6 +7,9 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [tanstackRouter({ target: 'react', autoCodeSplitting: true }), react(), tailwindcss()],
+  preview: {
+    allowedHosts: ['loreo-demo.onrender.com']
+  },
   resolve: {
     alias: {
       '@': resolve(__dirname, './src')

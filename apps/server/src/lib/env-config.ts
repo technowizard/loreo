@@ -6,64 +6,93 @@ import * as z from 'zod';
 const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env';
 dotenv.config({ path: envFile });
 
-const envSchema = z.object({
-  HOST: z.string().min(1).default('localhost'),
+const envSchema = z
+  .object({
+    HOST: z.string().min(1).default('localhost'),
 
-  PORT: z.coerce.number().int().positive().default(3000),
+    PORT: z.coerce.number().int().positive().default(3000),
 
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('production'),
+    NODE_ENV: z.enum(['development', 'production', 'test']).default('production'),
 
-  CORS_ORIGINS: z.union([z.url(), z.literal('*')]).default('http://localhost:3001'),
+    DEMO_MODE: z
+      .enum(['true', 'false'])
+      .default('false')
+      .transform((value) => value === 'true'),
 
-  JWT_SECRET: z.string(), // min 32 chars
+    CORS_ORIGINS: z.union([z.url(), z.literal('*')]).default('http://localhost:3001'),
 
-  DATABASE_HOST: z.string().default('localhost'),
+    JWT_SECRET: z.string(), // min 32 chars
 
-  DATABASE_PORT: z.coerce.number().int().positive().default(5432),
+    DATABASE_URL: z.string().default(''),
 
-  DATABASE_USER: z.string(),
+    DATABASE_HOST: z.string().default('localhost'),
 
-  DATABASE_PASSWORD: z.string(), // min 16 chars
+    DATABASE_PORT: z.coerce.number().int().positive().default(5432),
 
-  DATABASE_DB: z.string().default('postgres'),
+    DATABASE_USER: z.string().default(''),
 
-  DATABASE_URL: z.string().default(''),
+    DATABASE_PASSWORD: z.string().default(''), // min 16 chars
 
-  DATABASE_POOL_MAX: z.coerce.number().int().positive().default(10),
+    DATABASE_DB: z.string().default('postgres'),
 
-  REDIS_HOST: z.string().default('localhost'),
+    DATABASE_POOL_MAX: z.coerce.number().int().positive().default(10),
 
-  REDIS_PORT: z.coerce.number().int().positive().default(6379),
+    REDIS_URL: z.string().default(''),
 
-  RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(60_000),
+    REDIS_HOST: z.string().default('localhost'),
 
-  RATE_LIMIT_MAX: z.coerce.number().int().positive().default(50),
+    REDIS_PORT: z.coerce.number().int().positive().default(6379),
 
-  BODY_SIZE_LIMIT: z.coerce.number().int().positive().default(4_194_304),
+    RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(60_000),
 
-  PUBLIC_URL: z.string().default(''),
+    RATE_LIMIT_MAX: z.coerce.number().int().positive().default(50),
 
-  STORAGE_PATH: z.string().default(''),
+    BODY_SIZE_LIMIT: z.coerce.number().int().positive().default(4_194_304),
 
-  STORAGE_PROVIDER: z.enum(['local', 'local-docker', 's3']).default('local'),
+    PUBLIC_URL: z.string().default(''),
 
-  // S3-compatible storage (AWS S3, Cloudflare R2, MinIO, etc.)
-  // S3_ENDPOINT: omit for AWS S3, set to custom URL for R2/MinIO
-  S3_ENDPOINT: z.string().default(''),
+    STORAGE_PATH: z.string().default(''),
 
-  S3_REGION: z.string().default('auto'),
+    STORAGE_PROVIDER: z.enum(['local', 'local-docker', 's3']).default('local'),
 
-  S3_ACCESS_KEY_ID: z.string().default(''),
+    // S3-compatible storage (AWS S3, Cloudflare R2, MinIO, etc.)
+    // S3_ENDPOINT: omit for AWS S3, set to custom URL for R2/MinIO
+    S3_ENDPOINT: z.string().default(''),
 
-  S3_SECRET_ACCESS_KEY: z.string().default(''),
+    S3_REGION: z.string().default('auto'),
 
-  S3_BUCKET_NAME: z.string().default(''),
+    S3_ACCESS_KEY_ID: z.string().default(''),
 
-  // public url for the bucket (CDN, R2 public domain, MinIO public URL, etc.)
-  S3_PUBLIC_URL: z.string().default(''),
+    S3_SECRET_ACCESS_KEY: z.string().default(''),
 
-  BROWSER_URL: z.string().default('ws://localhost:4444/camoufox')
-});
+    S3_BUCKET_NAME: z.string().default(''),
+
+    // public url for the bucket (CDN, R2 public domain, MinIO public URL, etc.)
+    S3_PUBLIC_URL: z.string().default(''),
+
+    BROWSER_URL: z.string().default('ws://localhost:4444/camoufox')
+  })
+  .superRefine((env, ctx) => {
+    if (env.DATABASE_URL) return;
+
+    if (env.NODE_ENV === 'test') return;
+
+    if (!env.DATABASE_USER) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'DATABASE_USER is required when DATABASE_URL is not set',
+        path: ['DATABASE_USER']
+      });
+    }
+
+    if (!env.DATABASE_PASSWORD) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'DATABASE_PASSWORD is required when DATABASE_URL is not set',
+        path: ['DATABASE_PASSWORD']
+      });
+    }
+  });
 
 const parsedEnv = envSchema.safeParse(process.env);
 
@@ -80,13 +109,16 @@ ${Object.entries(z.flattenError(parsedEnv.error).fieldErrors)
 
 const envData = parsedEnv.data;
 
-const DATABASE_URL = `postgresql://${envData.DATABASE_USER}:${envData.DATABASE_PASSWORD}@${envData.DATABASE_HOST}:${envData.DATABASE_PORT}/${envData.DATABASE_DB}`;
+const DATABASE_URL = envData.DATABASE_URL
+  ? envData.DATABASE_URL
+  : `postgresql://${envData.DATABASE_USER}:${envData.DATABASE_PASSWORD}@${envData.DATABASE_HOST}:${envData.DATABASE_PORT}/${envData.DATABASE_DB}`;
 
 export type Env = z.infer<typeof envSchema>;
 
 export const env = {
   ...envData,
   DATABASE_URL,
+  isDemo: envData.DEMO_MODE,
   isDevelopment: envData.NODE_ENV === 'development',
   isProduction: envData.NODE_ENV === 'production',
   isTest: envData.NODE_ENV === 'test'
