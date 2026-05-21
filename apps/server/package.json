@@ -12,6 +12,7 @@
     "db:push": "drizzle-kit push --config src/config/drizzle.config.ts",
     "db:studio": "drizzle-kit studio --config src/config/drizzle.config.ts",
     "db:migrate:test": "tsx scripts/migrate-test.ts",
+    "demo:reset": "tsx scripts/demo-reset.ts",
     "typecheck": "tsc --noEmit",
     "test": "cross-env NODE_ENV=test vitest"
   },

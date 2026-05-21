@@ -5,6 +5,7 @@
 - Phase 1 complete: demo env parsing, shared demo helper, and test isolation helper added.
 - Phase 2 complete: demo-mode route enforcement added for auth, links, imports, tags, and highlights coverage verified.
 - Phase 3 complete: demo-mode worker and queue safety added for content extraction and CSV import.
+- Phase 4 complete: demo seed/reset data, safety checks, and reset command added.
 
 ## Changed Files
 
@@ -27,6 +28,11 @@
 - `apps/server/src/workers/csv-import.worker.ts` - added demo-mode early exit before CSV import work and extraction enqueueing.
 - `apps/server/src/workers/content-extraction.worker.test.ts` - added demo-mode worker regression coverage.
 - `apps/server/src/workers/csv-import.worker.test.ts` - added demo-mode worker regression coverage.
+- `apps/server/src/db/fixtures.ts` - added seeded TurboFan article content, tags, highlights, and shared demo reader settings seed data.
+- `apps/server/src/lib/demo-reset.ts` - added reset safety checks for demo-only execution and demo-looking database targets.
+- `apps/server/src/lib/demo-reset.test.ts` - added safety guard coverage for the reset helper.
+- `apps/server/scripts/demo-reset.ts` - added demo reset truncate-and-reseed command.
+- `apps/server/package.json` - added `demo:reset` script.
 
 ## Verification Results
 
@@ -36,6 +42,8 @@
 - `pnpm --filter server test` after phase 2 route/test fixes - pass, 21 files / 168 tests total, 0 failures.
 - `pnpm --filter server test -- src/workers/content-extraction.worker.test.ts src/workers/csv-import.worker.test.ts` - pass, 23 files / 170 tests total, 0 failures.
 - `pnpm --filter server typecheck` after worker guard/test fixes - pass.
+- `pnpm --filter server typecheck` after phase 4 seed/reset changes - pass.
+- `pnpm --filter server exec vitest run src/lib/demo-reset.test.ts` - pass, 1 file / 3 tests, with the server test migration setup running successfully beforehand.
 
 ## Drift Check
 
@@ -45,8 +53,9 @@
 ## Remaining Risks
 
 - Worker exits, demo reset, web UX, and deployment notes remain for later phases.
-- Demo reset, web UX, and deployment notes remain for later phases.
+- Web UX and deployment notes remain for later phases.
+- The reset command was not executed against a live demo database here, so repeat-run verification still needs a real demo target even though the script is truncate-and-reseed deterministic.
 
 ## Completion Summary
 
-Phase 1 scaffolded the demo-mode contract and the env isolation helper needed for later route tests. Phase 2 enforced the demo-mode server route policy and verified the hybrid highlight behavior. Phase 3 stopped background workers from doing real work in demo mode and locked that down with isolated regression tests.
+Phase 1 scaffolded the demo-mode contract and the env isolation helper needed for later route tests. Phase 2 enforced the demo-mode server route policy and verified the hybrid highlight behavior. Phase 3 stopped background workers from doing real work in demo mode and locked that down with isolated regression tests. Phase 4 added seeded demo content for the TurboFan article, highlight notes, demo tag groups/tags, and an idempotent reset command guarded against non-demo execution.

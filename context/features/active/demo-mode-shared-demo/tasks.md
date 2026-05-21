@@ -41,13 +41,13 @@ Dependencies: Phase 1.
 
 Dependencies: Phases 1 and 2.
 
-- [ ] Extend `apps/server/src/db/fixtures.ts` only as needed to seed realistic demo links, tag groups/tags, pre-highlighted examples, notes, and default reader settings.
-- [ ] Add an idempotent demo reset script under `apps/server/scripts/` that upserts the shared demo account and resets/reseeds demo-owned mutable data.
-- [ ] Add explicit safety checks so reset refuses to run unless `DEMO_MODE=true` and rejects obviously non-demo database targets where practical.
-- [ ] Add a package script in `apps/server/package.json` for the demo reset command.
-- [ ] Test reset idempotency if practical in the existing test setup; otherwise document the manual repeat-run verification in `review.md`.
-- [ ] Verify with `pnpm --filter server typecheck` and targeted reset/script checks.
-- [ ] Record verification results in `review.md`.
+- [x] Extend `apps/server/src/db/fixtures.ts` only as needed to seed realistic demo links, tag groups/tags, pre-highlighted examples, notes, and default reader settings.
+- [x] Add an idempotent demo reset script under `apps/server/scripts/` that upserts the shared demo account and resets/reseeds demo-owned mutable data.
+- [x] Add explicit safety checks so reset refuses to run unless `DEMO_MODE=true` and rejects obviously non-demo database targets where practical.
+- [x] Add a package script in `apps/server/package.json` for the demo reset command.
+- [x] Test reset idempotency if practical in the existing test setup; otherwise document the manual repeat-run verification in `review.md`.
+- [x] Verify with `pnpm --filter server typecheck` and targeted reset/script checks.
+- [x] Record verification results in `review.md`.
 
 ## Phase 5: Web Demo UX Shell And Auth
 
