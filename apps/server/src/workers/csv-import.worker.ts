@@ -337,8 +337,10 @@ csvImportWorker.on('error', (error: Error) => {
   logger.error(`[${workerName}] Error in CSV import worker: ${JSON.stringify(error)}`);
 });
 
-logger.info(
-  `[${workerName}] CSV import worker started and listening for jobs on 'csv-import' queue.`
-);
+if (!isDemoMode()) {
+  logger.info(
+    `[${workerName}] CSV import worker started and listening for jobs on 'csv-import' queue.`
+  );
+}
 
 export default csvImportWorker;

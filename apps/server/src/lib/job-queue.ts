@@ -1,8 +1,42 @@
-import { Queue, Worker, type QueueOptions, type WorkerOptions } from 'bullmq';
+import { Queue, type QueueOptions, Worker, type WorkerOptions } from 'bullmq';
 
 import redisConfig from '@/config/redis.config.js';
 
+import { isDemoMode } from '@/lib/demo-mode.js';
+
+type NoopJob = {
+  id: string;
+};
+
+class NoopQueue {
+  constructor(private readonly name: string) {}
+
+  add(): Promise<NoopJob> {
+    return Promise.resolve({ id: `${this.name}:demo-job` });
+  }
+
+  async close(): Promise<void> {}
+
+  async getJob(): Promise<null> {
+    return null;
+  }
+
+  on(): this {
+    return this;
+  }
+}
+
+class NoopWorker {
+  async close(): Promise<void> {}
+
+  on(): this {
+    return this;
+  }
+}
+
 export function createQueue(name: string, options?: QueueOptions) {
+  if (isDemoMode()) return new NoopQueue(name) as unknown as Queue;
+
   return new Queue(name, {
     connection: redisConfig,
     defaultJobOptions: {
@@ -29,6 +63,8 @@ export function createWorker(
   processor: any,
   options?: Omit<WorkerOptions, 'connection'>
 ) {
+  if (isDemoMode()) return new NoopWorker() as unknown as Worker;
+
   return new Worker(name, processor, {
     connection: redisConfig,
     concurrency: 1,

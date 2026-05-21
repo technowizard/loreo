@@ -372,8 +372,10 @@ contentExtractionWorker.on('error', (error: Error) => {
   logger.error(`[${workerName}] Error in content-extraction worker: ${JSON.stringify(error)}`);
 });
 
-logger.info(
-  `[${workerName}] Content extraction worker started and listening for jobs on 'content-extraction' queue.`
-);
+if (!isDemoMode()) {
+  logger.info(
+    `[${workerName}] Content extraction worker started and listening for jobs on 'content-extraction' queue.`
+  );
+}
 
 export default contentExtractionWorker;
