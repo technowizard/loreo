@@ -2,12 +2,9 @@ import type { RedisClient } from 'hono-rate-limiter';
 import { RedisStore, rateLimiter } from 'hono-rate-limiter';
 import { Redis } from 'ioredis';
 
-import { env } from '@/lib/env-config.js';
+import redisConfig from '@/config/redis.config.js';
 
-const redisClient = new Redis({
-  host: env.REDIS_HOST,
-  port: env.REDIS_PORT ? Number(env.REDIS_PORT) : 6379
-});
+const redisClient = new Redis(redisConfig);
 
 // node-redis workaround using ioredis to adapt the redis client for hono-rate-limiter
 const redisAdapter: RedisClient = {

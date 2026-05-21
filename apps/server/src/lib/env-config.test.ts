@@ -46,6 +46,18 @@ describe('env-config', () => {
     );
   });
 
+  it('preserves REDIS_URL when provided', async () => {
+    const { env } = await importWithEnv(
+      {
+        JWT_SECRET: 'secret',
+        REDIS_URL: 'rediss://default:upstash-token@demo.upstash.io:6380'
+      },
+      () => import('./env-config.js')
+    );
+
+    expect(env.REDIS_URL).toBe('rediss://default:upstash-token@demo.upstash.io:6380');
+  });
+
   it('rejects unsupported demo mode values', async () => {
     await expect(
       importWithEnv(
