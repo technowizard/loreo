@@ -14,12 +14,18 @@ export interface ArticleActions {
 
 export interface ArticleActionsConfig {
   deleteFromNavbar?: boolean;
+  disabled?: boolean;
   onDeleteSuccess?: () => void;
   formatUpdateMessage?: (body: UpdateLinkBody) => string | false;
 }
 
 export function useArticleActions(config: ArticleActionsConfig = {}): ArticleActions {
-  const { deleteFromNavbar = false, onDeleteSuccess, formatUpdateMessage } = config;
+  const {
+    deleteFromNavbar = false,
+    disabled = false,
+    onDeleteSuccess,
+    formatUpdateMessage
+  } = config;
 
   const updateMutation = useUpdateLink({
     mutationConfig: {
@@ -42,18 +48,30 @@ export function useArticleActions(config: ArticleActionsConfig = {}): ArticleAct
   const refetchMutation = useRefetchLink();
 
   const updateLink = useCallback(
-    (id: string, data: UpdateLinkBody) => updateMutation.mutate({ body: data, linkId: id }),
-    [updateMutation]
+    (id: string, data: UpdateLinkBody) => {
+      if (disabled) return;
+
+      updateMutation.mutate({ body: data, linkId: id });
+    },
+    [disabled, updateMutation]
   );
 
   const deleteLink = useCallback(
-    (linkId: string) => deleteMutation.mutate({ id: linkId }),
-    [deleteMutation]
+    (linkId: string) => {
+      if (disabled) return;
+
+      deleteMutation.mutate({ id: linkId });
+    },
+    [disabled, deleteMutation]
   );
 
   const refetchLink = useCallback(
-    (id: string) => refetchMutation.mutate({ id }),
-    [refetchMutation]
+    (id: string) => {
+      if (disabled) return;
+
+      refetchMutation.mutate({ id });
+    },
+    [disabled, refetchMutation]
   );
 
   return {

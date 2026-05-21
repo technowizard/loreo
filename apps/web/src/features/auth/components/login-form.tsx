@@ -45,7 +45,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'form'>)
 
   const handleTryDemo = () => {
     const demoCredentials = {
-      email: 'demo@loreo.app',
+      email: 'demo@loreo.test',
       password: 'demo-password'
     } satisfies LoginInput;
 

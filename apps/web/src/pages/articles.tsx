@@ -26,6 +26,7 @@ import { useDebounce } from '@/hooks/use-debounce';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useThemeConfig } from '@/hooks/use-theme-config';
 
+import { env } from '@/lib/env';
 import { cn } from '@/lib/utils';
 
 import { useNotificationsStore } from '@/stores/notifications';
@@ -47,6 +48,7 @@ function ArticleListSkeleton() {
 
 function ArticlesPage() {
   const { isDesktop, isMobile, isTablet } = useMediaQuery();
+  const isDemo = env.isDemo;
   const queryClient = useQueryClient();
   const notifySuccess = useNotificationsStore.useSuccess();
   const { t } = useTranslation('common');
@@ -340,6 +342,7 @@ function ArticlesPage() {
             articleCardView={articleCardView}
             currentFilterInfo={currentFilterInfo}
             filterContentProps={filterContentProps}
+            disabled={isDemo}
             isMobile={isMobile}
             isTablet={isTablet}
             onAddArticle={addArticleModal.open}
@@ -374,6 +377,7 @@ function ArticlesPage() {
                     handleDeleteLink={handleDeleteLink}
                     handleRefetchLink={handleRefetchLink}
                     handleUpdateLink={handleUpdateLink}
+                    enableActions={!isDemo}
                     link={link}
                     tagGroups={tagGroups}
                     variant={articleCardView}
@@ -402,6 +406,7 @@ function ArticlesPage() {
 
       <AddArticleDialog
         formData={addArticleModal.formData}
+        disabled={isDemo}
         isMobile={isMobile}
         onClose={addArticleModal.close}
         onFormChange={addArticleModal.onChange}

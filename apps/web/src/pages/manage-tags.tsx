@@ -13,10 +13,12 @@ import { TagGroupCard } from '@/features/tags/components/tag-group-card';
 import { TagGroupFormDialog } from '@/features/tags/components/tag-group-form-dialog';
 import { useTagsActions } from '@/features/tags/hooks/use-tags-actions';
 
+import { env } from '@/lib/env';
 import { cn } from '@/lib/utils';
 
 function ManageTagsPage() {
   const { t } = useTranslation('common');
+  const isDemo = env.isDemo;
   const {
     isLoading,
     isError,
@@ -57,7 +59,11 @@ function ManageTagsPage() {
               value={searchQuery}
             />
           </div>
-          <Button className="w-full sm:w-auto" disabled={isLoading} onClick={openCreateGroup}>
+          <Button
+            className="w-full sm:w-auto"
+            disabled={isLoading || isDemo}
+            onClick={openCreateGroup}
+          >
             <PlusIcon className="size-4" />
             {t('tags.page.newGroup')}
           </Button>
@@ -124,6 +130,7 @@ function ManageTagsPage() {
             {filteredGroups.map((group) => (
               <TagGroupCard
                 group={group}
+                isDemo={isDemo}
                 key={group.id}
                 onAddFirstTag={() => openTagDialog(group)}
                 onDelete={() => openDeleteConfirmation('group', group, group.tags?.length)}
@@ -139,7 +146,7 @@ function ManageTagsPage() {
       <TagGroupFormDialog {...tagGroupDialog} />
       <TagFormDialog {...tagDialog} />
       <DeleteConfirmationDialog {...deleteDialog} />
-      <GroupTagsSheet {...tagsSheet} />
+      <GroupTagsSheet {...tagsSheet} isDemo={isDemo} />
       <MoveTagsDialog {...moveDialog} />
     </>
   );

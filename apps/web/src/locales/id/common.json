@@ -37,7 +37,7 @@
     "invalidCredentials": "Email atau kata sandi tidak valid",
     "success": "Berhasil masuk",
     "tryDemo": "Coba Demo",
-    "demoGuidance": "Akun demo bersama: demo@loreo.app / demo-password.",
+    "demoGuidance": "Akun demo bersama: demo@loreo.test / demo-password.",
     "demoSignUpDisabled": "Mode demo menonaktifkan pendaftaran. Gunakan akun demo bersama sebagai gantinya."
   },
   "register": {

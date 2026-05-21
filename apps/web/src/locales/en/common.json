@@ -37,7 +37,7 @@
     "invalidCredentials": "Invalid email or password",
     "success": "Login successful",
     "tryDemo": "Try Demo",
-    "demoGuidance": "Shared demo account: demo@loreo.app / demo-password.",
+    "demoGuidance": "Shared demo account: demo@loreo.test / demo-password.",
     "demoSignUpDisabled": "Demo mode disables registration. Use the shared demo account instead."
   },
   "register": {

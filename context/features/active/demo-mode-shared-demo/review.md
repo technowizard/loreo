@@ -7,6 +7,7 @@
 - Phase 3 complete: demo-mode worker and queue safety added for content extraction and CSV import.
 - Phase 4 complete: demo seed/reset data, safety checks, and reset command added.
 - Phase 5 complete: web demo UX banner, demo login guidance, registration blocking, and reader note added.
+- Phase 6 complete: web entry-point disabling added for import, tags, articles, reader actions, and local-only reader settings; fresh verification shows only unrelated repo-lint drift outside this slice.
 
 ## Changed Files
 
@@ -43,6 +44,8 @@
 - `apps/web/src/lib/env.test.ts` - added web demo flag parser coverage.
 - `apps/web/src/locales/en/common.json` - added demo-mode copy.
 - `apps/web/src/locales/id/common.json` - added demo-mode copy.
+- `apps/web/src/components/navigation/reader-nav.tsx` - hid the reader actions menu in demo mode while keeping navigation, highlights, and settings.
+- `apps/web/src/features/tags/components/tag-group-card.tsx` - kept tag-group browsing visible while hiding demo-mode mutating actions.
 
 ## Verification Results
 
@@ -54,20 +57,22 @@
 - `pnpm --filter server typecheck` after worker guard/test fixes - pass.
 - `pnpm --filter server typecheck` after phase 4 seed/reset changes - pass.
 - `pnpm --filter server exec vitest run src/lib/demo-reset.test.ts` - pass, 1 file / 3 tests, with the server test migration setup running successfully beforehand.
-- `pnpm --filter web typecheck` - pass.
+- `pnpm --filter web typecheck` - pass (fresh run during phase 6 review).
 - `pnpm --filter web exec vitest run src/app.test.tsx src/lib/env.test.ts` - pass, 2 files / 3 tests total.
+- `pnpm lint` - partial pass; `oxlint` passed, but `oxfmt --check` still reports unrelated formatting drift in `apps/server/browser/server.js`, `apps/web/src/routeTree.gen.ts`, `apps/web/src/typography.css`, and `docs/browser-image-optimization.md`.
+- Browser smoke: the local demo session rendered the protected shell banner, manage-tags page with disabled `New Group`, settings import demo-disabled screen, and seeded TurboFan article reader with continuation controls.
 
 ## Drift Check
 
-- No product behavior implemented yet beyond the shared demo flag/helper foundation.
-- Phase 2 keeps runtime behavior aligned with the documented hybrid policy: server mutations are blocked in demo mode while reads and highlight CRUD remain available.
+- Phase 6 keeps runtime behavior aligned with the documented hybrid policy: server mutations are blocked in demo mode while reads and highlight CRUD remain available, and the web shell now hides or disables the matching entry points.
 
 ## Remaining Risks
 
-- Worker exits, demo reset, web UX, and deployment notes remain for later phases.
 - The reset command was not executed against a live demo database here, so repeat-run verification still needs a real demo target even though the script is truncate-and-reseed deterministic.
 - Deployment notes remain for later phases.
+- Repo lint is still blocked by unrelated formatting drift outside the demo-mode slice.
+- Browser smoke is limited to the local demo session in this workspace.
 
 ## Completion Summary
 
-Phase 1 scaffolded the demo-mode contract and the env isolation helper needed for later route tests. Phase 2 enforced the demo-mode server route policy and verified the hybrid highlight behavior. Phase 3 stopped background workers from doing real work in demo mode and locked that down with isolated regression tests. Phase 4 added seeded demo content for the TurboFan article, highlight notes, demo tag groups/tags, and an idempotent reset command guarded against non-demo execution. Phase 5 added the demo-facing web shell treatment, demo login affordances, registration blocking, and an explicit reader-settings note while keeping the server as the source of truth.
+Phase 1 scaffolded the demo-mode contract and the env isolation helper needed for later route tests. Phase 2 enforced the demo-mode server route policy and verified the hybrid highlight behavior. Phase 3 stopped background workers from doing real work in demo mode and locked that down with isolated regression tests. Phase 4 added seeded demo content for the TurboFan article, highlight notes, demo tag groups/tags, and an idempotent reset command guarded against non-demo execution. Phase 5 added the demo-facing web shell treatment, demo login affordances, registration blocking, and an explicit reader-settings note while keeping the server as the source of truth. Phase 6 finished the web gating slice and confirmed the demo shell, disabled tags/import surfaces, and seeded reader flow in the local browser.

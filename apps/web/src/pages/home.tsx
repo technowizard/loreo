@@ -10,6 +10,7 @@ import { QuickAddBar } from '@/features/home/components/quick-add-bar';
 import { RecentlySavedSection } from '@/features/home/components/recently-saved-section';
 import { SuggestionsSection } from '@/features/home/components/suggestions-section';
 
+import { env } from '@/lib/env';
 import { greetUser } from '@/lib/utils';
 
 function HomePage() {
@@ -46,7 +47,7 @@ function HomePage() {
         </div>
       </div>
 
-      <QuickAddBar />
+      <QuickAddBar isDemo={env.isDemo} />
 
       <ContinueReadingSection
         data={suggestions?.continueReading}

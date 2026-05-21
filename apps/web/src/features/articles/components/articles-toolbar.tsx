@@ -32,6 +32,7 @@ type Props = {
   articleCardView: 'grid' | 'list';
   currentFilterInfo: CurrentFilterInfo | undefined;
   filterContentProps: FilterProps;
+  disabled?: boolean;
   isMobile: boolean;
   isTablet: boolean;
   onAddArticle: () => void;
@@ -47,6 +48,7 @@ export function ArticlesToolbar({
   articleCardView,
   currentFilterInfo,
   filterContentProps,
+  disabled = false,
   isMobile,
   isTablet,
   onAddArticle,
@@ -78,6 +80,7 @@ export function ArticlesToolbar({
             <Input
               aria-label={t('articles.toolbar.searchAria')}
               className="bg-white pr-10 pl-10"
+              disabled={disabled}
               onChange={(e) => onSearchChange(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={t('articles.toolbar.searchPlaceholder')}
@@ -136,6 +139,7 @@ export function ArticlesToolbar({
           <Button
             aria-label={t('articles.toolbar.saveArticleAria')}
             className="group hidden sm:flex"
+            disabled={disabled}
             onClick={onAddArticle}
             size="lg"
           >
@@ -149,6 +153,7 @@ export function ArticlesToolbar({
         <Button
           aria-label={t('articles.toolbar.saveArticleAria')}
           className="group"
+          disabled={disabled}
           onClick={onAddArticle}
           size="lg"
         >

@@ -66,14 +66,14 @@ Dependencies: Phase 1 for contract shape; can run after server guard behavior is
 
 Dependencies: Phase 5.
 
-- [ ] Disable or hide import wizard access and file selection/drop paths in `apps/web/src/pages/import-articles.tsx` and `apps/web/src/features/import-articles/components/upload-from-csv.tsx`.
-- [ ] Keep manage-tags browsing visible while disabling create/edit/delete/move entry points in `apps/web/src/pages/manage-tags.tsx` and tag components.
-- [ ] Disable link create entry points in quick add and add-article flows.
-- [ ] Disable link refetch/delete/update/tag-edit actions in article list, article cards, edit-tags dialog, article reader, and reader nav.
-- [ ] Preserve reader settings UI as local-only in demo mode.
-- [ ] Implement hybrid highlight behavior: seeded highlighted text plus temporary highlight CRUD cleaned up by reset.
-- [ ] Verify with `pnpm --filter web typecheck`, `pnpm lint`, and manual browser checks for login, banner, import, tags, article list, reader, and highlights.
-- [ ] Record verification results in `review.md`.
+- [x] Disable or hide import wizard access and file selection/drop paths in `apps/web/src/pages/import-articles.tsx` and `apps/web/src/features/import-articles/components/upload-from-csv.tsx`.
+- [x] Keep manage-tags browsing visible while disabling create/edit/delete/move entry points in `apps/web/src/pages/manage-tags.tsx` and tag components.
+- [x] Disable link create entry points in quick add and add-article flows.
+- [x] Disable link refetch/delete/update/tag-edit actions in article list, article cards, edit-tags dialog, article reader, and reader nav.
+- [x] Preserve reader settings UI as local-only in demo mode.
+- [x] Implement hybrid highlight behavior: seeded highlighted text plus temporary highlight CRUD cleaned up by reset.
+- [x] Verify with `pnpm --filter web typecheck`, `pnpm lint`, and manual browser checks for login, banner, import, tags, article list, reader, and highlights.
+- [x] Record verification results in `review.md`.
 
 ## Phase 7: Deployment Notes And Final Verification
 

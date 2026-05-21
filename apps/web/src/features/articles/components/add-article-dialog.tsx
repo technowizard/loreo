@@ -27,6 +27,7 @@ type FormData = {
 
 type Props = {
   formData: FormData;
+  disabled?: boolean;
   isMobile: boolean;
   onClose: () => void;
   onFormChange: (field: string, value: string | Tag[]) => void;
@@ -38,6 +39,7 @@ type Props = {
 
 export function AddArticleDialog({
   formData,
+  disabled = false,
   isMobile,
   onClose,
   onFormChange,
@@ -103,6 +105,10 @@ export function AddArticleDialog({
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (disabled) {
+      return;
+    }
+
     const payload = {
       tags: formData.tags.map((tag) => ({
         id: tag.id,
@@ -129,6 +135,9 @@ export function AddArticleDialog({
           <DialogTitle>{t('articles.dialog.saveLaterTitle')}</DialogTitle>
           <DialogDescription>{t('articles.dialog.saveLaterDescription')}</DialogDescription>
         </DialogHeader>
+        {disabled && (
+          <p className="text-muted-foreground text-sm">{t('demo.banner.description')}</p>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="grid gap-2">
             <Label htmlFor="url">{t('articles.dialog.urlLabel')}</Label>
@@ -136,6 +145,7 @@ export function AddArticleDialog({
               name="url"
               onChange={(e) => onFormChange('url', e.target.value)}
               placeholder={t('articles.dialog.urlPlaceholder')}
+              disabled={disabled}
               required
               type="url"
               value={formData.url}
@@ -151,7 +161,7 @@ export function AddArticleDialog({
               placeholder={t('tags.tagInput.placeholder')}
               value={formData.tags}
             />
-            <Button className="mt-2 w-full" type="submit">
+            <Button className="mt-2 w-full" disabled={disabled} type="submit">
               <PlusIcon className="size-4" weight="bold" />
               {t('articles.dialog.submit')}
             </Button>

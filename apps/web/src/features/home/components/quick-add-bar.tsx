@@ -9,7 +9,11 @@ import { useCreateLink } from '@/features/articles/api/create-link';
 
 import { useNotificationsStore } from '@/stores/notifications';
 
-export function QuickAddBar() {
+type QuickAddBarProps = {
+  isDemo?: boolean;
+};
+
+export function QuickAddBar({ isDemo = false }: QuickAddBarProps) {
   const { t } = useTranslation('common');
   const notifySuccess = useNotificationsStore.useSuccess();
 
@@ -28,6 +32,10 @@ export function QuickAddBar() {
   const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    if (isDemo) {
+      return;
+    }
+
     createLink.mutate({ url });
   };
 
@@ -43,12 +51,13 @@ export function QuickAddBar() {
               name="url"
               onChange={(event) => setUrl(event.target.value)}
               placeholder={t('home.quickAdd.placeholder')}
+              disabled={isDemo}
               required
               type="url"
               value={url}
             />
           </div>
-          <Button className="w-full sm:w-30" type="submit">
+          <Button className="w-full sm:w-30" disabled={isDemo} type="submit">
             <PlusIcon className="size-4" />
             {t('home.quickAdd.save')}
           </Button>

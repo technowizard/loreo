@@ -27,6 +27,8 @@ import {
 } from '@/features/import-articles/constants/wizard-config';
 import { useImportArticles } from '@/features/import-articles/hooks/use-import-articles';
 
+import { env } from '@/lib/env';
+
 import { useNotificationsStore } from '@/stores/notifications';
 
 function ImportArticlesPage() {
@@ -45,6 +47,32 @@ function ImportArticlesPage() {
   const { mapping, onPreviewImportSuccess, uploadedFile } = useImportArticles();
 
   const navigate = useNavigate();
+
+  if (env.isDemo) {
+    return (
+      <main
+        aria-label="Article import disabled"
+        className="flex max-w-350 flex-col gap-6"
+        role="main"
+      >
+        <header className="space-y-2">
+          <h1 className="text-foreground text-3xl font-bold tracking-tight">
+            {t('demo.banner.title')}
+          </h1>
+          <p className="text-muted-foreground">{t('demo.banner.description')}</p>
+        </header>
+
+        <div className="bg-card border-border rounded-3xl border p-6">
+          <p className="text-muted-foreground text-sm">
+            {t('import.wizard.confirmCancelDescription')}
+          </p>
+          <Button className="mt-4" onClick={() => navigate({ to: '/articles' })}>
+            {t('reader.nav.back')}
+          </Button>
+        </div>
+      </main>
+    );
+  }
 
   // Focus management on step change
   useEffect(() => {

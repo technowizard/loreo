@@ -34,6 +34,7 @@ import {
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useThemeConfig } from '@/hooks/use-theme-config';
 
+import { env } from '@/lib/env';
 import { cn, openOriginalLink } from '@/lib/utils';
 
 import { Button } from '../ui/button';
@@ -106,6 +107,7 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
   const { isMobile } = useMediaQuery();
 
   const actions = useReaderActions(linkId, {
+    disabled: env.isDemo,
     formatUpdateMessage: (body) => {
       if (body.readingProgress !== undefined || body.timeSpentReading !== undefined) return false;
       if (body.isFavorite !== undefined)
@@ -434,68 +436,70 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
                 </DrawerContent>
               </Drawer>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={
-                    <Button
-                      aria-label={t('reader.settings.moreOptions')}
-                      className="mr-0"
-                      size="icon"
-                      variant="ghost"
+              {!env.isDemo && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={
+                      <Button
+                        aria-label={t('reader.settings.moreOptions')}
+                        className="mr-0"
+                        size="icon"
+                        variant="ghost"
+                      >
+                        <DotsThreeIcon className="size-4" size={24} weight="bold" />
+                      </Button>
+                    }
+                  />
+                  <DropdownMenuContent align="end" className="divide-y w-36">
+                    <DropdownMenuItem
+                      className="focus:bg-accent h-11 rounded-none"
+                      onClick={handleFavoriteArticle}
                     >
-                      <DotsThreeIcon className="size-4" size={24} weight="bold" />
-                    </Button>
-                  }
-                />
-                <DropdownMenuContent align="end" className="divide-y w-36">
-                  <DropdownMenuItem
-                    className="focus:bg-accent h-11 rounded-none"
-                    onClick={handleFavoriteArticle}
-                  >
-                    <StarIcon
-                      className={cn('mr-2', article?.isFavorite && 'fill-yellow-500')}
-                      size={24}
-                      weight={article?.isFavorite ? 'fill' : 'bold'}
-                    />
-                    {article?.isFavorite
-                      ? t('reader.settings.unfavorite')
-                      : t('reader.settings.favorite')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="focus:bg-accent h-11 rounded-none"
-                    onClick={handleArchiveArticle}
-                  >
-                    <ArchiveIcon
-                      className="mr-2"
-                      size={24}
-                      weight={article?.isArchived ? 'fill' : 'bold'}
-                    />
-                    {article?.isArchived
-                      ? t('reader.settings.unarchive')
-                      : t('reader.settings.archive')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="focus:bg-accent h-11 rounded-none"
-                    onClick={() => setIsEditTagsOpen(true)}
-                  >
-                    <TagIcon className="mr-2" size={24} weight="bold" />
-                    {t('reader.settings.editTags')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="focus:bg-accent h-11 rounded-t-none"
-                    onClick={handleDeleteArticle}
-                    variant="destructive"
-                  >
-                    <TrashIcon className="mr-2" size={24} weight="bold" />
-                    {t('reader.settings.deleteArticle')}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                      <StarIcon
+                        className={cn('mr-2', article?.isFavorite && 'fill-yellow-500')}
+                        size={24}
+                        weight={article?.isFavorite ? 'fill' : 'bold'}
+                      />
+                      {article?.isFavorite
+                        ? t('reader.settings.unfavorite')
+                        : t('reader.settings.favorite')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="focus:bg-accent h-11 rounded-none"
+                      onClick={handleArchiveArticle}
+                    >
+                      <ArchiveIcon
+                        className="mr-2"
+                        size={24}
+                        weight={article?.isArchived ? 'fill' : 'bold'}
+                      />
+                      {article?.isArchived
+                        ? t('reader.settings.unarchive')
+                        : t('reader.settings.archive')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="focus:bg-accent h-11 rounded-none"
+                      onClick={() => setIsEditTagsOpen(true)}
+                    >
+                      <TagIcon className="mr-2" size={24} weight="bold" />
+                      {t('reader.settings.editTags')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="focus:bg-accent h-11 rounded-t-none"
+                      onClick={handleDeleteArticle}
+                      variant="destructive"
+                    >
+                      <TrashIcon className="mr-2" size={24} weight="bold" />
+                      {t('reader.settings.deleteArticle')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
           </div>
         </div>
       </header>
-      {article && (
+      {article && !env.isDemo && (
         <EditTagsDialog
           initialTags={article.tags}
           linkId={linkId}
