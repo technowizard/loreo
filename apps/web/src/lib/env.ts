@@ -1,7 +1,7 @@
 import * as z from 'zod';
 
 const envSchema = z.object({
-  API_URL: z.string(),
+  API_URL: z.string().default(''),
   DEMO_MODE: z
     .enum(['true', 'false'])
     .default('false')

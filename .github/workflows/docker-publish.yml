@@ -33,8 +33,7 @@ jobs:
         include:
           - image: loreo-web
             dockerfile: apps/web/Dockerfile.prod
-            build-args: |
-              VITE_API_URL=${{ vars.VITE_API_URL || 'http://localhost:3001' }}
+            build-args: ''
           - image: loreo-server
             dockerfile: apps/server/Dockerfile.prod
             build-args: ''

@@ -14,7 +14,11 @@ build
 
 # Environment
 .env
+.env.test
+**/.env
+**/.env.test
 .env*.local
+**/.env*.local
 
 # Misc
 .DS_Store

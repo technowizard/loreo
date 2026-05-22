@@ -1,6 +1,6 @@
 services:
   loreo-postgres:
-    image: postgres:16-alpine
+    image: postgres:17-alpine
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -42,7 +42,7 @@ services:
     image: ghcr.io/technowizard/loreo-server:latest
     restart: always
     ports:
-      - '3000:3000'
+      - '${SERVER_PUBLIC_PORT:-3000}:3000'
     environment:
       NODE_ENV: production
       DATABASE_HOST: loreo-postgres
@@ -73,15 +73,12 @@ services:
         condition: service_started
 
   loreo-web:
-    build:
-      context: .
-      dockerfile: apps/web/Dockerfile.prod
-      args:
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:3001}
     image: ghcr.io/technowizard/loreo-web:latest
     restart: always
     ports:
-      - '3001:80'
+      - '${WEB_PUBLIC_PORT:-3001}:80'
+    environment:
+      API_UPSTREAM: http://loreo-server:3000
     networks:
       - frontend
     depends_on:
