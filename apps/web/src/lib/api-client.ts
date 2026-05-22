@@ -49,7 +49,7 @@ const buildPayload = (body?: RequestBody, headers: object = {}): Options => {
 
 export const instance = ky.create({
   credentials: 'include',
-  prefix: env.API_URL,
+  prefix: env.API_URL || globalThis.location.origin,
   retry: {
     limit: 1,
     statusCodes: [401, 403, 429, 500, 502, 503, 504]
