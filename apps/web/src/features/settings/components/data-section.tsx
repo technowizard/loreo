@@ -101,14 +101,14 @@ export function DataSection() {
                       <div className="flex items-center gap-3 pt-1">
                         <span className="inline-flex items-center gap-1 text-xs text-emerald-600">
                           <CheckCircleIcon className="size-3.5" weight="fill" />
-                          {t('settings.data.extracted', {
+                          {t('settings.data.counts.extracted', {
                             count: session.extractionCompleted
                           })}
                         </span>
                         {session.extractionFailed > 0 && (
                           <span className="inline-flex items-center gap-1 text-xs text-red-600">
                             <XCircleIcon className="size-3.5" weight="fill" />
-                            {t('settings.data.failed', {
+                            {t('settings.data.counts.failed', {
                               count: session.extractionFailed
                             })}
                           </span>
