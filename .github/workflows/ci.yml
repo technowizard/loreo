@@ -75,7 +75,7 @@ jobs:
     env:
       NODE_ENV: test
       DATABASE_USER: postgres
-      DATABASE_PASSWORD: postgres
+      DATABASE_PASSWORD: test-postgres-password-at-least-16-characters
       DATABASE_DB: loreo_test
       DATABASE_HOST: 127.0.0.1
       DATABASE_PORT: 5432
