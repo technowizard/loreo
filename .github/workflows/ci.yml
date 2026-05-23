@@ -64,7 +64,7 @@ jobs:
         env:
           POSTGRES_DB: loreo_test
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: test-postgres-password-at-least-16-characters
         ports:
           - 5432:5432
         options: >-
