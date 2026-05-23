@@ -1,0 +1,70 @@
+name: Clear GitHub Actions Cache
+
+on:
+  workflow_dispatch:
+    inputs:
+      key_prefix:
+        description: Cache key prefix to delete. Leave empty to match every cache.
+        required: false
+        type: string
+      ref:
+        description: Git ref to filter caches by, for example refs/heads/main. Leave empty for all refs.
+        required: false
+        type: string
+      dry_run:
+        description: List matching caches without deleting them.
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: clear-actions-cache
+  cancel-in-progress: false
+
+jobs:
+  clear-cache:
+    name: Clear matching caches
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      KEY_PREFIX: ${{ inputs.key_prefix }}
+      REF: ${{ inputs.ref }}
+      DRY_RUN: ${{ inputs.dry_run }}
+    steps:
+      - name: Delete matching GitHub Actions caches
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          args=(--limit 100 --json id,key,ref,lastAccessedAt,sizeInBytes)
+
+          if [[ -n "${REF}" ]]; then
+            args+=(--ref "${REF}")
+          fi
+
+          caches=$(gh cache list "${args[@]}" --jq '.[] | select(env.KEY_PREFIX == "" or (.key | startswith(env.KEY_PREFIX))) | [.id, .key, .ref, .lastAccessedAt, .sizeInBytes] | @tsv')
+
+          if [[ -z "${caches}" ]]; then
+            echo "No matching caches found."
+            exit 0
+          fi
+
+          if [[ "${DRY_RUN}" == "true" ]]; then
+            echo "Dry run enabled. Matching caches:"
+          else
+            echo "Deleting matching caches:"
+          fi
+
+          while IFS=$'\t' read -r id key cache_ref last_accessed size_bytes; do
+            echo "${id}\t${key}\t${cache_ref}\t${last_accessed}\t${size_bytes} bytes"
+
+            if [[ "${DRY_RUN}" != "true" ]]; then
+              gh cache delete "${id}"
+            fi
+          done <<< "${caches}"
