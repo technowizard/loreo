@@ -1,6 +1,6 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { createMemoryHistory, createRouter, RouterProvider } from '@tanstack/react-router';
-import { type RenderOptions, render } from '@testing-library/react';
+import { type RenderOptions, render, renderHook } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
 import { routeTree } from '@/routeTree.gen';
@@ -33,6 +33,13 @@ const authContext: AuthContext = {
 
 function customRender(ui: ReactNode, options?: Omit<RenderOptions, 'wrapper'>) {
   return render(ui, { wrapper: Providers, ...options });
+}
+
+export function renderHookWithProviders<Result, Props>(
+  callback: (initialProps: Props) => Result,
+  options?: Parameters<typeof renderHook<Result, Props>>[1]
+) {
+  return renderHook(callback, { wrapper: Providers, ...options });
 }
 
 /**
