@@ -32,7 +32,7 @@ const envSchema = z
 
     DATABASE_USER: z.string().default(''),
 
-    DATABASE_PASSWORD: z.string().min(16),
+    DATABASE_PASSWORD: z.string().default(''),
 
     DATABASE_DB: z.string().default('postgres'),
 
@@ -86,10 +86,10 @@ const envSchema = z
       });
     }
 
-    if (!env.DATABASE_PASSWORD) {
+    if (env.DATABASE_PASSWORD.length < 16) {
       ctx.addIssue({
         code: 'custom',
-        message: 'DATABASE_PASSWORD is required when DATABASE_URL is not set',
+        message: 'DATABASE_PASSWORD must be at least 16 characters when DATABASE_URL is not set',
         path: ['DATABASE_PASSWORD']
       });
     }
