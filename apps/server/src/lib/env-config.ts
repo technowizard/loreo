@@ -14,6 +14,7 @@ const envSchema = z
 
     NODE_ENV: z.enum(['development', 'production', 'test']).default('production'),
 
+    // demo mode - when true, all users are created with demo credentials
     DEMO_MODE: z
       .enum(['true', 'false'])
       .default('false')
@@ -21,7 +22,7 @@ const envSchema = z
 
     CORS_ORIGINS: z.union([z.url(), z.literal('*')]).default('http://localhost:3001'),
 
-    JWT_SECRET: z.string(), // min 32 chars
+    JWT_SECRET: z.string().min(32),
 
     DATABASE_URL: z.string().default(''),
 
@@ -31,7 +32,7 @@ const envSchema = z
 
     DATABASE_USER: z.string().default(''),
 
-    DATABASE_PASSWORD: z.string().default(''), // min 16 chars
+    DATABASE_PASSWORD: z.string().min(16),
 
     DATABASE_DB: z.string().default('postgres'),
 
@@ -79,7 +80,7 @@ const envSchema = z
 
     if (!env.DATABASE_USER) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: 'DATABASE_USER is required when DATABASE_URL is not set',
         path: ['DATABASE_USER']
       });
@@ -87,7 +88,7 @@ const envSchema = z
 
     if (!env.DATABASE_PASSWORD) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: 'DATABASE_PASSWORD is required when DATABASE_URL is not set',
         path: ['DATABASE_PASSWORD']
       });
