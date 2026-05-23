@@ -193,6 +193,8 @@ Server-only local env lives in `apps/server/.env`. Web-only local env lives in `
 VITE_API_URL=http://localhost:3000
 ```
 
+For production, see the [self-hosting section](./README.md#self-hosting).
+
 ## Commands
 
 ```bash
