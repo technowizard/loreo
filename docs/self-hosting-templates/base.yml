@@ -1,0 +1,96 @@
+services:
+  loreo-postgres:
+    image: postgres:17-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  loreo-redis:
+    image: redis:7-alpine
+    restart: always
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  loreo-browser:
+    image: ghcr.io/technowizard/loreo-browser:latest
+    restart: always
+    expose:
+      - '4444'
+    shm_size: '1g'
+    networks:
+      - browser
+
+  loreo-server:
+    image: ghcr.io/technowizard/loreo-server:latest
+    restart: always
+    ports:
+      - '${SERVER_PUBLIC_PORT:-3000}:3000'
+    environment:
+      NODE_ENV: production
+      DATABASE_HOST: loreo-postgres
+      DATABASE_PORT: 5432
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_DB: ${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      REDIS_HOST: loreo-redis
+      REDIS_PORT: 6379
+      STORAGE_PROVIDER: local-docker
+      STORAGE_PATH: /app/data/storage
+      PUBLIC_URL: ${PUBLIC_URL:-http://localhost:3001}
+      BROWSER_URL: ws://loreo-browser:4444/camoufox
+    volumes:
+      - storage_data:/app/data/storage
+    networks:
+      - backend
+      - browser
+      - frontend
+    depends_on:
+      loreo-postgres:
+        condition: service_healthy
+      loreo-redis:
+        condition: service_healthy
+      loreo-browser:
+        condition: service_started
+
+  loreo-web:
+    image: ghcr.io/technowizard/loreo-web:latest
+    restart: always
+    ports:
+      - '${WEB_PUBLIC_PORT:-3001}:80'
+    environment:
+      API_UPSTREAM: http://loreo-server:3000
+    networks:
+      - frontend
+    depends_on:
+      - loreo-server
+
+volumes:
+  postgres_data:
+  redis_data:
+  storage_data:
+
+networks:
+  backend:
+    internal: true
+  frontend:
+  browser:

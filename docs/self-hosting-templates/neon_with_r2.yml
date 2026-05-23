@@ -1,0 +1,78 @@
+services:
+  loreo-redis:
+    image: redis:7-alpine
+    restart: always
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  loreo-browser:
+    image: ghcr.io/technowizard/loreo-browser:latest
+    restart: always
+    expose:
+      - '4444'
+    shm_size: '1g'
+    networks:
+      - browser
+
+  loreo-server:
+    image: ghcr.io/technowizard/loreo-server:latest
+    restart: always
+    ports:
+      - '${SERVER_PUBLIC_PORT:-3000}:3000'
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL} # connection string
+      JWT_SECRET: ${JWT_SECRET}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      REDIS_HOST: loreo-redis
+      REDIS_PORT: 6379
+      STORAGE_PROVIDER: s3
+      PUBLIC_URL: ${PUBLIC_URL:-http://localhost:3001}
+      BROWSER_URL: ws://loreo-browser:4444/camoufox
+      S3_ENDPOINT: ${S3_ENDPOINT}
+      S3_REGION: ${S3_REGION}
+      S3_ACCOUNT_ID: ${S3_ACCOUNT_ID}
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME}
+      S3_PUBLIC_URL: ${S3_PUBLIC_URL}
+    volumes:
+      - storage_data:/app/data/storage
+    networks:
+      - backend
+      - browser
+      - frontend
+    depends_on:
+      loreo-redis:
+        condition: service_healthy
+      loreo-browser:
+        condition: service_started
+
+  loreo-web:
+    image: ghcr.io/technowizard/loreo-web:latest
+    restart: always
+    ports:
+      - '${WEB_PUBLIC_PORT:-3001}:80'
+    environment:
+      API_UPSTREAM: http://loreo-server:3000
+    networks:
+      - frontend
+    depends_on:
+      - loreo-server
+
+volumes:
+  redis_data:
+  storage_data:
+
+networks:
+  backend:
+    internal: true
+  frontend:
+  browser:
