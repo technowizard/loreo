@@ -8,6 +8,7 @@ import { secureHeaders } from 'hono/secure-headers';
 
 import { notFound, onError } from '../middlewares/common.js';
 import { pinoLogger } from '../middlewares/pino-logger.js';
+import { rateLimit } from '../middlewares/rate-limit.js';
 
 import { env } from './env-config.js';
 import { errorResponse, HttpStatus } from './response.js';
@@ -68,15 +69,15 @@ export default function createApp() {
       )
     );
 
-  // if (!env.isTest) {
-  //   app.use('*', async (c, next) => {
-  //     if (c.req.path === '/health') {
-  //       return next();
-  //     }
+  if (!env.isTest) {
+    app.use('*', async (c, next) => {
+      if (c.req.path === '/health') {
+        return next();
+      }
 
-  //     return rateLimit(c as any, next);
-  //   });
-  // }
+      return rateLimit(c, next);
+    });
+  }
 
   app.notFound(notFound);
   app.onError(onError);
