@@ -2,10 +2,16 @@
 
 Thanks for helping improve Loreo. This guide captures the repo's current contribution flow and quality gates.
 
+## Philosophy
+
+Loreo is intentionally focused on calm, intentional reading and revisitability.
+Feature proposals are evaluated against that philosophy; if it adds noise or moves
+Loreo toward a general-purpose tool, it's probably not a fit. Open an issue to
+discuss before building something substantial.
+
 ## Before You Start
 
 - Read `README.md` for setup and repo structure.
-- Check whether your change is already covered by an active plan under `docs/plans/` or `context/features/`.
 - Keep secrets, credentials, and local environment values out of commits.
 
 ## Branches

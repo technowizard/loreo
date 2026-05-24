@@ -6,7 +6,7 @@ This guide walks through deploying Loreo with Docker Compose, including domain s
 
 ![Loreo Architecture](./images/architecture.png)
 
-Loreo's production stack consists of four containers:
+Loreo's production stack consists of five containers:
 
 | Service          | Image                                | Role                                    |
 | ---------------- | ------------------------------------ | --------------------------------------- |
@@ -16,7 +16,9 @@ Loreo's production stack consists of four containers:
 | `loreo-server`   | `ghcr.io/technowizard/loreo-server`  | Hono API, background jobs               |
 | `loreo-web`      | `ghcr.io/technowizard/loreo-web`     | Nginx + static React app                |
 
-The web container serves the React app through nginx and proxies API requests to the server. The server connects to Postgres, Redis, and the browser service internally. No services other than the web and server containers are exposed on host ports.
+The web container serves the React app through nginx and proxies API requests to the server.
+
+The server connects to Postgres, Redis, and the browser service internally. No services other than the web and server containers are exposed on host ports.
 
 ## Prerequisites
 
@@ -115,7 +117,7 @@ The server uses `STORAGE_PROVIDER: local-docker` by default, storing uploaded fi
 
 ### Web
 
-The web container is **portable** — it does not require rebuilding when your deployment URL or server port changes. The browser calls the API on the same origin (through nginx's reverse proxy), and the nginx template resolves `${API_UPSTREAM}` at container startup.
+The web container is portable: it does not require rebuilding when your deployment URL or server port changes. The browser calls the API on the same origin (through nginx's reverse proxy), and the nginx template resolves `${API_UPSTREAM}` at container startup.
 
 The default `API_UPSTREAM=http://loreo-server:3000` works for standard Docker Compose deployments. You only need to change it if you rename the server service or run containers on different Docker networks.
 
@@ -206,14 +208,16 @@ Add these to the `loreo-server` environment block in `docker-compose.prod.yml`.
 
 ### Backup
 
+Replace `<POSTGRES_USER>` and `<POSTGRES_DB>` with the values from your `.env.prod`.
+
 ```bash
-docker exec loreo-prod-loreo-postgres-1 pg_dump -U loreo loreo > loreo-backup-$(date +%Y%m%d).sql
+docker exec loreo-prod-loreo-postgres-1 pg_dump -U <POSTGRES_USER> <POSTGRES_DB> > loreo-backup-$(date +%Y%m%d).sql
 ```
 
 ### Restore
 
 ```bash
-docker exec -i loreo-prod-loreo-postgres-1 psql -U loreo loreo < loreo-backup-YYYYMMDD.sql
+docker exec -i loreo-prod-loreo-postgres-1 psql -U <POSTGRES_USER> <POSTGRES_DB> < loreo-backup-YYYYMMDD.sql
 ```
 
 ### Automated Backups
@@ -221,7 +225,7 @@ docker exec -i loreo-prod-loreo-postgres-1 psql -U loreo loreo < loreo-backup-YY
 Add a cron job for daily backups:
 
 ```bash
-0 2 * * * docker exec loreo-prod-loreo-postgres-1 pg_dump -U loreo loreo > /backups/loreo-$(date +\%Y\%m\%d).sql
+0 2 * * * docker exec loreo-prod-loreo-postgres-1 pg_dump -U <POSTGRES_USER> <POSTGRES_DB> > /backups/loreo-$(date +\%Y\%m\%d).sql
 ```
 
 ## Updating

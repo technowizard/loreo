@@ -2,14 +2,23 @@
 
 ![Cover](./docs/images/cover.png)
 
-Loreo is a read-it-later app for saving articles worth revisiting, built with self-hosting in mind
+Loreo is a read-it-later app for saving articles worth revisiting, built with self-hosting in mind.
 
 ## Demo
 
 [Demo](https://loreo-demo.onrender.com)
 
-> The demo runs on a free tier Render instance, expect a cold start on first visit (~30s). Self-hosted instances don't have this limitation
-> The demo is read-only, you can't save or edit articles
+> The demo runs on a free tier Render instance, expect a cold start on first visit (~30s). Self-hosted instances don't have this limitation.
+> The demo is read-only, you can't save or edit articles.
+
+## Screenshots
+
+<table>
+  <tr>
+    <td><img src="docs/images/reading-list.png" alt="Article list" /></td>
+    <td><img src="docs/images/reading-view.png" alt="Archive view" /></td>
+  </tr>
+</table>
 
 ## Features
 
@@ -48,7 +57,7 @@ The goal is not productivity maximization, but creating a calmer relationship wi
 
 ## Why this exists
 
-I was a [Pocket](https://getpocket.com) user for a decade, but they decided to [shut down their service](https://blog.mozilla.org/en/mozilla/building-whats-next/). I tried finding alternatives, but most of them either just bookmark links without actually saving the content, have cluttered dashboards, or have too many features that I don't need. So I decided to build a calm, focused read-it-later app that I could self-host myself
+I was a [Pocket](https://getpocket.com) user for a decade, but they decided to [shut down their service](https://blog.mozilla.org/en/mozilla/building-whats-next/). I tried finding alternatives, but most of them either just bookmark links without actually saving the content, have cluttered dashboards, or have too many features that I don't need. So I decided to build a calm, focused read-it-later app that I could self-host myself.
 
 ## Behind the Name
 
@@ -91,11 +100,36 @@ This is a monorepo project using pnpm workspaces based on my [monorepo template]
 
 ## Note About Development
 
-This project is built as a personal tool I use daily, with a focus on intentional design decisions over feature accumulation. I'm open to suggestions and contributions that align with that philosophy
+This project is built as a personal tool I use daily, with a focus on intentional design decisions over feature accumulation. I'm open to suggestions and contributions that align with that philosophy.
+
+## License & Philosophy
+
+Loreo is open source because personal reading infrastructure should be inspectable,
+moddable, and self-hostable; not locked behind a service that can shut down.
+AGPL-3.0 ensures that hosted forks remain open to the community.
+
+This means:
+
+- You can self-host, modify, and use Loreo freely
+- If you host a modified version for others, you must publish your changes under AGPL-3.0
+- Commercial use requires a separate agreement
+
+Loreo is not a permissive-licensed library. It is a product with a philosophy.
+
+Licensed under [AGPL-3.0](LICENSE).
+
+## Contributing
+
+Contributions are welcome. Please open an issue before submitting a PR so we can
+discuss the approach first. See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
+
+Loreo is intentionally focused on calm, intentional reading and revisitability.
+Feature proposals are evaluated against that philosophy — if it adds noise or moves
+Loreo toward a general-purpose tool, it's probably not a fit.
 
 ## Acknowledgements
 
-Open-source software and transparent architecture discussions helped Loreo tremendously during development, so proper attribution feels important
+Open-source software and transparent architecture discussions helped Loreo tremendously during development, so proper attribution feels important.
 
 - [Karakeep](https://github.com/karakeep-app/karakeep) — inspiration for how scraping works and self-hosting patterns
 
@@ -311,7 +345,7 @@ Loreo supports decoupling services for better scalability and reliability. You c
 - **Redis**: For job queue and caching (e.g., Upstash)
 - **Storage**: S3-compatible storage for images and other assets (e.g., Cloudflare R2)
 
-I have tested this with Neon as the database provider, Upstash as the Redis provider, and Cloudflare R2 as the storage provider. To get the best performance, make sure each service's region is close to your server location
+I have tested this with Neon as the database provider, Upstash as the Redis provider, and Cloudflare R2 as the storage provider. To get the best performance, make sure each service's region is close to your server location.
 
 ### Examples
 
@@ -342,7 +376,3 @@ STORAGE_SECRET_ACCESS_KEY=<your-cloudflare-r2-secret-access-key>
 
 - Article extraction uses a Playwright-compatible Camoufox websocket configured by `BROWSER_URL`.
 - Local storage is available by default; S3-compatible storage is supported through server env vars.
-
-## License
-
-Loreo is licensed under the [AGPL-3.0](LICENSE)
