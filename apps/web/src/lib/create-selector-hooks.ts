@@ -10,7 +10,7 @@ export const createSelectorHooks = <S extends UseBoundStore<StoreApi<object>>>(_
   for (const k of Object.keys(store.getState())) {
     const hookName = `use${k.charAt(0).toUpperCase()}${k.slice(1)}`;
 
-    (store as any)[hookName] = () => store((s) => s[k as keyof typeof s]);
+    Object.assign(store, { [hookName]: () => store((s) => s[k as keyof typeof s]) });
   }
   return store;
 };
