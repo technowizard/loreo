@@ -1,8 +1,11 @@
+import type { Context } from 'hono';
 import type { RedisClient } from 'hono-rate-limiter';
 import { RedisStore, rateLimiter } from 'hono-rate-limiter';
 import { Redis } from 'ioredis';
 
 import redisConfig from '@/config/redis.config.js';
+
+import type { AppBindings } from '@/lib/types.js';
 
 const redisClient = new Redis(redisConfig);
 
@@ -18,31 +21,44 @@ const redisAdapter: RedisClient = {
 const ONE_HOUR_WINDOW = 60 * 60 * 1000;
 
 function makeStore(prefix: string) {
-  return new RedisStore({
+  return new RedisStore<AppBindings>({
     client: redisAdapter,
     prefix
   });
 }
 
-function keyByUser(c: any): string {
+function keyByIp(c: Context<AppBindings>): string {
+  return (
+    c.req.header('x-forwarded-for')?.split(',')[0]?.trim() || c.req.header('x-real-ip') || 'unknown'
+  );
+}
+
+function keyByUser(c: Context<AppBindings>): string {
   return c.get('user')?.id ?? 'anon';
 }
 
-async function keyByIpAndEmail(c: any): Promise<string> {
+async function keyByIpAndEmail(c: Context<AppBindings>): Promise<string> {
   let email = 'unknown';
 
   try {
     const body = await c.req.json();
-    email = typeof body?.email === 'string' ? body.email.toLowerCase() : email;
+    if (typeof body === 'object' && body !== null && 'email' in body) {
+      const candidateEmail = body.email;
+      email = typeof candidateEmail === 'string' ? candidateEmail.toLowerCase() : email;
+    }
   } catch {
     // keep unknown email key for malformed requests
   }
 
-  const forwardedFor = c.req.header('x-forwarded-for')?.split(',')[0]?.trim();
-  const ip = forwardedFor || c.req.header('x-real-ip') || 'unknown';
-
-  return `${ip}:${email}`;
+  return `${keyByIp(c)}:${email}`;
 }
+
+export const rateLimit = rateLimiter<AppBindings>({
+  windowMs: 15 * 60 * 1000,
+  limit: 300,
+  keyGenerator: keyByIp,
+  store: makeStore('rl:global:')
+});
 
 export const authRegisterRateLimit = rateLimiter({
   windowMs: ONE_HOUR_WINDOW,
