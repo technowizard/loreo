@@ -500,7 +500,6 @@ function ListCardCompact({
   return (
     <div className="group bg-card [@media(hover:hover)]:hover:bg-accent/30 relative flex w-full flex-col overflow-hidden rounded-xl border transition-colors">
       <div className="flex gap-3 p-3">
-        {/* Thumbnail */}
         <div className="bg-muted relative h-16 w-16 shrink-0 overflow-hidden rounded-lg">
           {isLoading ? (
             <Skeleton className="absolute inset-0 rounded-none" />
@@ -581,14 +580,12 @@ function ListCardCompact({
             </div>
           </div>
 
-          {/* Excerpt */}
           {isLoading ? (
             <Skeleton className="h-3 w-4/5 rounded-md" />
           ) : (
             <p className="text-muted-foreground line-clamp-1 text-xs">{excerpt}</p>
           )}
 
-          {/* Meta row: priority · source · time · progress · tags */}
           {isLoading ? (
             <Skeleton className="h-3 w-28 rounded-md" />
           ) : (
@@ -672,11 +669,10 @@ function ListCardCompact({
         </div>
       </div>
 
-      {/* Ambient reading progress bar at card bottom */}
       {!isLoading && readingProgress > 0 && (
         <div className="bg-muted h-0.5 w-full overflow-hidden">
           <div
-            className="bg-primary h-full w-full origin-left motion-safe:transition-[transform] motion-safe:duration-500 motion-safe:[transition-timing-function:cubic-bezier(0.215,0.61,0.355,1)]"
+            className="bg-primary h-full w-full origin-left motion-safe:transition-[transform] motion-safe:duration-500 motion-safe:ease-[cubic-bezier(0.215,0.61,0.355,1)]"
             style={{ transform: `scaleX(${readingProgress / 100})` }}
           />
         </div>

@@ -31,21 +31,6 @@ export function ImportProgress() {
     return () => clearInterval(interval);
   }, []);
 
-  // if (loading) {
-  //   return (
-  //     <div className="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center gap-6">
-  //       <ArrowsClockwiseIcon className="animate-spin" size={36} />
-  //       <div className="flex flex-col gap-2 text-center">
-  //         <h1 className="text-foreground">Preparing your import</h1>
-  //         <div className="text-muted-foreground">
-  //           We&apos;re getting things ready for your import. This should only
-  //           take a moment.
-  //         </div>
-  //       </div>
-  //     </div>
-  //   )
-  // }
-
   if (status === 'extraction') {
     return (
       <ExtractionProgress

@@ -64,7 +64,11 @@ function buildClient() {
     })
   );
 
-  return { client, seedGroup: tagsAdapter.seedGroup, seedTag: tagsAdapter.seedTag };
+  return {
+    client,
+    seedGroup: tagsAdapter.seedGroup,
+    seedTag: tagsAdapter.seedTag
+  };
 }
 
 let client: ReturnType<typeof buildClient>['client'];
@@ -109,7 +113,13 @@ describe('tags routes', () => {
 
     it('creates a new category', async () => {
       const response = await client.tags.groups.$post(
-        { json: { name: 'Science', color: '#6366F1', description: 'Science articles' } },
+        {
+          json: {
+            name: 'Science',
+            color: '#6366F1',
+            description: 'Science articles'
+          }
+        },
         { headers: { Cookie: authCookie } }
       );
       expect(response.status).toBe(HttpStatus.CREATED);
@@ -276,44 +286,44 @@ describe('tags routes', () => {
     });
   });
 
-  // describe('PUT /api/tags/:tagId/:groupId', () => {
-  //   it('returns 401 without auth', async () => {
-  //     const response = await client.tags[':tagId'][':groupId'].$put({
-  //       param: { tagId: TAG_ID, groupId: GROUP_ID },
-  //       json: { name: 'Updated' }
-  //     });
-  //     expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
-  //   });
+  describe('PUT /api/tags/:tagId', () => {
+    it('returns 401 without auth', async () => {
+      const response = await client.tags[':tagId'].$put({
+        param: { tagId: TAG_ID },
+        json: { name: 'Updated' }
+      });
+      expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+    });
 
-  //   it('returns 404 for unknown tag', async () => {
-  //     const response = await client.tags[':tagId'][':groupId'].$put(
-  //       { param: { tagId: UNKNOWN_ID, groupId: GROUP_ID }, json: { name: 'Updated' } },
-  //       { headers: { Cookie: authCookie } }
-  //     );
-  //     expect(response.status).toBe(HttpStatus.NOT_FOUND);
-  //   });
+    it('returns 404 for unknown tag', async () => {
+      const response = await client.tags[':tagId'].$put(
+        { param: { tagId: UNKNOWN_ID }, json: { name: 'Updated' } },
+        { headers: { Cookie: authCookie } }
+      );
+      expect(response.status).toBe(HttpStatus.NOT_FOUND);
+    });
 
-  //   it('returns 400 when no fields provided', async () => {
-  //     const response = await client.tags[':tagId'][':groupId'].$put(
-  //       { param: { tagId: TAG_ID, groupId: GROUP_ID }, json: {} },
-  //       { headers: { Cookie: authCookie } }
-  //     );
-  //     expect(response.status).toBe(HttpStatus.BAD_REQUEST);
-  //   });
+    it('returns 400 when no fields provided', async () => {
+      const response = await client.tags[':tagId'].$put(
+        { param: { tagId: TAG_ID }, json: {} },
+        { headers: { Cookie: authCookie } }
+      );
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+    });
 
-  //   it('updates the tag name', async () => {
-  //     const response = await client.tags[':tagId'][':groupId'].$put(
-  //       { param: { tagId: TAG_ID, groupId: GROUP_ID }, json: { name: 'TypeScript Updated' } },
-  //       { headers: { Cookie: authCookie } }
-  //     );
-  //     expect(response.status).toBe(HttpStatus.OK);
-  //     if (response.status === HttpStatus.OK) {
-  //       const json = await response.json();
-  //       expect(json.result.name).toBe('TypeScript Updated');
-  //       expect(json.result.id).toBe(TAG_ID);
-  //     }
-  //   });
-  // });
+    it('updates the tag name', async () => {
+      const response = await client.tags[':tagId'].$put(
+        { param: { tagId: TAG_ID }, json: { name: 'TypeScript Updated' } },
+        { headers: { Cookie: authCookie } }
+      );
+      expect(response.status).toBe(HttpStatus.OK);
+      if (response.status === HttpStatus.OK) {
+        const json = await response.json();
+        expect(json.result.name).toBe('TypeScript Updated');
+        expect(json.result.id).toBe(TAG_ID);
+      }
+    });
+  });
 
   describe('POST /api/tags/:tagId/move', () => {
     it('returns 401 without auth', async () => {
@@ -346,30 +356,30 @@ describe('tags routes', () => {
     });
   });
 
-  // describe('DELETE /api/tags/:tagId/:groupId', () => {
-  //   it('returns 401 without auth', async () => {
-  //     const response = await client.tags[':tagId'][':groupId'].$delete({
-  //       param: { tagId: TAG_ID, groupId: GROUP_ID }
-  //     });
-  //     expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
-  //   });
+  describe('DELETE /api/tags/:tagId', () => {
+    it('returns 401 without auth', async () => {
+      const response = await client.tags[':tagId'].$delete({
+        param: { tagId: TAG_ID }
+      });
+      expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+    });
 
-  //   it('returns 404 for unknown tag', async () => {
-  //     const response = await client.tags[':tagId'][':groupId'].$delete(
-  //       { param: { tagId: UNKNOWN_ID, groupId: GROUP_ID } },
-  //       { headers: { Cookie: authCookie } }
-  //     );
-  //     expect(response.status).toBe(HttpStatus.NOT_FOUND);
-  //   });
+    it('returns 404 for unknown tag', async () => {
+      const response = await client.tags[':tagId'].$delete(
+        { param: { tagId: UNKNOWN_ID } },
+        { headers: { Cookie: authCookie } }
+      );
+      expect(response.status).toBe(HttpStatus.NOT_FOUND);
+    });
 
-  //   it('deletes the tag', async () => {
-  //     const response = await client.tags[':tagId'][':groupId'].$delete(
-  //       { param: { tagId: TAG_ID, groupId: GROUP_ID } },
-  //       { headers: { Cookie: authCookie } }
-  //     );
-  //     expect(response.status).toBe(HttpStatus.OK);
-  //   });
-  // });
+    it('deletes the tag', async () => {
+      const response = await client.tags[':tagId'].$delete(
+        { param: { tagId: TAG_ID } },
+        { headers: { Cookie: authCookie } }
+      );
+      expect(response.status).toBe(HttpStatus.OK);
+    });
+  });
 
   describe('DELETE /api/tags/bulk', () => {
     it('returns 401 without auth', async () => {

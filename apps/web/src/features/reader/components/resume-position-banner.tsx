@@ -19,11 +19,10 @@ export default function ResumePositionBanner({
 }: ResumePositionBannerProps) {
   const { t } = useTranslation('common');
   const [isVisible, setIsVisible] = useState(false);
-  // Capture progress at mount so it doesn't update as the user scrolls
+
   const [snapshotPercent] = useState(Math.round(progress));
 
   useEffect(() => {
-    // Delay mount animation so the slide-up plays on entry
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
   }, []);

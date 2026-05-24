@@ -108,11 +108,9 @@ export default function FloatingProgressIndicator({
         className
       )}
     >
-      {/* Expanded State */}
       {isExpanded && (
         <div className="animate-in slide-in-from-bottom-2 fade-in absolute right-0 bottom-16 z-50 mb-2 duration-200">
           <div className="bg-card relative z-50 min-w-50 rounded-xl border border-gray-200 p-3 shadow-lg">
-            {/* Progress Info */}
             <div className="mb-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <BookOpenIcon className="text-gray-600" size={16} />
@@ -127,7 +125,6 @@ export default function FloatingProgressIndicator({
               )}
             </div>
 
-            {/* Progress Bar */}
             <div className="relative mb-3">
               <div className="h-2 rounded-full bg-gray-200">
                 <div
@@ -135,7 +132,6 @@ export default function FloatingProgressIndicator({
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
-              {/* Progress dots for visual appeal */}
               <div className="absolute top-0 right-0 left-0 flex h-2 items-center justify-between px-1">
                 {[0, 25, 50, 75, 100].map((point) => (
                   <div
@@ -149,7 +145,6 @@ export default function FloatingProgressIndicator({
               </div>
             </div>
 
-            {/* Navigation Buttons */}
             <div className="flex gap-2">
               <button
                 className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-gray-200"
@@ -178,7 +173,6 @@ export default function FloatingProgressIndicator({
         </div>
       )}
 
-      {/* Floating Button */}
       <button
         className={cn(
           'bg-card sepia-theme:hover:bg-card text-card-foreground flex h-10 items-center justify-center rounded-full px-3 py-2 shadow-lg transition-all duration-200 hover:bg-zinc-600/50 active:scale-95',

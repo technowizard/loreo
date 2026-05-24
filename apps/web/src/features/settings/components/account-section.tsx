@@ -117,7 +117,6 @@ export function AccountSection() {
       title={t('settings.account.title')}
     >
       <div className="space-y-6">
-        {/* Avatar */}
         <div className="flex items-center gap-4">
           <Avatar className="h-16 w-16">
             {avatarPreview && <AvatarImage src={avatarPreview} />}
@@ -146,10 +145,8 @@ export function AccountSection() {
           />
         </div>
 
-        {/* Name */}
         <Field>
           <FieldLabel>{t('settings.account.nameLabel')}</FieldLabel>
-          {/* Outer grid: input takes 1fr, button wrapper takes auto (content-sized) */}
           <div className="grid grid-cols-[1fr_auto]">
             <Input
               onChange={(e) => setName(e.target.value)}
@@ -157,7 +154,6 @@ export function AccountSection() {
               type="text"
               value={name}
             />
-            {/* Inner grid nested in auto column: 1fr here = button's natural width */}
             <div
               className={cn(
                 'grid min-w-0 transition-[grid-template-columns] duration-150 motion-reduce:transition-none',
@@ -187,7 +183,6 @@ export function AccountSection() {
           </div>
         </Field>
 
-        {/* Email */}
         <div>
           <Field>
             <FieldLabel>{t('settings.account.emailLabel')}</FieldLabel>
@@ -228,7 +223,6 @@ export function AccountSection() {
             </div>
           </Field>
 
-          {/* Animated password confirmation — grid-rows expand + opacity + translateY */}
           <div
             className={cn(
               'grid transition-[grid-template-rows] duration-200 motion-reduce:transition-none',
