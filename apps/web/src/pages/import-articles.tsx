@@ -74,12 +74,10 @@ function ImportArticlesPage() {
     );
   }
 
-  // Focus management on step change
   useEffect(() => {
     stepRef.current?.focus();
   }, [step]);
 
-  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -217,7 +215,6 @@ function ImportArticlesPage() {
     <main aria-label="Article import wizard" className="flex max-w-350 flex-col gap-6" role="main">
       <WizardStepIndicator currentStep={step} steps={STEP_LABELS.map((key) => t(key))} />
 
-      {/* Header */}
       <header>
         <h1 className="text-foreground text-3xl font-bold tracking-tight">
           {t(STEP_LABELS[step])}
@@ -225,7 +222,6 @@ function ImportArticlesPage() {
         <p className="text-muted-foreground mt-1">{t(STEP_DESCRIPTIONS[step])}</p>
       </header>
 
-      {/* Error Alert */}
       {error && (
         <div
           className="border-destructive/50 bg-destructive/10 text-destructive mb-2 flex items-center gap-2 rounded-lg border p-3 text-sm"
@@ -236,7 +232,6 @@ function ImportArticlesPage() {
         </div>
       )}
 
-      {/* Step Content */}
       <div
         aria-label={`Step ${step + 1} content`}
         className="focus-visible:ring-primary focus-visible:ring-2 focus-visible:outline-none"
@@ -247,7 +242,6 @@ function ImportArticlesPage() {
         {renderStep()}
       </div>
 
-      {/* Navigation */}
       <div className="flex items-center justify-between border-t pt-6">
         <div className="flex">
           {step !== STEP_UPLOAD && (
