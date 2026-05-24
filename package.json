@@ -1,6 +1,22 @@
 {
   "name": "loreo",
+  "version": "0.1.0",
   "private": true,
+  "description": "Self-hosted read-it-later app for saving and revisiting articles.",
+  "keywords": [
+    "articles",
+    "bookmarks",
+    "read-it-later",
+    "self-hosted"
+  ],
+  "homepage": "https://github.com/technowizard/loreo#readme",
+  "bugs": {
+    "url": "https://github.com/technowizard/loreo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/technowizard/loreo.git"
+  },
   "scripts": {
     "dev": "docker compose up",
     "dev:local": "pnpm --parallel -r dev",
