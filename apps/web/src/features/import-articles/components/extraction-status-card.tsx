@@ -39,7 +39,7 @@ const renderStatusBadge = (status: string, t: (key: string) => string) => {
 };
 
 export function ExtractionStatusCard({ link, onViewArticle }: ExtractionStatusCardProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   const getStatusIconStyle = () => {
     switch (link.status) {

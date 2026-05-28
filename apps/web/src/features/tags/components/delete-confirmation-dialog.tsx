@@ -32,7 +32,7 @@ export function DeleteConfirmationDialog({
   relatedCount,
   type
 }: Props) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const itemName = type === 'group' ? (item as TagGroup)?.name : (item as TagType)?.name;
 
   return (

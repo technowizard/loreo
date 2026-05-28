@@ -41,7 +41,7 @@ const Filter = memo(function Filter({
   onFilterClick,
   onNavigateToTagManagement
 }: FilterProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-4">
       <SidebarTitle className="inline-flex items-center gap-2">

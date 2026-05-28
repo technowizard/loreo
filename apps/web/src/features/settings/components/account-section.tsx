@@ -26,7 +26,7 @@ const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.
 const easeOutCubic = 'cubic-bezier(0.215, 0.61, 0.355, 1)';
 
 export function AccountSection() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const { data: user } = useGetUser();
   const notifyError = useNotificationsStore.useError();
   const notifySuccess = useNotificationsStore.useSuccess();

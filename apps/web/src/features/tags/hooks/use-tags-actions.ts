@@ -40,7 +40,7 @@ const TAG_TOAST_OPTIONS = {
 const TAG_ERROR_TOAST_OPTIONS = { position: 'top-center' } as const;
 
 export function useTagsActions() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 

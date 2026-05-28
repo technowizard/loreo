@@ -17,7 +17,7 @@ import { type LoginInput, useLogin } from '../api/login';
 import { authKeys } from '../api/query-keys';
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'form'>) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const notifyError = useNotificationsStore.useError();

@@ -51,7 +51,7 @@ function ArticlesPage() {
   const isDemo = env.isDemo;
   const queryClient = useQueryClient();
   const notifySuccess = useNotificationsStore.useSuccess();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   const navigate = useNavigate();
   const searchParams = useSearch({ strict: false }) as {

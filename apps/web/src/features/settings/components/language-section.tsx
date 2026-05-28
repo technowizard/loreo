@@ -17,7 +17,7 @@ const languages = ['en', 'id'] as const;
 
 export function LanguageSection() {
   const { current, setLanguage } = useLanguage();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const currentLanguage = t(`settings.language.languages.${current}`);
 
   function handleLanguageChange(value: string) {

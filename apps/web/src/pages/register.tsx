@@ -10,7 +10,7 @@ import { env } from '@/lib/env';
 
 function RegisterPage() {
   const navigate = useNavigate();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   if (env.isDemo) {
     return (

@@ -78,7 +78,7 @@ export function ReaderPreferencesSection() {
   } = useThemeConfig();
 
   const [showFontPreview, setShowFontPreview] = useState(false);
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   const currentFonts = getFontsByCategory(fontFamily.style);
 

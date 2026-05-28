@@ -14,7 +14,7 @@ type Props = {
 
 export function ContinueReadingSection({ data, isLoading }: Props) {
   const navigate = useNavigate();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   if (isLoading) {
     return <Skeleton className="h-25 w-full rounded-3xl" />;

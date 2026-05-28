@@ -49,7 +49,7 @@ export function AddArticleDialog({
   tags
 }: Props) {
   const position = isMobile ? 'top-center' : 'top-right';
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   const createLinkMutation = useCreateLink({
     mutationConfig: {

@@ -14,7 +14,7 @@ type QuickAddBarProps = {
 };
 
 export function QuickAddBar({ isDemo = false }: QuickAddBarProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const notifySuccess = useNotificationsStore.useSuccess();
 
   const [url, setUrl] = useState('');

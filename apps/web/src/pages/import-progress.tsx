@@ -13,7 +13,7 @@ import { ExtractionProgress } from '@/features/import-articles/components/extrac
 const COMPLETE_SCREEN_DURATION = 2500;
 
 function ImportProgressPage() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const importSessionId = useParams({
     from: '/_protected/_with-layout/settings/import-articles/$sessionId'
   }).sessionId;

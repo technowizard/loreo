@@ -77,7 +77,7 @@ export const useGetLinksFromImportSession = ({
   queryConfig
 }: UseGetLinksFromImportSessionOptions) => {
   const queryClient = useQueryClient();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   const infiniteQuery = useInfiniteQuery({
     ...getLinksFromImportSessionQueryOptions(importSessionId, extractionStatus),

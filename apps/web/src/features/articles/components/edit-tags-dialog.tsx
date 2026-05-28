@@ -40,7 +40,7 @@ interface EditTagsDialogProps {
 function EditTagsDialog({ initialTags, linkId, onOpenChange, open }: EditTagsDialogProps) {
   const [pendingTags, setPendingTags] = useState<Tag[]>(initialTags);
   const pendingCreatedTagRef = useRef<Tag | null>(null);
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const { isMobile } = useMediaQuery();
 
   const tagsQuery = useGetTags();

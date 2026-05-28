@@ -47,7 +47,7 @@ export function MoveTagsDialog({
   onConfirm,
   onDestinationChange
 }: Props) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const title =
     dialog?.mode === 'single'
       ? t('tags.moveDialog.titleSingle', { name: dialog.tag.name })

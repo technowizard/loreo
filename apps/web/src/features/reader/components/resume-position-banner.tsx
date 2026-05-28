@@ -17,7 +17,7 @@ export default function ResumePositionBanner({
   onRestore,
   onDismiss
 }: ResumePositionBannerProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
 
   const [snapshotPercent] = useState(Math.round(progress));

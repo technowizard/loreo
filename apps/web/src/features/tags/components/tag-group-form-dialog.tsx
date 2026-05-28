@@ -47,7 +47,7 @@ export function TagGroupFormDialog({
   onSave,
   open
 }: Props) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-125">

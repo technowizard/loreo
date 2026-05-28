@@ -17,7 +17,7 @@ import { env } from '@/lib/env';
 import { cn } from '@/lib/utils';
 
 function ManageTagsPage() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const isDemo = env.isDemo;
   const {
     isLoading,

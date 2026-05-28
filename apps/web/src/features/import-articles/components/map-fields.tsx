@@ -79,7 +79,7 @@ function ColumnSelect({
 }
 
 export function MapFields({ onMappingComplete }: MapFieldsProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const { mapping, onMappingChange, uploadedFile } = useImportArticles();
 
   const populateFields = (columns: string[]) => {

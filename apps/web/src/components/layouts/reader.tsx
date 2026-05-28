@@ -23,7 +23,7 @@ function ReaderLayout({
   onUpdateHighlight,
   onRemoveHighlight
 }: ReaderLayoutProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const id = useParams({ from: '/_protected/articles/$id' }).id;
   const { selectedHighlightId, setSelectedHighlightId, showHighlights, toggleShowHighlights } =
     useHighlights();

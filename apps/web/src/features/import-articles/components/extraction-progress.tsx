@@ -43,7 +43,7 @@ const statusFilterKeys = [
 ] as const;
 
 export function ExtractionProgress(props: ExtractionProgressProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const {
     extractionCompleted,
     extractionFailed,

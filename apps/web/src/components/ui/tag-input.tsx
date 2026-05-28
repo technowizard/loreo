@@ -148,7 +148,7 @@ const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
     }, [groupedTags, inputValue]);
 
     const isMaxReached = maxTags ? value.length >= maxTags : false;
-    const { t } = useTranslation('common');
+    const { t } = useTranslation();
 
     const addTag = useCallback(
       (tag: Tag) => {

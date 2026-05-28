@@ -74,7 +74,7 @@ export function useHighlighter({
   onRemove,
   onUpdate
 }: UseHighlighterProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const [popoverState, setPopoverState] = useState<HighlightPopoverState>({
     editingHighlight: null,
     selectedRange: null,

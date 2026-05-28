@@ -32,7 +32,7 @@ import { env } from '@/lib/env';
 import { useNotificationsStore } from '@/stores/notifications';
 
 function ImportArticlesPage() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const [step, setStep] = useState<ImportWizardStep>(STEP_UPLOAD);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

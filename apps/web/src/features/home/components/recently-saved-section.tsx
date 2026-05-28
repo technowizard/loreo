@@ -14,7 +14,7 @@ type Props = {
 };
 
 export function RecentlySavedSection({ articles, isFirstTimeUser, isLoading }: Props) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   return (
     <div className="flex flex-col gap-4">

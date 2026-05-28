@@ -19,7 +19,7 @@ type Props = {
 };
 
 export function SuggestionsSection({ isLoading, suggestions }: Props) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const shortReadCount = suggestions?.shortReads?.totalArticles ?? 0;

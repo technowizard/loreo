@@ -20,7 +20,7 @@ interface UploadFromCsvProps {
 }
 
 export function UploadFromCsv({ disabled = false, onUploadComplete }: UploadFromCsvProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const notifyError = useNotificationsStore.useError();
 

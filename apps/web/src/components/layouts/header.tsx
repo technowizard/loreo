@@ -8,7 +8,7 @@ import { UserMenu } from '../common/user-menu';
 
 export function Header() {
   const { pathname } = useLocation();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   return (
     <header className="bg-background/80 dark:bg-card border-border sticky top-0 z-50 hidden border-b backdrop-blur-md md:block">

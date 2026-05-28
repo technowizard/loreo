@@ -29,7 +29,7 @@ import { SettingsRow, SettingsSection } from './settings-section';
 
 export function DataSection() {
   const navigate = useNavigate();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   const importSessionQuery = useImportSessions();
   const importSessions = importSessionQuery.data?.result?.items || [];

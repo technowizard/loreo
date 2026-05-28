@@ -16,7 +16,7 @@ import { authKeys } from '../api/query-keys';
 import { type RegisterInput, useRegister } from '../api/register';
 
 export function RegisterForm({ className, ...props }: React.ComponentProps<'form'>) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const notifyError = useNotificationsStore.useError();
