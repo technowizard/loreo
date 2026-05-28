@@ -14,20 +14,20 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: () => false
   })
 });
+
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { afterAll, afterEach, beforeAll } from 'vitest';
 
-import enCommon from '@/locales/en/common.json';
+import en from '@/translations/en.json';
 
 import { server } from './mocks/server';
 
 // init i18n for tests with English only
 i18n.use(initReactI18next).init({
-  resources: { en: { common: enCommon } },
+  resources: { en: { translation: en } },
   lng: 'en',
   fallbackLng: 'en',
-  defaultNS: 'common',
   interpolation: { escapeValue: false }
 });
 
