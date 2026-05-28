@@ -1,9 +1,7 @@
-import type { HttpStatusCode } from '@/lib/response';
-
 export interface ApiResult<T> {
   result: T;
   message: string;
-  status: HttpStatusCode;
+  status: number;
 }
 
 export type BaseEntity = {

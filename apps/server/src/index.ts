@@ -5,7 +5,6 @@ import { showRoutes } from 'hono/dev';
 
 import { env } from './lib/env-config.js';
 import { logger } from './lib/logger.js';
-// import { browserService } from './services/browser.service.js';
 
 import { browserService } from './services/browser.service.js';
 
@@ -13,9 +12,6 @@ import app from './app.js';
 import { enqueueContentExtraction } from './queues/content-extraction.queue.js';
 import contentExtractionWorker from './workers/content-extraction.worker.js';
 import csvImportWorker from './workers/csv-import.worker.js';
-// import { enqueueContentExtraction } from './queues/content-extraction.queue.js';
-// import contentExtractionWorker from './workers/content-extraction.worker.js';
-// import csvImportWorker from './workers/csv-import.worker.js';
 
 if (env.isDevelopment) {
   logger.info('Available routes:');

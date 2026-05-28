@@ -1,6 +1,5 @@
 import { QueryClientProvider } from '@tanstack/react-query';
-import { HeadContent, Outlet, createRootRouteWithContext } from '@tanstack/react-router';
-import { ThemeProvider } from 'next-themes';
+import { createRootRouteWithContext, HeadContent, Outlet } from '@tanstack/react-router';
 
 import { ErrorFallback } from '@/components/common/error';
 import { NotFound } from '@/components/common/not-found';
@@ -29,14 +28,12 @@ function RootComponent() {
   const { queryClient: client } = Route.useRouteContext();
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <QueryClientProvider client={client}>
-        <HeadContent />
-        <Outlet />
-        <Notifications />
-        <TanstackQueryDevTools position="bottom" />
-        <TanstackRouterDevTools position="bottom-left" />
-      </QueryClientProvider>
-    </ThemeProvider>
+    <QueryClientProvider client={client}>
+      <HeadContent />
+      <Outlet />
+      <Notifications />
+      <TanstackQueryDevTools position="bottom" />
+      <TanstackRouterDevTools position="bottom-left" />
+    </QueryClientProvider>
   );
 }
