@@ -3,15 +3,14 @@ import { RouterProvider } from '@tanstack/react-router';
 import { ThemeProvider, useTheme } from 'next-themes';
 import { useEffect, useRef } from 'react';
 
-import { getUserQueryOptions, useGetUser } from './features/auth/api/get-user';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
-import { useThemeConfig } from './hooks/use-theme-config';
+import { getUserQueryOptions, useGetUser } from '@/features/auth/api/get-user';
 
-import { queryClient } from './lib/react-query';
-import { type AuthContext, router } from './lib/router';
+import { useThemeConfig } from '@/hooks/use-theme-config';
 
-import { Toaster } from './components/ui/sonner';
-import { TooltipProvider } from './components/ui/tooltip';
+import { queryClient } from '@/lib/react-query';
+import { type AuthContext, router } from '@/lib/router';
 
 export function App() {
   return (
@@ -26,8 +25,6 @@ export function App() {
           <RouterProviderWithContext />
         </TooltipProvider>
       </ThemeProvider>
-
-      <Toaster />
     </QueryClientProvider>
   );
 }
