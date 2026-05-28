@@ -56,7 +56,7 @@ function getInitials(name: string): string {
 }
 
 export function UserMenu({ align = 'end', contentClassName, trigger }: UserMenuProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const { data: user } = useGetUser();
   const { setTheme, theme } = useTheme();
   const navigate = useNavigate();

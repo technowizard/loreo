@@ -56,7 +56,7 @@ export function GroupTagsSheet({
   onToggleSelect,
   selectedTagIds
 }: GroupTagsSheetProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const tagCount = group?.tags?.length || 0;
 
   return (

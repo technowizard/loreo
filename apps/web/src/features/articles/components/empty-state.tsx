@@ -20,7 +20,7 @@ interface EmptyStateProps {
 
 export function EmptyState({ filter, hasSearch, isDemo = false, onAddArticle }: EmptyStateProps) {
   const shouldReduceMotion = useReducedMotion();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   const getEmptyStateContent = () => {
     if (hasSearch) {

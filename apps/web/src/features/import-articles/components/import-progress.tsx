@@ -8,7 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { ExtractionProgress } from './extraction-progress';
 
 export function ImportProgress() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const [progress, setProgress] = useState({
     extraction: 0,
     import: 0

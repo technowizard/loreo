@@ -8,7 +8,7 @@ type Props = {
 };
 
 export function WizardStepIndicator({ currentStep, steps }: Props) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   return (
     <nav aria-label={t('import.wizard.stepsAria')} className="flex items-center gap-2 text-sm">

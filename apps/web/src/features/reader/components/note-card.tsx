@@ -31,7 +31,7 @@ export function NoteCard({
   onRemove,
   onUpdate
 }: NoteCardProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [noteText, setNoteText] = useState(note || '');
   const cardRef = useRef<HTMLDivElement>(null);

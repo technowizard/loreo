@@ -32,7 +32,7 @@ export function ManageHighlight({
   updateHighlight
 }: ManageHighlightProps) {
   const { selectedHighlightId, toggleShowHighlights } = useHighlights();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   return (
     <div className="flex min-w-40 flex-col items-center gap-2">

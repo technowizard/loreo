@@ -7,7 +7,7 @@ import { ReaderPreferencesSection } from '@/features/settings/components/reader-
 import { SecuritySection } from '@/features/settings/components/security-section';
 
 function SettingsPage() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   return (
     <div className="max-w-350">

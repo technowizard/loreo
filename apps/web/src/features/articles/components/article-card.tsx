@@ -138,7 +138,7 @@ function ArticleDropdownMenu({
   link,
   onEditTagsOpen
 }: ArticleDropdownMenuProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const { id, isArchived, priority } = link;
 
   return (
@@ -228,7 +228,7 @@ function GridCard({
   link,
   tagGroups
 }: ArticleCardProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const {
     coverImage,
     excerpt,
@@ -478,7 +478,7 @@ function ListCardCompact({
   link,
   tagGroups
 }: ArticleCardProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const {
     coverImage,
     excerpt,
@@ -696,7 +696,7 @@ function ListCardDesktop({
   link,
   tagGroups
 }: ArticleCardProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const {
     coverImage,
     excerpt,

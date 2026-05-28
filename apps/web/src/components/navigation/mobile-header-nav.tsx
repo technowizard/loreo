@@ -5,7 +5,7 @@ import { UserMenu } from '../common/user-menu';
 import { Button } from '../ui/button';
 
 export function MobileHeaderNav() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   return (
     <div className="sepia-theme:bg-background fixed top-0 right-0 left-0 z-50 flex h-16 items-center justify-between border-b border-zinc-300 bg-white px-4 py-2  sm:hidden dark:border-zinc-800 dark:bg-zinc-950/80">

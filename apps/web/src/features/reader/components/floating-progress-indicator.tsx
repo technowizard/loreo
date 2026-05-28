@@ -17,7 +17,7 @@ export default function FloatingProgressIndicator({
   progress,
   readingTime
 }: FloatingProgressIndicatorProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [shouldShowIndicator, setShouldShowIndicator] = useState(true);

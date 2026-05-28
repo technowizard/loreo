@@ -11,7 +11,7 @@ type Props = {
 };
 
 export function OnboardingProgressCard({ hasStartedReading, totalArticles }: Props) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   const steps = [
     {

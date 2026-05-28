@@ -86,7 +86,7 @@ function getFontFamilyLocaleKey(value: string) {
 
 function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
   const navigate = useNavigate();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   const linkQuery = useGetLink({ linkId });
 

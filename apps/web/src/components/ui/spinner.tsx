@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 
 function Spinner({ className, ...props }: React.ComponentProps<'svg'>) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   return (
     <SpinnerIcon

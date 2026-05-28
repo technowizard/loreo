@@ -15,7 +15,7 @@ import { greetUser } from '@/lib/utils';
 
 function HomePage() {
   const { auth } = useRouteContext({ from: '/_protected/_with-layout/' });
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const homeSuggestions = useGetHomeSuggestions();
   const suggestions = homeSuggestions.data?.result;
 

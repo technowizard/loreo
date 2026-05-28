@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { env } from '@/lib/env';
 
 export function DemoModeBanner() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   if (!env.isDemo) return null;
 

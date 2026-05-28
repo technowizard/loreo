@@ -46,7 +46,7 @@ export function TagGroupCard({
   onManageTags,
   onMoveAll
 }: TagGroupCardProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const tagCount = group.tags?.length || 0;
   const displayTags = group.tags?.slice(0, 3) || [];
   const remainingTags = Math.max(0, tagCount - displayTags.length);

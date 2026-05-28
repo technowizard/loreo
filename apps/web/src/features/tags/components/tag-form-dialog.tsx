@@ -44,7 +44,7 @@ export function TagFormDialog({
   open,
   tag
 }: Props) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent>

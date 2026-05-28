@@ -2,7 +2,7 @@ import { useRouter } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
 export function NotFound() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const router = useRouter();
 
   return (

@@ -19,7 +19,7 @@ const emptyForm = {
 };
 
 export function SecuritySection() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const notifyError = useNotificationsStore.useError();
   const notifySuccess = useNotificationsStore.useSuccess();
   const [formData, setFormData] = useState(emptyForm);

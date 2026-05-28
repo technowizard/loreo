@@ -59,7 +59,7 @@ export function ArticlesToolbar({
   searchQuery,
   setOpenFilterModal
 }: Props) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') onSearchClear();
   };

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 
 export function AuthBrandPanel() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   return (
     <div className="relative flex h-full flex-col overflow-hidden rounded-xl bg-linear-to-br from-[oklch(0.44_0.18_248)] to-[oklch(0.18_0.09_240)]">

@@ -26,7 +26,7 @@ import { cn, formatReadingTime, getUrlName } from '@/lib/utils';
 const DEFAULT_TAG_COLOR = '#6B7280';
 
 function ArticleReaderPage() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const id = useParams({ from: '/_protected/articles/$id' }).id;
 
   const linkQuery = useGetLink({ linkId: id });

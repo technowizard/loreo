@@ -21,7 +21,7 @@ interface ReviewImportProps {
 }
 
 export function ReviewImport({ onReviewComplete }: ReviewImportProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const { preview, uploadedFile } = useImportArticles();
 
   useEffect(() => {
