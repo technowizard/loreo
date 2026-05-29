@@ -1,5 +1,7 @@
 import { useCallback } from 'react';
 
+import { useNotificationsStore } from '@/stores/notifications';
+
 import type { UpdateLinkBody } from '@/types/links';
 
 import { useDeleteLink } from '../api/delete-link';
@@ -27,14 +29,15 @@ export function useArticleActions(config: ArticleActionsConfig = {}): ArticleAct
     formatUpdateMessage
   } = config;
 
+  const notifySuccess = useNotificationsStore.useSuccess();
+
   const updateMutation = useUpdateLink({
     mutationConfig: {
       onSuccess: (_, { body }) => {
         const message = formatUpdateMessage ? formatUpdateMessage(body) : 'Link updated';
 
         if (message) {
-          // TODO: Show toast
-          console.log(message);
+          notifySuccess(message);
         }
       }
     }
