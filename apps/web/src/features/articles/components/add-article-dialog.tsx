@@ -53,7 +53,15 @@ export function AddArticleDialog({
 
   const createLinkMutation = useCreateLink({
     mutationConfig: {
+      onMutate: () => {
+        toast.loading(t('articles.toasts.saving'), {
+          position: 'top-right',
+          richColors: true
+        });
+      },
       onSuccess: () => {
+        toast.dismiss();
+
         toast.success(t('articles.toasts.linkSaved'), {
           position,
           richColors: true
@@ -129,7 +137,7 @@ export function AddArticleDialog({
   };
 
   return (
-    <Dialog onOpenChange={onClose} open={open}>
+    <Dialog onOpenChangeComplete={onReset} onOpenChange={onClose} open={open}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('articles.dialog.saveLaterTitle')}</DialogTitle>
