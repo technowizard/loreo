@@ -29,7 +29,7 @@ export const useDeleteLink = ({
   return useMutation({
     ...restConfig,
     mutationFn: deleteLink,
-    meta: { invalidates: [linkKeys.all] },
+    meta: { invalidates: [linkKeys.lists(), linkKeys.infinites()] },
     onSuccess: (data, variables, ...args) => {
       if (deleteFromNavbar && (linkId ?? variables.id)) {
         queryClient.removeQueries({

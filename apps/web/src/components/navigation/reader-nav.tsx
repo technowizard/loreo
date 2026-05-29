@@ -107,6 +107,7 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
   const { isMobile } = useMediaQuery();
 
   const actions = useReaderActions(linkId, {
+    deleteFromNavbar: true,
     disabled: env.isDemo,
     formatUpdateMessage: (body) => {
       if (body.readingProgress !== undefined || body.timeSpentReading !== undefined) return false;
@@ -117,7 +118,8 @@ function ReaderNav({ linkId, onOpenHighlights }: ReaderNavProps) {
       if (body.isArchived !== undefined && body.isRead !== undefined)
         return t('reader.actions.archivedAndMarkedRead');
       return t('reader.actions.linkUpdated');
-    }
+    },
+    onDeleteSuccess: () => navigate({ to: '/articles' })
   });
 
   const [shouldShowNavbar, setShouldShowNavbar] = useState(true);

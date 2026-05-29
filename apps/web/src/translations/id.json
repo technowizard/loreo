@@ -159,6 +159,7 @@
   },
   "articles": {
     "toasts": {
+      "saving": "Menyimpan...",
       "updating": "Memperbarui...",
       "linkUpdated": "Tautan diperbarui",
       "deletingLink": "Menghapus tautan",
@@ -169,7 +170,8 @@
       "failedCreateTag": "Gagal membuat tag",
       "tagCreated": "Tag \"{{name}}\" dibuat",
       "failedUpdateTags": "Gagal memperbarui tag",
-      "tagsUpdated": "Tag diperbarui"
+      "tagsUpdated": "Tag diperbarui",
+      "priorityUpdated": "Prioritas diperbarui"
     },
     "toolbar": {
       "searchPlaceholder": "Cari artikel...",

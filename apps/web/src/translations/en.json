@@ -159,6 +159,7 @@
   },
   "articles": {
     "toasts": {
+      "saving": "Saving...",
       "updating": "Updating...",
       "linkUpdated": "Link updated",
       "deletingLink": "Deleting link",
@@ -169,7 +170,8 @@
       "failedCreateTag": "Failed to create tag",
       "tagCreated": "Tag \"{{name}}\" created",
       "failedUpdateTags": "Failed to update tags",
-      "tagsUpdated": "Tags updated"
+      "tagsUpdated": "Tags updated",
+      "priorityUpdated": "Priority updated"
     },
     "toolbar": {
       "searchPlaceholder": "Search articles...",

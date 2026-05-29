@@ -133,6 +133,7 @@ function ArticlesPage() {
   const infiniteLinksQuery = useGetLinks({ filters: activeFilter });
   const tagsQuery = useGetTags();
   const tagGroupsQuery = useGetTagGroups();
+  const deletingLinkIdsRef = useRef(new Set<string>());
   const previousLinksRef = useRef<Array<Pick<StreamlinedLink, 'id' | 'processingStatus'>>>([]);
 
   const updateLinkMutation = useUpdateLink({
@@ -142,8 +143,23 @@ function ArticlesPage() {
           position: 'top-right',
           richColors: true
         }),
-      onSuccess: () => {
+      onSuccess: (_, { body }) => {
         toast.dismiss();
+
+        if (body.isFavorite !== undefined) {
+          return body.isFavorite
+            ? notifySuccess(t('reader.actions.markedAsFavorite'))
+            : notifySuccess(t('reader.actions.removedFromFavorites'));
+        }
+
+        if (body.isArchived !== undefined) {
+          return notifySuccess(t('reader.actions.archivedAndMarkedRead'));
+        }
+
+        if (body.priority !== undefined) {
+          return notifySuccess(t('articles.toasts.priorityUpdated'));
+        }
+
         notifySuccess(t('articles.toasts.linkUpdated'));
       }
     }
@@ -183,7 +199,10 @@ function ArticlesPage() {
   );
 
   const handleDeleteLink = useCallback(
-    (linkId: string) => deleteLinkMutation.mutate({ id: linkId }),
+    (linkId: string) => {
+      deletingLinkIdsRef.current.add(linkId);
+      deleteLinkMutation.mutate({ id: linkId });
+    },
     [deleteLinkMutation]
   );
 
@@ -202,7 +221,18 @@ function ArticlesPage() {
       return;
     }
 
-    const recentlyCompletedLinkIds = getRecentlyCompletedLinkIds(previousLinksRef.current, links);
+    const currentLinkIds = new Set(links.map((link) => link.id));
+
+    for (const deletingLinkId of deletingLinkIdsRef.current) {
+      if (!currentLinkIds.has(deletingLinkId)) {
+        deletingLinkIdsRef.current.delete(deletingLinkId);
+      }
+    }
+
+    const recentlyCompletedLinkIds = getRecentlyCompletedLinkIds(
+      previousLinksRef.current,
+      links
+    ).filter((id) => !deletingLinkIdsRef.current.has(id));
 
     if (recentlyCompletedLinkIds.length > 0) {
       void Promise.all(
