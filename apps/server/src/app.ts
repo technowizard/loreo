@@ -10,6 +10,7 @@ import { createDrizzleImportSessionsAdapter } from './repositories/import-sessio
 import { createDrizzleLinksAdapter } from './repositories/links.repository.js';
 import { createDrizzleTagsAdapter } from './repositories/tags.repository.js';
 
+import admin from './routes/admin/admin.index.js';
 import auth from './routes/auth/auth.index.js';
 import files from './routes/files/files.index.js';
 import health from './routes/health/health.index.js';
@@ -38,6 +39,7 @@ configureOpenAPI(app);
 
 const router = app
   .route('/', health)
+  .route('/', admin)
   .route('/', auth)
   .route('/', home)
   .route('/', links)
