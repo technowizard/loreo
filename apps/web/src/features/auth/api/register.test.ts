@@ -28,7 +28,8 @@ describe('auth register', () => {
           result: {
             avatar: null,
             email: body.email,
-            name: body.name
+            name: body.name,
+            role: 'user'
           },
           message: 'ok',
           status: 200
@@ -51,7 +52,8 @@ describe('auth register', () => {
         avatar: null,
         displayName: 'New Reader',
         email: 'new-reader@loreo.test',
-        name: 'New Reader'
+        name: 'New Reader',
+        role: 'user'
       },
       status: 200
     });

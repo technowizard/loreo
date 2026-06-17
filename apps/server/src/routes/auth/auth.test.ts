@@ -224,6 +224,7 @@ describe('auth routes', () => {
       if (response.status === HttpStatus.OK) {
         const json = await response.json();
         expect(json.result.email).toBe(TEST_EMAIL);
+        expect(json.result.role).toMatch(/^(admin|user)$/);
       }
     });
   });

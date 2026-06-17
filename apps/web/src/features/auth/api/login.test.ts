@@ -26,7 +26,8 @@ describe('auth login', () => {
           result: {
             avatar: 'https://cdn.example.com/avatar.png',
             email: body.email,
-            name: 'Reader User'
+            name: 'Reader User',
+            role: 'user'
           },
           message: 'ok',
           status: 200
@@ -47,7 +48,8 @@ describe('auth login', () => {
         avatar: 'https://cdn.example.com/avatar.png',
         displayName: 'Reader User',
         email: 'reader@loreo.test',
-        name: 'Reader User'
+        name: 'Reader User',
+        role: 'user'
       },
       status: 200
     });

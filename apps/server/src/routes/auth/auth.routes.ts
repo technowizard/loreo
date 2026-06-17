@@ -11,6 +11,8 @@ import { authLoginRateLimit, authRegisterRateLimit } from '@/middlewares/rate-li
 
 const tags = ['Auth'];
 
+const currentUserSchema = selectUsersSchema.extend({ role: z.string() });
+
 export const create = createRoute({
   tags,
   method: 'post',
@@ -84,7 +86,7 @@ export const getUser = createRoute({
   middleware: [currentUser],
   responses: {
     [HttpStatus.OK]: jsonContent(
-      successResponseSchema(selectUsersSchema),
+      successResponseSchema(currentUserSchema),
       'User retrieved successfully'
     ),
     [HttpStatus.UNAUTHORIZED]: jsonContent(

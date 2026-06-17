@@ -153,6 +153,7 @@ export const getUser: AppRouteHandler<GetUserRoute> = async (c) => {
       email: user.email,
       name: user.name,
       avatar: user.avatar,
+      role: user.role,
       settings
     },
     'User fetched successfully'
