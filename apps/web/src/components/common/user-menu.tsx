@@ -4,6 +4,7 @@ import {
   GearIcon,
   MonitorIcon,
   MoonIcon,
+  ShieldIcon,
   SignOutIcon,
   SunIcon
 } from '@phosphor-icons/react';
@@ -125,6 +126,13 @@ export function UserMenu({ align = 'end', contentClassName, trigger }: UserMenuP
         </DropdownMenuSub>
 
         <DropdownMenuSeparator />
+
+        {user?.result?.role === 'admin' && (
+          <DropdownMenuItem className="h-11 sm:h-8" onClick={() => navigate({ to: '/admin' })}>
+            <ShieldIcon className="mr-2 size-4" />
+            {t('userMenu.admin')}
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuItem className="h-11 sm:h-8" onClick={() => navigate({ to: '/settings' })}>
           <GearIcon className="mr-2 size-4" />

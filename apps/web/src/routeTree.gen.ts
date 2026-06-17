@@ -11,9 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as AuthRouteImport } from './routes/_auth'
+import { Route as ProtectedAdminRouteImport } from './routes/_protected/admin'
 import { Route as ProtectedWithLayoutRouteImport } from './routes/_protected/_with-layout'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
+import { Route as ProtectedAdminIndexRouteImport } from './routes/_protected/admin/index'
 import { Route as ProtectedWithLayoutIndexRouteImport } from './routes/_protected/_with-layout/index'
 import { Route as ProtectedArticlesIdRouteImport } from './routes/_protected/articles/$id'
 import { Route as ProtectedWithLayoutManageTagsRouteImport } from './routes/_protected/_with-layout/manage-tags'
@@ -30,6 +32,11 @@ const AuthRoute = AuthRouteImport.update({
   id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProtectedAdminRoute = ProtectedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => ProtectedRoute,
+} as any)
 const ProtectedWithLayoutRoute = ProtectedWithLayoutRouteImport.update({
   id: '/_with-layout',
   getParentRoute: () => ProtectedRoute,
@@ -43,6 +50,11 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => AuthRoute,
+} as any)
+const ProtectedAdminIndexRoute = ProtectedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProtectedAdminRoute,
 } as any)
 const ProtectedWithLayoutIndexRoute =
   ProtectedWithLayoutIndexRouteImport.update({
@@ -90,8 +102,10 @@ export interface FileRoutesByFullPath {
   '/': typeof ProtectedWithLayoutIndexRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
+  '/admin': typeof ProtectedAdminRouteWithChildren
   '/manage-tags': typeof ProtectedWithLayoutManageTagsRoute
   '/articles/$id': typeof ProtectedArticlesIdRoute
+  '/admin/': typeof ProtectedAdminIndexRoute
   '/articles/': typeof ProtectedWithLayoutArticlesIndexRoute
   '/settings/': typeof ProtectedWithLayoutSettingsIndexRoute
   '/settings/import-articles/$sessionId': typeof ProtectedWithLayoutSettingsImportArticlesSessionIdRoute
@@ -103,6 +117,7 @@ export interface FileRoutesByTo {
   '/register': typeof AuthRegisterRoute
   '/manage-tags': typeof ProtectedWithLayoutManageTagsRoute
   '/articles/$id': typeof ProtectedArticlesIdRoute
+  '/admin': typeof ProtectedAdminIndexRoute
   '/articles': typeof ProtectedWithLayoutArticlesIndexRoute
   '/settings': typeof ProtectedWithLayoutSettingsIndexRoute
   '/settings/import-articles/$sessionId': typeof ProtectedWithLayoutSettingsImportArticlesSessionIdRoute
@@ -115,9 +130,11 @@ export interface FileRoutesById {
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
   '/_protected/_with-layout': typeof ProtectedWithLayoutRouteWithChildren
+  '/_protected/admin': typeof ProtectedAdminRouteWithChildren
   '/_protected/_with-layout/manage-tags': typeof ProtectedWithLayoutManageTagsRoute
   '/_protected/articles/$id': typeof ProtectedArticlesIdRoute
   '/_protected/_with-layout/': typeof ProtectedWithLayoutIndexRoute
+  '/_protected/admin/': typeof ProtectedAdminIndexRoute
   '/_protected/_with-layout/articles/': typeof ProtectedWithLayoutArticlesIndexRoute
   '/_protected/_with-layout/settings/': typeof ProtectedWithLayoutSettingsIndexRoute
   '/_protected/_with-layout/settings/import-articles/$sessionId': typeof ProtectedWithLayoutSettingsImportArticlesSessionIdRoute
@@ -129,8 +146,10 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/register'
+    | '/admin'
     | '/manage-tags'
     | '/articles/$id'
+    | '/admin/'
     | '/articles/'
     | '/settings/'
     | '/settings/import-articles/$sessionId'
@@ -142,6 +161,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/manage-tags'
     | '/articles/$id'
+    | '/admin'
     | '/articles'
     | '/settings'
     | '/settings/import-articles/$sessionId'
@@ -153,9 +173,11 @@ export interface FileRouteTypes {
     | '/_auth/login'
     | '/_auth/register'
     | '/_protected/_with-layout'
+    | '/_protected/admin'
     | '/_protected/_with-layout/manage-tags'
     | '/_protected/articles/$id'
     | '/_protected/_with-layout/'
+    | '/_protected/admin/'
     | '/_protected/_with-layout/articles/'
     | '/_protected/_with-layout/settings/'
     | '/_protected/_with-layout/settings/import-articles/$sessionId'
@@ -183,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_protected/admin': {
+      id: '/_protected/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof ProtectedAdminRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
     '/_protected/_with-layout': {
       id: '/_protected/_with-layout'
       path: ''
@@ -203,6 +232,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/login'
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthRoute
+    }
+    '/_protected/admin/': {
+      id: '/_protected/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof ProtectedAdminIndexRouteImport
+      parentRoute: typeof ProtectedAdminRoute
     }
     '/_protected/_with-layout/': {
       id: '/_protected/_with-layout/'
@@ -291,13 +327,27 @@ const ProtectedWithLayoutRouteChildren: ProtectedWithLayoutRouteChildren = {
 const ProtectedWithLayoutRouteWithChildren =
   ProtectedWithLayoutRoute._addFileChildren(ProtectedWithLayoutRouteChildren)
 
+interface ProtectedAdminRouteChildren {
+  ProtectedAdminIndexRoute: typeof ProtectedAdminIndexRoute
+}
+
+const ProtectedAdminRouteChildren: ProtectedAdminRouteChildren = {
+  ProtectedAdminIndexRoute: ProtectedAdminIndexRoute,
+}
+
+const ProtectedAdminRouteWithChildren = ProtectedAdminRoute._addFileChildren(
+  ProtectedAdminRouteChildren,
+)
+
 interface ProtectedRouteChildren {
   ProtectedWithLayoutRoute: typeof ProtectedWithLayoutRouteWithChildren
+  ProtectedAdminRoute: typeof ProtectedAdminRouteWithChildren
   ProtectedArticlesIdRoute: typeof ProtectedArticlesIdRoute
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedWithLayoutRoute: ProtectedWithLayoutRouteWithChildren,
+  ProtectedAdminRoute: ProtectedAdminRouteWithChildren,
   ProtectedArticlesIdRoute: ProtectedArticlesIdRoute,
 }
 
