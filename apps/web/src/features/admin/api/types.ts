@@ -13,6 +13,7 @@ export type AdminUser = {
   role: AdminUserRole;
   settings: Record<string, unknown>;
   updatedAt: string;
+  articleCount?: number;
 };
 
 export type AdminUsersResponse = ApiResult<AdminUser[]>;

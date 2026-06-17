@@ -17,7 +17,8 @@ const adminSafeUserSchema = z.object({
   settings: z.record(z.string(), z.unknown()),
   deletedAt: z.string().nullable(),
   createdAt: z.string(),
-  updatedAt: z.string()
+  updatedAt: z.string(),
+  articleCount: z.number().optional()
 });
 
 const userParamsSchema = z.object({ id: z.uuid() });
@@ -41,6 +42,14 @@ const resetPasswordSchema = z
     message: 'Passwords do not match',
     path: ['confirmNewPassword']
   });
+
+const connectionCheckSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  latencyMs: z.number().optional(),
+  message: z.string().optional(),
+  status: z.enum(['ok', 'degraded', 'down'])
+});
 
 export const listUsers = createRoute({
   tags,
@@ -205,9 +214,28 @@ export const restoreUser = createRoute({
   }
 });
 
+export const listConnections = createRoute({
+  tags,
+  method: 'get',
+  path: '/admin/health/connections',
+  middleware: [currentUser, adminUser],
+  responses: {
+    [HttpStatus.OK]: jsonContent(
+      successResponseSchema(z.array(connectionCheckSchema)),
+      'Service connections fetched successfully'
+    ),
+    [HttpStatus.UNAUTHORIZED]: jsonContent(
+      errorResponseSchema(HttpStatus.UNAUTHORIZED),
+      'Unauthorized'
+    ),
+    [HttpStatus.FORBIDDEN]: jsonContent(errorResponseSchema(HttpStatus.FORBIDDEN), 'Forbidden')
+  }
+});
+
 export type ListUsersRoute = typeof listUsers;
 export type GetUserRoute = typeof getUser;
 export type UpdateUserRoute = typeof updateUser;
 export type ResetPasswordRoute = typeof resetPassword;
 export type SoftDeleteUserRoute = typeof softDeleteUser;
 export type RestoreUserRoute = typeof restoreUser;
+export type ListConnectionsRoute = typeof listConnections;

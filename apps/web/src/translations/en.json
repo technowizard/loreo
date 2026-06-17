@@ -780,7 +780,9 @@
       "edit": "Manage",
       "delete": "Delete account",
       "restore": "Restore account",
-      "adminProtected": "Admin accounts can't be modified from here."
+      "adminProtected": "Admin accounts can't be modified from here.",
+      "articles": "Articles",
+      "articlesCount": "{{count}} articles"
     },
     "role": {
       "admin": "Admin",
@@ -794,6 +796,19 @@
       "savePassword": "Save password",
       "updateError": "Couldn't update account.",
       "resetError": "Couldn't reset password."
+    },
+    "connections": {
+      "title": "Connections",
+      "description": "Status of external services this instance depends on.",
+      "refresh": "Refresh",
+      "error": "Couldn't load connection statuses.",
+      "autoRefresh": "Refreshes automatically every 30 seconds.",
+      "status": {
+        "ok": "Operational",
+        "degraded": "Degraded",
+        "down": "Down"
+      },
+      "latency": "{{ms}} ms"
     }
   }
 }

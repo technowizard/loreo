@@ -2,10 +2,12 @@ import { demoModeForbiddenResponse, isDemoMode } from '@/lib/demo-mode.js';
 import { errorResponse, HttpStatus, successResponse } from '@/lib/response.js';
 import type { AppRouteHandler } from '@/lib/types.js';
 
+import { adminHealthService } from '@/services/admin-health.service.js';
 import { AdminService, AdminServiceError } from '@/services/admin.service.js';
 
 import type {
   GetUserRoute,
+  ListConnectionsRoute,
   ListUsersRoute,
   ResetPasswordRoute,
   RestoreUserRoute,
@@ -136,4 +138,10 @@ export const restoreUser: AppRouteHandler<RestoreUserRoute> = async (c) => {
     const response = errorResponse(message, HttpStatus.BAD_REQUEST);
     return c.json(response, response.status);
   }
+};
+
+export const listConnections: AppRouteHandler<ListConnectionsRoute> = async (c) => {
+  const connections = await adminHealthService.checkConnections();
+  const response = successResponse(connections, 'Service connections fetched successfully');
+  return c.json(response, response.status);
 };

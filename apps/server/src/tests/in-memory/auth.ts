@@ -75,6 +75,8 @@ export function createInMemoryAuthAdapter(): AuthRepository {
       Array.from(usersById.values()).filter((user) => user.role === 'admin' && !user.deletedAt)
         .length,
 
+    countArticlesByUser: async () => ({}),
+
     update: async (id, updates) => {
       const user = usersById.get(id);
       if (!user) return null;

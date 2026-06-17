@@ -92,7 +92,8 @@ function createFakeAuthRepository(user: UserWithoutPassword): AuthRepository {
     updatePassword: async () => null,
     updateDeletedAt: async () => user,
     countUsers: async () => 1,
-    countActiveAdmins: async () => 0
+    countActiveAdmins: async () => 0,
+    countArticlesByUser: async () => ({})
   } satisfies AuthRepository;
 }
 

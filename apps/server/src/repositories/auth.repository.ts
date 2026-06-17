@@ -2,7 +2,7 @@ import { and, count, desc, eq, isNotNull, isNull } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
 import type * as schema from '@/db/schemas/index.js';
-import { usersTable } from '@/db/schemas/index.js';
+import { linksTable, usersTable } from '@/db/schemas/index.js';
 
 import { logger } from '@/lib/logger.js';
 
@@ -65,6 +65,7 @@ export interface AuthRepository {
   updateDeletedAt(id: string, deletedAt: string | null): Promise<UserWithoutPassword>;
   countUsers(): Promise<number>;
   countActiveAdmins(): Promise<number>;
+  countArticlesByUser(): Promise<Record<string, number>>;
 }
 
 function getListUsersWhere(status: ListUsersStatus) {
@@ -255,6 +256,19 @@ export function createDrizzleAuthAdapter(db: DrizzleClient): AuthRepository {
         .where(and(eq(usersTable.role, 'admin'), isNull(usersTable.deletedAt)));
 
       return Number(users?.count ?? 0);
+    },
+
+    async countArticlesByUser() {
+      const rows = await db
+        .select({ userId: linksTable.userId, count: count() })
+        .from(linksTable)
+        .groupBy(linksTable.userId);
+
+      const counts: Record<string, number> = {};
+      for (const row of rows) {
+        counts[row.userId] = Number(row.count);
+      }
+      return counts;
     }
   };
 }

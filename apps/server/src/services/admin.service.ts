@@ -26,7 +26,11 @@ export class AdminService {
   constructor(private repo: AuthRepository = createDrizzleAuthAdapter(db)) {}
 
   async listUsers(options: ListUsersOptions = {}): Promise<UserWithoutPassword[]> {
-    return await this.repo.listUsers(options);
+    const [users, articleCounts] = await Promise.all([
+      this.repo.listUsers(options),
+      this.repo.countArticlesByUser()
+    ]);
+    return users.map((user) => ({ ...user, articleCount: articleCounts[user.id] ?? 0 }));
   }
 
   async getUser(userId: string): Promise<UserWithoutPassword | null> {

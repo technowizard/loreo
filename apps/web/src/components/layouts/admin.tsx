@@ -33,7 +33,10 @@ function AdminLayout({ children }: AdminLayoutProps) {
   const avatarPreview = user?.result?.avatar ?? null;
   const initials = getInitials(displayName);
 
-  const navItems = [{ label: t('admin.nav.accounts'), to: '/admin' }] as const;
+  const navItems = [
+    { label: t('admin.nav.accounts'), to: '/admin' },
+    { label: t('admin.nav.connections'), to: '/admin/connections' }
+  ] as const;
 
   return (
     <div className="bg-background min-h-screen transition-colors duration-300">

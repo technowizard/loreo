@@ -54,6 +54,7 @@ export function AdminUserList({ onEditUser, status, users }: AdminUserListProps)
               <TableHead>{t('admin.user.name')}</TableHead>
               <TableHead>{t('admin.user.email')}</TableHead>
               <TableHead>{t('admin.user.role')}</TableHead>
+              <TableHead className="text-right">{t('admin.user.articles')}</TableHead>
               <TableHead>{t('admin.user.created')}</TableHead>
               <TableHead className="text-right">{t('admin.user.actions')}</TableHead>
             </TableRow>
@@ -66,6 +67,7 @@ export function AdminUserList({ onEditUser, status, users }: AdminUserListProps)
                 <TableCell>
                   <UserRoleBadge role={user.role} />
                 </TableCell>
+                <TableCell className="text-right tabular-nums">{user.articleCount ?? 0}</TableCell>
                 <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                 <TableCell className="text-right">
                   <Button onClick={() => onEditUser(user.id)} size="sm" variant="ghost">
@@ -97,6 +99,8 @@ export function AdminUserList({ onEditUser, status, users }: AdminUserListProps)
             </div>
             <div className="text-muted-foreground mt-2 text-xs">
               {t('admin.user.created')}: {new Date(user.createdAt).toLocaleDateString()}
+              {' · '}
+              {t('admin.user.articlesCount', { count: user.articleCount ?? 0 })}
             </div>
             <div className="mt-3 flex justify-end">
               <Button onClick={() => onEditUser(user.id)} size="sm" variant="outline">

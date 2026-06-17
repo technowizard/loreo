@@ -126,6 +126,24 @@ class BrowserService {
       await this.releaseContext(context);
     }
   }
+
+  async checkHealth(): Promise<{ latencyMs?: number; message?: string; status: 'ok' | 'down' }> {
+    const start = Date.now();
+
+    try {
+      const context = await Promise.race([
+        this.acquireContext(),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('Health check timeout')), 5_000)
+        )
+      ]);
+      await this.releaseContext(context);
+      return { latencyMs: Date.now() - start, status: 'ok' };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown browser error';
+      return { message, status: 'down' };
+    }
+  }
 }
 
 export const browserService = new BrowserService();

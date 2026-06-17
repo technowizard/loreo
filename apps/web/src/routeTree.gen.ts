@@ -18,6 +18,7 @@ import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as ProtectedAdminIndexRouteImport } from './routes/_protected/admin/index'
 import { Route as ProtectedWithLayoutIndexRouteImport } from './routes/_protected/_with-layout/index'
 import { Route as ProtectedArticlesIdRouteImport } from './routes/_protected/articles/$id'
+import { Route as ProtectedAdminConnectionsRouteImport } from './routes/_protected/admin/connections'
 import { Route as ProtectedWithLayoutManageTagsRouteImport } from './routes/_protected/_with-layout/manage-tags'
 import { Route as ProtectedWithLayoutSettingsIndexRouteImport } from './routes/_protected/_with-layout/settings/index'
 import { Route as ProtectedWithLayoutArticlesIndexRouteImport } from './routes/_protected/_with-layout/articles/index'
@@ -67,6 +68,12 @@ const ProtectedArticlesIdRoute = ProtectedArticlesIdRouteImport.update({
   path: '/articles/$id',
   getParentRoute: () => ProtectedRoute,
 } as any)
+const ProtectedAdminConnectionsRoute =
+  ProtectedAdminConnectionsRouteImport.update({
+    id: '/connections',
+    path: '/connections',
+    getParentRoute: () => ProtectedAdminRoute,
+  } as any)
 const ProtectedWithLayoutManageTagsRoute =
   ProtectedWithLayoutManageTagsRouteImport.update({
     id: '/manage-tags',
@@ -104,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof AuthRegisterRoute
   '/admin': typeof ProtectedAdminRouteWithChildren
   '/manage-tags': typeof ProtectedWithLayoutManageTagsRoute
+  '/admin/connections': typeof ProtectedAdminConnectionsRoute
   '/articles/$id': typeof ProtectedArticlesIdRoute
   '/admin/': typeof ProtectedAdminIndexRoute
   '/articles/': typeof ProtectedWithLayoutArticlesIndexRoute
@@ -116,6 +124,7 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/manage-tags': typeof ProtectedWithLayoutManageTagsRoute
+  '/admin/connections': typeof ProtectedAdminConnectionsRoute
   '/articles/$id': typeof ProtectedArticlesIdRoute
   '/admin': typeof ProtectedAdminIndexRoute
   '/articles': typeof ProtectedWithLayoutArticlesIndexRoute
@@ -132,6 +141,7 @@ export interface FileRoutesById {
   '/_protected/_with-layout': typeof ProtectedWithLayoutRouteWithChildren
   '/_protected/admin': typeof ProtectedAdminRouteWithChildren
   '/_protected/_with-layout/manage-tags': typeof ProtectedWithLayoutManageTagsRoute
+  '/_protected/admin/connections': typeof ProtectedAdminConnectionsRoute
   '/_protected/articles/$id': typeof ProtectedArticlesIdRoute
   '/_protected/_with-layout/': typeof ProtectedWithLayoutIndexRoute
   '/_protected/admin/': typeof ProtectedAdminIndexRoute
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/admin'
     | '/manage-tags'
+    | '/admin/connections'
     | '/articles/$id'
     | '/admin/'
     | '/articles/'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/manage-tags'
+    | '/admin/connections'
     | '/articles/$id'
     | '/admin'
     | '/articles'
@@ -175,6 +187,7 @@ export interface FileRouteTypes {
     | '/_protected/_with-layout'
     | '/_protected/admin'
     | '/_protected/_with-layout/manage-tags'
+    | '/_protected/admin/connections'
     | '/_protected/articles/$id'
     | '/_protected/_with-layout/'
     | '/_protected/admin/'
@@ -254,6 +267,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedArticlesIdRouteImport
       parentRoute: typeof ProtectedRoute
     }
+    '/_protected/admin/connections': {
+      id: '/_protected/admin/connections'
+      path: '/connections'
+      fullPath: '/admin/connections'
+      preLoaderRoute: typeof ProtectedAdminConnectionsRouteImport
+      parentRoute: typeof ProtectedAdminRoute
+    }
     '/_protected/_with-layout/manage-tags': {
       id: '/_protected/_with-layout/manage-tags'
       path: '/manage-tags'
@@ -328,10 +348,12 @@ const ProtectedWithLayoutRouteWithChildren =
   ProtectedWithLayoutRoute._addFileChildren(ProtectedWithLayoutRouteChildren)
 
 interface ProtectedAdminRouteChildren {
+  ProtectedAdminConnectionsRoute: typeof ProtectedAdminConnectionsRoute
   ProtectedAdminIndexRoute: typeof ProtectedAdminIndexRoute
 }
 
 const ProtectedAdminRouteChildren: ProtectedAdminRouteChildren = {
+  ProtectedAdminConnectionsRoute: ProtectedAdminConnectionsRoute,
   ProtectedAdminIndexRoute: ProtectedAdminIndexRoute,
 }
 
