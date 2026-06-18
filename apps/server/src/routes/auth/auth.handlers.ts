@@ -57,6 +57,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c) => {
 
   const userCount = await auth.countUsers();
   const isFirstUser = userCount === 0;
+  const role = isFirstUser ? 'admin' : 'user';
 
   const createdUser = await auth.create({
     email,
@@ -83,6 +84,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c) => {
       email: createdUser.email,
       name: createdUser.name,
       avatar: createdUser.avatar,
+      role,
       settings: createdUser.settings
     },
     'User created successfully',
@@ -119,6 +121,7 @@ export const login: AppRouteHandler<LoginRoute> = async (c) => {
       email: user.email,
       name: user.name,
       avatar: user.avatar,
+      role: user.role,
       settings: user.settings
     },
     'User logged in successfully'
@@ -153,6 +156,7 @@ export const getUser: AppRouteHandler<GetUserRoute> = async (c) => {
       email: user.email,
       name: user.name,
       avatar: user.avatar,
+      role: user.role,
       settings
     },
     'User fetched successfully'

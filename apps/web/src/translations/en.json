@@ -98,9 +98,11 @@
   },
   "userMenu": {
     "fallbackName": "User",
+    "open": "Open menu for {{name}}",
     "switchTheme": "Switch theme",
     "settings": "Settings",
     "logOut": "Log out",
+    "admin": "Admin",
     "themes": {
       "system": "System",
       "light": "Light",
@@ -140,6 +142,9 @@
     },
     "settings": {
       "metaTitle": "Settings | Loreo"
+    },
+    "admin": {
+      "metaTitle": "Admin | Loreo"
     },
     "manageTags": {
       "metaTitle": "Manage Tags | Loreo"
@@ -739,6 +744,71 @@
       "viewArticle": "View",
       "failedLoadMore": "Failed to load more items",
       "processingQueue": "Processing Queue"
+    }
+  },
+  "admin": {
+    "layout": {
+      "title": "Admin",
+      "subtitle": "Account and service management",
+      "backToApp": "Back to app",
+      "navLabel": "Admin sections"
+    },
+    "nav": {
+      "accounts": "Accounts",
+      "connections": "Connections"
+    },
+    "page": {
+      "title": "Accounts",
+      "description": "Manage user accounts, roles, and access.",
+      "error": "Couldn't load accounts.",
+      "tryAgain": "Try again",
+      "emptyActive": "No active accounts.",
+      "emptyDeleted": "No deleted accounts.",
+      "status": {
+        "active": "Active",
+        "deleted": "Deleted",
+        "all": "All"
+      }
+    },
+    "user": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "created": "Created",
+      "actions": "Actions",
+      "noName": "No name",
+      "edit": "Manage",
+      "delete": "Delete account",
+      "restore": "Restore account",
+      "adminProtected": "Admin accounts can't be modified from here.",
+      "articles": "Articles",
+      "articlesCount": "{{count}} articles"
+    },
+    "role": {
+      "admin": "Admin",
+      "user": "User"
+    },
+    "dialog": {
+      "editTitle": "Manage account",
+      "resetPassword": "Reset password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "savePassword": "Save password",
+      "updateError": "Couldn't update account.",
+      "resetError": "Couldn't reset password."
+    },
+    "connections": {
+      "title": "Connections",
+      "description": "Status of external services this instance depends on.",
+      "refresh": "Refresh",
+      "error": "Couldn't load connection statuses.",
+      "autoRefresh": "Refreshes automatically every 30 seconds.",
+      "status": {
+        "ok": "Operational",
+        "degraded": "Degraded",
+        "down": "Down"
+      },
+      "latency": "{{ms}} ms"
     }
   }
 }

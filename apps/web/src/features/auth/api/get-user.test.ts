@@ -13,8 +13,10 @@ const API_URL = 'http://localhost:3000';
 
 describe('auth get-user', () => {
   it('derives a display name from the email when the name is missing', () => {
-    expect(getDisplayName({ email: 'reader@loreo.test' })).toBe('reader');
-    expect(getDisplayName({ email: 'reader@loreo.test', name: 'Reader User' })).toBe('Reader User');
+    expect(getDisplayName({ email: 'reader@loreo.test', role: 'user' })).toBe('reader');
+    expect(getDisplayName({ email: 'reader@loreo.test', name: 'Reader User', role: 'user' })).toBe(
+      'Reader User'
+    );
   });
 
   it('maps the API response into the auth user shape', () => {
@@ -22,7 +24,8 @@ describe('auth get-user', () => {
       result: {
         avatar: undefined,
         email: 'reader@loreo.test',
-        name: undefined
+        name: undefined,
+        role: 'admin'
       },
       message: 'ok',
       status: 200
@@ -34,7 +37,8 @@ describe('auth get-user', () => {
         avatar: null,
         displayName: 'reader',
         email: 'reader@loreo.test',
-        name: 'reader'
+        name: 'reader',
+        role: 'admin'
       },
       status: 200
     });
@@ -47,7 +51,8 @@ describe('auth get-user', () => {
           result: {
             avatar: null,
             email: 'reader@loreo.test',
-            name: undefined
+            name: undefined,
+            role: 'user'
           },
           message: 'ok',
           status: 200
@@ -67,7 +72,8 @@ describe('auth get-user', () => {
         avatar: null,
         displayName: 'reader',
         email: 'reader@loreo.test',
-        name: 'reader'
+        name: 'reader',
+        role: 'user'
       },
       status: 200
     });

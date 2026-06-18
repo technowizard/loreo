@@ -11,6 +11,7 @@ export type UserResult = {
   avatar?: string | null;
   email: string;
   name?: string | null;
+  role: 'admin' | 'user';
   settings?: UserSettings;
 };
 
@@ -19,6 +20,7 @@ export type AuthUser = {
   displayName: string;
   email: string;
   name: string;
+  role: 'admin' | 'user';
   settings?: UserSettings;
 };
 
@@ -33,6 +35,7 @@ export const mapUserResponse = (data: ApiResult<UserResult>): UserResponse => ({
     displayName: getDisplayName(data.result),
     email: data.result.email,
     name: getDisplayName(data.result),
+    role: data.result.role,
     settings: data.result.settings
   }
 });

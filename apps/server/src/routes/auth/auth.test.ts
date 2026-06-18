@@ -119,6 +119,7 @@ describe('auth routes', () => {
       if (response.status === HttpStatus.CREATED) {
         const json = await response.json();
         expect(json.result.email).toBe(TEST_EMAIL);
+        expect(json.result.role).toBe('admin');
         expect(json.status).toBe(HttpStatus.CREATED);
         expect(extractTokenCookie(response)).not.toBe('');
       }
@@ -195,6 +196,7 @@ describe('auth routes', () => {
       if (response.status === HttpStatus.OK) {
         const json = await response.json();
         expect(json.result.email).toBe(TEST_EMAIL);
+        expect(json.result.role).toBe('admin');
         expect(extractTokenCookie(response)).not.toBe('');
       }
     });
@@ -224,6 +226,7 @@ describe('auth routes', () => {
       if (response.status === HttpStatus.OK) {
         const json = await response.json();
         expect(json.result.email).toBe(TEST_EMAIL);
+        expect(json.result.role).toMatch(/^(admin|user)$/);
       }
     });
   });

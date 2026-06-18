@@ -11,6 +11,8 @@ import { authLoginRateLimit, authRegisterRateLimit } from '@/middlewares/rate-li
 
 const tags = ['Auth'];
 
+const currentUserSchema = selectUsersSchema.extend({ role: z.string() });
+
 export const create = createRoute({
   tags,
   method: 'post',
@@ -34,7 +36,7 @@ export const create = createRoute({
   },
   responses: {
     [HttpStatus.CREATED]: jsonContent(
-      successResponseSchema(selectUsersSchema, HttpStatus.CREATED),
+      successResponseSchema(currentUserSchema, HttpStatus.CREATED),
       'User Registration Success'
     ),
     [HttpStatus.FORBIDDEN]: jsonContent(
@@ -57,7 +59,7 @@ export const login = createRoute({
     body: jsonContentRequired(z.object({ email: z.string(), password: z.string() }), '')
   },
   responses: {
-    [HttpStatus.OK]: jsonContent(successResponseSchema(selectUsersSchema), 'Login Success'),
+    [HttpStatus.OK]: jsonContent(successResponseSchema(currentUserSchema), 'Login Success'),
     [HttpStatus.UNAUTHORIZED]: jsonContent(
       errorResponseSchema(HttpStatus.UNAUTHORIZED),
       'Invalid credentials'
@@ -84,7 +86,7 @@ export const getUser = createRoute({
   middleware: [currentUser],
   responses: {
     [HttpStatus.OK]: jsonContent(
-      successResponseSchema(selectUsersSchema),
+      successResponseSchema(currentUserSchema),
       'User retrieved successfully'
     ),
     [HttpStatus.UNAUTHORIZED]: jsonContent(

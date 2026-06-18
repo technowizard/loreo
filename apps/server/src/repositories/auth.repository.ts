@@ -1,8 +1,8 @@
-import { and, count, eq, isNull } from 'drizzle-orm';
+import { and, count, desc, eq, isNotNull, isNull } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
 import type * as schema from '@/db/schemas/index.js';
-import { usersTable } from '@/db/schemas/index.js';
+import { linksTable, usersTable } from '@/db/schemas/index.js';
 
 import { logger } from '@/lib/logger.js';
 
@@ -15,6 +15,14 @@ import type {
 } from '@/types/auth.js';
 
 type DrizzleClient = NodePgDatabase<typeof schema>;
+
+export type ListUsersStatus = 'active' | 'deleted' | 'all';
+
+export interface ListUsersOptions {
+  limit?: number;
+  offset?: number;
+  status?: ListUsersStatus;
+}
 
 const publicUserColumns = {
   id: usersTable.id,
@@ -43,14 +51,27 @@ export interface AuthRepository {
   // Returns full User including passwordHash — only for auth verification
   findByIdWithCredentials(id: string): Promise<User | null>;
   findByIdIncludingDeleted(id: string): Promise<UserWithoutPassword | null>;
+  listUsers(options?: ListUsersOptions): Promise<UserWithoutPassword[]>;
   update(
     id: string,
     updates: Partial<Omit<User, 'passwordHash' | 'id' | 'createdAt'>>
   ): Promise<PublicUser | null>;
+  updateUserForAdmin(
+    id: string,
+    updates: Partial<Pick<User, 'name' | 'role'>>
+  ): Promise<UserWithoutPassword | null>;
   updateRole(id: string, role: string): Promise<PublicUserWithRole>;
   updatePassword(id: string, passwordHash: string): Promise<PublicUser | null>;
   updateDeletedAt(id: string, deletedAt: string | null): Promise<UserWithoutPassword>;
   countUsers(): Promise<number>;
+  countActiveAdmins(): Promise<number>;
+  countArticlesByUser(): Promise<Record<string, number>>;
+}
+
+function getListUsersWhere(status: ListUsersStatus) {
+  if (status === 'active') return isNull(usersTable.deletedAt);
+  if (status === 'deleted') return isNotNull(usersTable.deletedAt);
+  return undefined;
 }
 
 export function createDrizzleAuthAdapter(db: DrizzleClient): AuthRepository {
@@ -126,6 +147,23 @@ export function createDrizzleAuthAdapter(db: DrizzleClient): AuthRepository {
       return user;
     },
 
+    async listUsers(options = {}) {
+      const { limit = 50, offset = 0, status = 'active' } = options;
+
+      const users = await db
+        .select(userWithoutPasswordColumns)
+        .from(usersTable)
+        .where(getListUsersWhere(status))
+        .orderBy(desc(usersTable.createdAt))
+        .limit(limit)
+        .offset(offset);
+
+      return users.map((user) => ({
+        ...user,
+        settings: user.settings as Record<string, unknown>
+      }));
+    },
+
     async update(id, updates) {
       const [updatedUser] = await db
         .update(usersTable)
@@ -139,6 +177,16 @@ export function createDrizzleAuthAdapter(db: DrizzleClient): AuthRepository {
       }
 
       return updatedUser;
+    },
+
+    async updateUserForAdmin(id, updates) {
+      const [updatedUser] = await db
+        .update(usersTable)
+        .set(updates)
+        .where(eq(usersTable.id, id))
+        .returning(userWithoutPasswordColumns);
+
+      return updatedUser ?? null;
     },
 
     async updatePassword(id, passwordHash) {
@@ -199,6 +247,28 @@ export function createDrizzleAuthAdapter(db: DrizzleClient): AuthRepository {
       }
 
       return Number(users.count);
+    },
+
+    async countActiveAdmins() {
+      const [users] = await db
+        .select({ count: count() })
+        .from(usersTable)
+        .where(and(eq(usersTable.role, 'admin'), isNull(usersTable.deletedAt)));
+
+      return Number(users?.count ?? 0);
+    },
+
+    async countArticlesByUser() {
+      const rows = await db
+        .select({ userId: linksTable.userId, count: count() })
+        .from(linksTable)
+        .groupBy(linksTable.userId);
+
+      const counts: Record<string, number> = {};
+      for (const row of rows) {
+        counts[row.userId] = Number(row.count);
+      }
+      return counts;
     }
   };
 }

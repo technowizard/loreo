@@ -85,11 +85,15 @@ function createFakeAuthRepository(user: UserWithoutPassword): AuthRepository {
     findById: async (id) => (id === user.id ? user : null),
     findByIdWithCredentials: async () => null,
     findByIdIncludingDeleted: async () => null,
+    listUsers: async () => [],
     update: async () => null,
+    updateUserForAdmin: async () => null,
     updateRole: async () => ({ ...user, role: 'user' }),
     updatePassword: async () => null,
     updateDeletedAt: async () => user,
-    countUsers: async () => 1
+    countUsers: async () => 1,
+    countActiveAdmins: async () => 0,
+    countArticlesByUser: async () => ({})
   } satisfies AuthRepository;
 }
 
