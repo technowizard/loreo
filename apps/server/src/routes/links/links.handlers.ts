@@ -8,6 +8,8 @@ import { errorResponse, HttpStatus, successResponse } from '@/lib/response.js';
 import type { AppRouteHandler } from '@/lib/types.js';
 import { isValidUrl } from '@/lib/url-validator.js';
 
+import { saveLink } from '@/services/link-save.service.js';
+
 import type { CursorPaginationOptions } from '@/types/pagination.js';
 import type { Tag } from '@/types/tags.js';
 
@@ -156,7 +158,7 @@ export const createLink: AppRouteHandler<CreateLinkRoute> = async (c) => {
   }
 
   const user = c.get('user');
-  const { links } = c.get('repos');
+  const repos = c.get('repos');
 
   try {
     const { tags = [], url } = c.req.valid('json');
@@ -168,13 +170,6 @@ export const createLink: AppRouteHandler<CreateLinkRoute> = async (c) => {
 
     if (!(await isValidUrl(url))) {
       const response = errorResponse('URL is not allowed', HttpStatus.BAD_REQUEST);
-      return c.json(response, response.status);
-    }
-
-    const urlExists = await links.existsByUrl(url, user.id);
-
-    if (urlExists) {
-      const response = errorResponse('URL already exists in your library', HttpStatus.CONFLICT);
       return c.json(response, response.status);
     }
 
@@ -191,31 +186,14 @@ export const createLink: AppRouteHandler<CreateLinkRoute> = async (c) => {
       }
     }
 
-    const newLink = await links.create({
-      author: null,
-      content: null,
-      excerpt: null,
-      isArchived: false,
-      isFavorite: false,
-      isPaywalled: false,
-      isRead: false,
-      lastReadAt: null,
-      priority: 'none',
-      processingStatus: 'pending',
-      publishedAt: null,
-      readingProgress: 0,
-      readingTime: 0,
-      textContent: null,
-      timeSpentReading: 0,
-      title: url,
-      url,
-      userId: user.id
-    });
+    const saveResult = await saveLink({ repos, user, url });
 
-    if (!newLink) {
-      const response = errorResponse('Failed to create link');
+    if (!saveResult.created) {
+      const response = errorResponse('URL already exists in your library', HttpStatus.CONFLICT);
       return c.json(response, response.status);
     }
+
+    const newLink = saveResult.link;
 
     if (processedTags.length > 0) {
       const { tags } = c.get('repos');
@@ -237,14 +215,6 @@ export const createLink: AppRouteHandler<CreateLinkRoute> = async (c) => {
       if (tagIds.length > 0) await tags.addTagsToLink(newLink.id as string, tagIds, user.id);
     }
 
-    const jobData: ContentExtractionJobData = {
-      linkId: newLink.id as string,
-      url,
-      user
-    };
-    const job = await enqueueContentExtraction.add('process-new-article', jobData);
-
-    logger.info(`Article processing job added to queue: ${job.id}`);
     logger.info(`Link created with id: ${newLink.id}`);
 
     const response = successResponse(

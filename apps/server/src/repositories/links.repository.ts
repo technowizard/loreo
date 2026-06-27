@@ -84,6 +84,7 @@ export interface LinksRepository {
   ): Promise<CursorQueryResult<LinkListItem>>;
   getTagsForLink(linkId: string, userId: string): Promise<Tag[]>;
   findAllUrls(userId: string): Promise<string[]>;
+  findByUrl(url: string, userId: string): Promise<LinkData | null>;
   existsByUrl(url: string, userId: string): Promise<boolean>;
 }
 
@@ -866,12 +867,21 @@ export function createDrizzleLinksAdapter(db: DrizzleClient): LinksRepository {
       }
     },
 
-    async existsByUrl(url, userId) {
+    async findByUrl(url, userId) {
       try {
         const result = await db.query.linksTable.findFirst({
-          where: and(eq(linksTable.url, url), eq(linksTable.userId, userId)),
-          columns: { id: true }
+          where: and(eq(linksTable.url, url), eq(linksTable.userId, userId))
         });
+        return (result as LinkData | undefined) ?? null;
+      } catch (error) {
+        logger.error(`Error finding URL for user ${userId}: ${error}`);
+        throw error;
+      }
+    },
+
+    async existsByUrl(url, userId) {
+      try {
+        const result = await this.findByUrl(url, userId);
         return result != null;
       } catch (error) {
         logger.error(`Error checking URL existence for user ${userId}: ${error}`);
