@@ -19,6 +19,7 @@ import { Route as ProtectedAdminIndexRouteImport } from './routes/_protected/adm
 import { Route as ProtectedWithLayoutIndexRouteImport } from './routes/_protected/_with-layout/index'
 import { Route as ProtectedArticlesIdRouteImport } from './routes/_protected/articles/$id'
 import { Route as ProtectedAdminConnectionsRouteImport } from './routes/_protected/admin/connections'
+import { Route as ProtectedWithLayoutPrototypeFeedsRouteImport } from './routes/_protected/_with-layout/prototype-feeds'
 import { Route as ProtectedWithLayoutManageTagsRouteImport } from './routes/_protected/_with-layout/manage-tags'
 import { Route as ProtectedWithLayoutSettingsIndexRouteImport } from './routes/_protected/_with-layout/settings/index'
 import { Route as ProtectedWithLayoutArticlesIndexRouteImport } from './routes/_protected/_with-layout/articles/index'
@@ -74,6 +75,12 @@ const ProtectedAdminConnectionsRoute =
     path: '/connections',
     getParentRoute: () => ProtectedAdminRoute,
   } as any)
+const ProtectedWithLayoutPrototypeFeedsRoute =
+  ProtectedWithLayoutPrototypeFeedsRouteImport.update({
+    id: '/prototype-feeds',
+    path: '/prototype-feeds',
+    getParentRoute: () => ProtectedWithLayoutRoute,
+  } as any)
 const ProtectedWithLayoutManageTagsRoute =
   ProtectedWithLayoutManageTagsRouteImport.update({
     id: '/manage-tags',
@@ -111,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof AuthRegisterRoute
   '/admin': typeof ProtectedAdminRouteWithChildren
   '/manage-tags': typeof ProtectedWithLayoutManageTagsRoute
+  '/prototype-feeds': typeof ProtectedWithLayoutPrototypeFeedsRoute
   '/admin/connections': typeof ProtectedAdminConnectionsRoute
   '/articles/$id': typeof ProtectedArticlesIdRoute
   '/admin/': typeof ProtectedAdminIndexRoute
@@ -124,6 +132,7 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/manage-tags': typeof ProtectedWithLayoutManageTagsRoute
+  '/prototype-feeds': typeof ProtectedWithLayoutPrototypeFeedsRoute
   '/admin/connections': typeof ProtectedAdminConnectionsRoute
   '/articles/$id': typeof ProtectedArticlesIdRoute
   '/admin': typeof ProtectedAdminIndexRoute
@@ -141,6 +150,7 @@ export interface FileRoutesById {
   '/_protected/_with-layout': typeof ProtectedWithLayoutRouteWithChildren
   '/_protected/admin': typeof ProtectedAdminRouteWithChildren
   '/_protected/_with-layout/manage-tags': typeof ProtectedWithLayoutManageTagsRoute
+  '/_protected/_with-layout/prototype-feeds': typeof ProtectedWithLayoutPrototypeFeedsRoute
   '/_protected/admin/connections': typeof ProtectedAdminConnectionsRoute
   '/_protected/articles/$id': typeof ProtectedArticlesIdRoute
   '/_protected/_with-layout/': typeof ProtectedWithLayoutIndexRoute
@@ -158,6 +168,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/admin'
     | '/manage-tags'
+    | '/prototype-feeds'
     | '/admin/connections'
     | '/articles/$id'
     | '/admin/'
@@ -171,6 +182,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/manage-tags'
+    | '/prototype-feeds'
     | '/admin/connections'
     | '/articles/$id'
     | '/admin'
@@ -187,6 +199,7 @@ export interface FileRouteTypes {
     | '/_protected/_with-layout'
     | '/_protected/admin'
     | '/_protected/_with-layout/manage-tags'
+    | '/_protected/_with-layout/prototype-feeds'
     | '/_protected/admin/connections'
     | '/_protected/articles/$id'
     | '/_protected/_with-layout/'
@@ -274,6 +287,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAdminConnectionsRouteImport
       parentRoute: typeof ProtectedAdminRoute
     }
+    '/_protected/_with-layout/prototype-feeds': {
+      id: '/_protected/_with-layout/prototype-feeds'
+      path: '/prototype-feeds'
+      fullPath: '/prototype-feeds'
+      preLoaderRoute: typeof ProtectedWithLayoutPrototypeFeedsRouteImport
+      parentRoute: typeof ProtectedWithLayoutRoute
+    }
     '/_protected/_with-layout/manage-tags': {
       id: '/_protected/_with-layout/manage-tags'
       path: '/manage-tags'
@@ -326,6 +346,7 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface ProtectedWithLayoutRouteChildren {
   ProtectedWithLayoutManageTagsRoute: typeof ProtectedWithLayoutManageTagsRoute
+  ProtectedWithLayoutPrototypeFeedsRoute: typeof ProtectedWithLayoutPrototypeFeedsRoute
   ProtectedWithLayoutIndexRoute: typeof ProtectedWithLayoutIndexRoute
   ProtectedWithLayoutArticlesIndexRoute: typeof ProtectedWithLayoutArticlesIndexRoute
   ProtectedWithLayoutSettingsIndexRoute: typeof ProtectedWithLayoutSettingsIndexRoute
@@ -335,6 +356,8 @@ interface ProtectedWithLayoutRouteChildren {
 
 const ProtectedWithLayoutRouteChildren: ProtectedWithLayoutRouteChildren = {
   ProtectedWithLayoutManageTagsRoute: ProtectedWithLayoutManageTagsRoute,
+  ProtectedWithLayoutPrototypeFeedsRoute:
+    ProtectedWithLayoutPrototypeFeedsRoute,
   ProtectedWithLayoutIndexRoute: ProtectedWithLayoutIndexRoute,
   ProtectedWithLayoutArticlesIndexRoute: ProtectedWithLayoutArticlesIndexRoute,
   ProtectedWithLayoutSettingsIndexRoute: ProtectedWithLayoutSettingsIndexRoute,
