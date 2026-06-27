@@ -5,6 +5,8 @@ import createApp from './lib/create-app.js';
 import type { Repos } from './lib/types.js';
 
 import { createDrizzleAuthAdapter } from './repositories/auth.repository.js';
+import { createDrizzleFeedItemsAdapter } from './repositories/feed-items.repository.js';
+import { createDrizzleFeedSubscriptionsAdapter } from './repositories/feed-subscriptions.repository.js';
 import { createDrizzleHighlightsAdapter } from './repositories/highlights.repository.js';
 import { createDrizzleImportSessionsAdapter } from './repositories/import-sessions.repository.js';
 import { createDrizzleLinksAdapter } from './repositories/links.repository.js';
@@ -24,6 +26,8 @@ const app = createApp();
 
 const repos: Repos = {
   auth: createDrizzleAuthAdapter(db),
+  feedItems: createDrizzleFeedItemsAdapter(db),
+  feedSubscriptions: createDrizzleFeedSubscriptionsAdapter(db),
   highlights: createDrizzleHighlightsAdapter(db),
   importSessions: createDrizzleImportSessionsAdapter(db),
   links: createDrizzleLinksAdapter(db),

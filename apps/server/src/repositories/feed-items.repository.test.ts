@@ -1,0 +1,255 @@
+import { describe, expect, it } from 'vitest';
+
+import { db } from '@/db/index.js';
+import { linksTable, usersTable } from '@/db/schemas/index.js';
+
+import { createDrizzleFeedItemsAdapter } from './feed-items.repository.js';
+import { createDrizzleFeedSubscriptionsAdapter } from './feed-subscriptions.repository.js';
+
+const USER_A_ID = '20000000-0000-0000-0000-000000000001';
+const USER_B_ID = '20000000-0000-0000-0000-000000000002';
+const LINK_ID = '20000000-0000-0000-0000-000000000010';
+
+async function seedUser(id: string, email: string) {
+  await db.insert(usersTable).values({
+    id,
+    email,
+    passwordHash: 'hashed-password',
+    name: email,
+    settings: {}
+  });
+}
+
+async function seedSubscription(userId: string, url = 'https://example.com/feed.xml') {
+  const subscriptions = createDrizzleFeedSubscriptionsAdapter(db);
+  return subscriptions.create({
+    feedUrl: url,
+    normalizedFeedUrl: url,
+    title: `Feed ${url}`,
+    userId
+  });
+}
+
+async function seedLink(userId: string, id = LINK_ID, url = 'https://example.com/post') {
+  const [link] = await db
+    .insert(linksTable)
+    .values({
+      id,
+      author: null,
+      content: null,
+      excerpt: null,
+      isArchived: false,
+      isFavorite: false,
+      isPaywalled: false,
+      isRead: false,
+      lastReadAt: null,
+      priority: 'none',
+      processingStatus: 'pending',
+      publishedAt: null,
+      readingProgress: 0,
+      readingTime: 0,
+      textContent: null,
+      timeSpentReading: 0,
+      title: url,
+      url,
+      userId
+    })
+    .returning({ id: linksTable.id });
+
+  if (!link) throw new Error('Failed to seed link');
+  return link.id;
+}
+
+describe('feed items repository', () => {
+  it('creates and queries review items scoped by user and state', async () => {
+    const items = createDrizzleFeedItemsAdapter(db);
+    await seedUser(USER_A_ID, 'feed-items-a@example.com');
+    await seedUser(USER_B_ID, 'feed-items-b@example.com');
+    const subscriptionA = await seedSubscription(USER_A_ID);
+    const subscriptionB = await seedSubscription(USER_B_ID, 'https://other.example/feed.xml');
+
+    const itemA = await items.create({
+      excerpt: 'A staged item',
+      guid: 'guid-a',
+      normalizedUrl: 'https://example.com/a',
+      publishedAt: new Date('2026-06-28T12:00:00Z'),
+      subscriptionId: subscriptionA.id,
+      title: 'Item A',
+      url: 'https://example.com/a',
+      userId: USER_A_ID
+    });
+    await items.create({
+      guid: 'guid-b',
+      normalizedUrl: 'https://example.com/b',
+      subscriptionId: subscriptionB.id,
+      title: 'Item B',
+      url: 'https://example.com/b',
+      userId: USER_B_ID
+    });
+
+    await expect(items.findById(itemA.id, USER_B_ID)).resolves.toBeNull();
+    await expect(
+      items.findManyForReview({ state: 'new', userId: USER_A_ID })
+    ).resolves.toMatchObject([{ id: itemA.id, title: 'Item A' }]);
+    await expect(
+      items.findManyForReview({ state: 'new', userId: USER_B_ID })
+    ).resolves.toHaveLength(1);
+  });
+
+  it('upserts by GUID or normalized URL within a subscription', async () => {
+    const items = createDrizzleFeedItemsAdapter(db);
+    await seedUser(USER_A_ID, 'feed-items-a@example.com');
+    const subscription = await seedSubscription(USER_A_ID);
+
+    const created = await items.upsertByIdentity({
+      guid: 'same-guid',
+      normalizedUrl: 'https://example.com/original',
+      subscriptionId: subscription.id,
+      title: 'Original title',
+      url: 'https://example.com/original',
+      userId: USER_A_ID
+    });
+    const updatedByGuid = await items.upsertByIdentity({
+      guid: 'same-guid',
+      normalizedUrl: 'https://example.com/original',
+      subscriptionId: subscription.id,
+      title: 'Updated title',
+      url: 'https://example.com/original',
+      userId: USER_A_ID
+    });
+    const updatedByUrl = await items.upsertByIdentity({
+      normalizedUrl: 'https://example.com/original',
+      subscriptionId: subscription.id,
+      title: 'Updated by URL',
+      url: 'https://example.com/original?utm=ignored',
+      userId: USER_A_ID
+    });
+
+    expect(updatedByGuid.id).toBe(created.id);
+    expect(updatedByGuid.title).toBe('Updated title');
+    expect(updatedByUrl.id).toBe(created.id);
+    expect(updatedByUrl.title).toBe('Updated by URL');
+    await expect(items.findManyForReview({ userId: USER_A_ID })).resolves.toHaveLength(1);
+  });
+
+  it('marks items dismissed and saved only for the owning user', async () => {
+    const items = createDrizzleFeedItemsAdapter(db);
+    await seedUser(USER_A_ID, 'feed-items-a@example.com');
+    await seedUser(USER_B_ID, 'feed-items-b@example.com');
+    const subscription = await seedSubscription(USER_A_ID);
+    const linkId = await seedLink(USER_A_ID);
+
+    const item = await items.create({
+      guid: 'guid-a',
+      normalizedUrl: 'https://example.com/post',
+      subscriptionId: subscription.id,
+      title: 'Item A',
+      url: 'https://example.com/post',
+      userId: USER_A_ID
+    });
+
+    await expect(items.dismiss(item.id, USER_B_ID)).resolves.toBeNull();
+    const dismissed = await items.dismiss(item.id, USER_A_ID, new Date('2026-06-28T12:00:00Z'));
+    expect(dismissed).toMatchObject({ id: item.id, state: 'dismissed' });
+    expect(dismissed?.dismissedAt?.toISOString()).toBe('2026-06-28T12:00:00.000Z');
+
+    await expect(items.save(item.id, USER_B_ID, linkId)).resolves.toBeNull();
+    const saved = await items.save(item.id, USER_A_ID, linkId, new Date('2026-06-28T13:00:00Z'));
+    expect(saved).toMatchObject({ id: item.id, linkId, state: 'saved' });
+    expect(saved?.savedAt?.toISOString()).toBe('2026-06-28T13:00:00.000Z');
+  });
+
+  it('reconciles matching staged items to an existing saved link by normalized URL', async () => {
+    const items = createDrizzleFeedItemsAdapter(db);
+    await seedUser(USER_A_ID, 'feed-items-a@example.com');
+    await seedUser(USER_B_ID, 'feed-items-b@example.com');
+    const subscriptionA = await seedSubscription(USER_A_ID);
+    const subscriptionB = await seedSubscription(USER_B_ID, 'https://other.example/feed.xml');
+    const linkId = await seedLink(USER_A_ID);
+
+    const itemA = await items.create({
+      normalizedUrl: 'https://example.com/post',
+      subscriptionId: subscriptionA.id,
+      title: 'Item A',
+      url: 'https://example.com/post',
+      userId: USER_A_ID
+    });
+    await items.create({
+      normalizedUrl: 'https://example.com/post',
+      subscriptionId: subscriptionB.id,
+      title: 'Item B',
+      url: 'https://example.com/post',
+      userId: USER_B_ID
+    });
+
+    const reconciled = await items.reconcileSavedByUrl({
+      linkId,
+      normalizedUrl: 'https://example.com/post',
+      savedAt: new Date('2026-06-28T12:00:00Z'),
+      userId: USER_A_ID
+    });
+
+    expect(reconciled.map((item) => item.id)).toEqual([itemA.id]);
+    expect(reconciled[0]).toMatchObject({ linkId, state: 'saved' });
+    await expect(
+      items.findManyForReview({ state: 'new', userId: USER_B_ID })
+    ).resolves.toHaveLength(1);
+  });
+
+  it('prunes old and excess unsaved items while keeping saved items', async () => {
+    const items = createDrizzleFeedItemsAdapter(db);
+    await seedUser(USER_A_ID, 'feed-items-a@example.com');
+    const subscription = await seedSubscription(USER_A_ID);
+    const linkId = await seedLink(USER_A_ID);
+
+    const oldUnsaved = await items.create({
+      discoveredAt: new Date('2026-01-01T00:00:00Z'),
+      normalizedUrl: 'https://example.com/old-unsaved',
+      subscriptionId: subscription.id,
+      title: 'Old unsaved',
+      url: 'https://example.com/old-unsaved',
+      userId: USER_A_ID
+    });
+    const oldSaved = await items.create({
+      discoveredAt: new Date('2026-01-02T00:00:00Z'),
+      linkId,
+      normalizedUrl: 'https://example.com/old-saved',
+      state: 'saved',
+      subscriptionId: subscription.id,
+      title: 'Old saved',
+      url: 'https://example.com/old-saved',
+      userId: USER_A_ID
+    });
+    const newest = await items.create({
+      discoveredAt: new Date('2026-06-28T00:00:00Z'),
+      normalizedUrl: 'https://example.com/newest',
+      subscriptionId: subscription.id,
+      title: 'Newest',
+      url: 'https://example.com/newest',
+      userId: USER_A_ID
+    });
+    const secondNewest = await items.create({
+      discoveredAt: new Date('2026-06-27T00:00:00Z'),
+      normalizedUrl: 'https://example.com/second-newest',
+      subscriptionId: subscription.id,
+      title: 'Second newest',
+      url: 'https://example.com/second-newest',
+      userId: USER_A_ID
+    });
+
+    const removed = await items.pruneForSubscription({
+      before: new Date('2026-04-01T00:00:00Z'),
+      keepLatest: 1,
+      subscriptionId: subscription.id,
+      userId: USER_A_ID
+    });
+
+    expect(removed).toBe(2);
+    await expect(items.findById(oldUnsaved.id, USER_A_ID)).resolves.toBeNull();
+    await expect(items.findById(oldSaved.id, USER_A_ID)).resolves.toMatchObject({
+      id: oldSaved.id
+    });
+    await expect(items.findById(newest.id, USER_A_ID)).resolves.toMatchObject({ id: newest.id });
+    await expect(items.findById(secondNewest.id, USER_A_ID)).resolves.toBeNull();
+  });
+});

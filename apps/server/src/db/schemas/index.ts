@@ -1,11 +1,15 @@
 import { relations } from 'drizzle-orm';
 
+import { feedItemsTable } from './feed-items.js';
+import { feedSubscriptionsTable } from './feed-subscriptions.js';
 import { highlightsTable } from './highlights.js';
 import { importSessionsTable } from './import-sessions.js';
 import { linksTable, linkTagsTable } from './links.js';
 import { tagGroupsTable, tagsTable } from './tags.js';
 import { usersTable } from './users.js';
 
+export * from './feed-items.js';
+export * from './feed-subscriptions.js';
 export * from './highlights.js';
 export * from './import-sessions.js';
 export * from './links.js';
@@ -14,6 +18,8 @@ export * from './user-settings.js';
 export * from './users.js';
 
 export const userRelations = relations(usersTable, ({ many }) => ({
+  feedItems: many(feedItemsTable),
+  feedSubscriptions: many(feedSubscriptionsTable),
   highlights: many(highlightsTable),
   links: many(linksTable),
   linkTags: many(linkTagsTable),
@@ -41,8 +47,32 @@ export const linksRelations = relations(linksTable, ({ many, one }) => ({
     fields: [linksTable.importSessionId],
     references: [importSessionsTable.id]
   }),
+  feedItems: many(feedItemsTable),
   highlights: many(highlightsTable),
   linkTags: many(linkTagsTable)
+}));
+
+export const feedSubscriptionsRelations = relations(feedSubscriptionsTable, ({ many, one }) => ({
+  feedItems: many(feedItemsTable),
+  user: one(usersTable, {
+    fields: [feedSubscriptionsTable.userId],
+    references: [usersTable.id]
+  })
+}));
+
+export const feedItemsRelations = relations(feedItemsTable, ({ one }) => ({
+  link: one(linksTable, {
+    fields: [feedItemsTable.linkId],
+    references: [linksTable.id]
+  }),
+  subscription: one(feedSubscriptionsTable, {
+    fields: [feedItemsTable.subscriptionId],
+    references: [feedSubscriptionsTable.id]
+  }),
+  user: one(usersTable, {
+    fields: [feedItemsTable.userId],
+    references: [usersTable.id]
+  })
 }));
 
 export const linkTagRelations = relations(linkTagsTable, ({ one }) => ({
