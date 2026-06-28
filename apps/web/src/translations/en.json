@@ -94,7 +94,8 @@
   "nav": {
     "home": "Home",
     "articles": "Articles",
-    "moreActionsAria": "More actions"
+    "moreActionsAria": "More actions",
+    "feeds": "Feeds"
   },
   "userMenu": {
     "fallbackName": "User",
@@ -154,6 +155,9 @@
     },
     "importProgress": {
       "metaTitle": "Import Progress | Loreo"
+    },
+    "feeds": {
+      "metaTitle": "Feeds | Loreo"
     }
   },
   "demo": {
@@ -460,7 +464,7 @@
         "manageTagsAria": "Manage tags for {{name}}"
       },
       "moreCount": "+{{count}} more",
-      "manageTags": "Manage tags \u2192",
+      "manageTags": "Manage tags →",
       "addFirstTag": "Add First Tag"
     },
     "tagInput": {
@@ -809,6 +813,44 @@
         "down": "Down"
       },
       "latency": "{{ms}} ms"
+    }
+  },
+  "feeds": {
+    "eyebrow": "User-curated discovery",
+    "title": "Feeds",
+    "description": "Follow trusted sources and review new articles before they enter your library.",
+    "addFeed": "Add feed",
+    "emptyFeed": "No items for this filter.",
+    "yes": "Yes",
+    "no": "No",
+    "tabs": {
+      "aria": "Feed review filters",
+      "new": "New",
+      "saved": "Saved",
+      "dismissed": "Dismissed",
+      "feeds": "Feeds"
+    },
+    "status": {
+      "active": "Active",
+      "paused": "Paused",
+      "warning": "Needs attention"
+    },
+    "fields": {
+      "autoSave": "Auto-save",
+      "failures": "Failures"
+    },
+    "actions": {
+      "save": "Save",
+      "dismiss": "Dismiss",
+      "refresh": "Refresh"
+    },
+    "empty": {
+      "title": "No feeds yet",
+      "description": "Add one trusted RSS source to start reviewing fresh articles here."
+    },
+    "error": {
+      "title": "Could not load feeds",
+      "description": "Refresh the page or try again in a moment."
     }
   }
 }

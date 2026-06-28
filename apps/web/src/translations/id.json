@@ -94,7 +94,8 @@
   "nav": {
     "home": "Beranda",
     "articles": "Artikel",
-    "moreActionsAria": "Aksi lainnya"
+    "moreActionsAria": "Aksi lainnya",
+    "feeds": "Feed"
   },
   "userMenu": {
     "fallbackName": "Pengguna",
@@ -149,6 +150,9 @@
     },
     "importProgress": {
       "metaTitle": "Progres Impor | Loreo"
+    },
+    "feeds": {
+      "metaTitle": "Feed | Loreo"
     }
   },
   "demo": {
@@ -455,7 +459,7 @@
         "manageTagsAria": "Kelola tag untuk {{name}}"
       },
       "moreCount": "+{{count}} lainnya",
-      "manageTags": "Kelola tag \u2192",
+      "manageTags": "Kelola tag →",
       "addFirstTag": "Tambah Tag Pertama"
     },
     "tagInput": {
@@ -739,6 +743,44 @@
       "viewArticle": "Lihat",
       "failedLoadMore": "Gagal memuat lebih banyak item",
       "processingQueue": "Antrean pemrosesan"
+    }
+  },
+  "feeds": {
+    "eyebrow": "Discovery pilihanmu",
+    "title": "Feed",
+    "description": "Ikuti sumber tepercaya dan tinjau artikel baru sebelum masuk ke perpustakaanmu.",
+    "addFeed": "Tambah feed",
+    "emptyFeed": "Tidak ada item untuk filter ini.",
+    "yes": "Ya",
+    "no": "Tidak",
+    "tabs": {
+      "aria": "Filter tinjauan feed",
+      "new": "Baru",
+      "saved": "Disimpan",
+      "dismissed": "Dilewati",
+      "feeds": "Feed"
+    },
+    "status": {
+      "active": "Aktif",
+      "paused": "Dijeda",
+      "warning": "Perlu perhatian"
+    },
+    "fields": {
+      "autoSave": "Simpan otomatis",
+      "failures": "Kegagalan"
+    },
+    "actions": {
+      "save": "Simpan",
+      "dismiss": "Lewati",
+      "refresh": "Segarkan"
+    },
+    "empty": {
+      "title": "Belum ada feed",
+      "description": "Tambahkan satu sumber RSS tepercaya untuk mulai meninjau artikel baru di sini."
+    },
+    "error": {
+      "title": "Feed tidak dapat dimuat",
+      "description": "Segarkan halaman atau coba lagi sebentar lagi."
     }
   }
 }

@@ -22,6 +22,7 @@ import { Route as ProtectedAdminConnectionsRouteImport } from './routes/_protect
 import { Route as ProtectedWithLayoutPrototypeFeedsRouteImport } from './routes/_protected/_with-layout/prototype-feeds'
 import { Route as ProtectedWithLayoutManageTagsRouteImport } from './routes/_protected/_with-layout/manage-tags'
 import { Route as ProtectedWithLayoutSettingsIndexRouteImport } from './routes/_protected/_with-layout/settings/index'
+import { Route as ProtectedWithLayoutFeedsIndexRouteImport } from './routes/_protected/_with-layout/feeds/index'
 import { Route as ProtectedWithLayoutArticlesIndexRouteImport } from './routes/_protected/_with-layout/articles/index'
 import { Route as ProtectedWithLayoutSettingsImportArticlesIndexRouteImport } from './routes/_protected/_with-layout/settings/import-articles/index'
 import { Route as ProtectedWithLayoutSettingsImportArticlesSessionIdRouteImport } from './routes/_protected/_with-layout/settings/import-articles/$sessionId'
@@ -93,6 +94,12 @@ const ProtectedWithLayoutSettingsIndexRoute =
     path: '/settings/',
     getParentRoute: () => ProtectedWithLayoutRoute,
   } as any)
+const ProtectedWithLayoutFeedsIndexRoute =
+  ProtectedWithLayoutFeedsIndexRouteImport.update({
+    id: '/feeds/',
+    path: '/feeds/',
+    getParentRoute: () => ProtectedWithLayoutRoute,
+  } as any)
 const ProtectedWithLayoutArticlesIndexRoute =
   ProtectedWithLayoutArticlesIndexRouteImport.update({
     id: '/articles/',
@@ -123,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/articles/$id': typeof ProtectedArticlesIdRoute
   '/admin/': typeof ProtectedAdminIndexRoute
   '/articles/': typeof ProtectedWithLayoutArticlesIndexRoute
+  '/feeds/': typeof ProtectedWithLayoutFeedsIndexRoute
   '/settings/': typeof ProtectedWithLayoutSettingsIndexRoute
   '/settings/import-articles/$sessionId': typeof ProtectedWithLayoutSettingsImportArticlesSessionIdRoute
   '/settings/import-articles/': typeof ProtectedWithLayoutSettingsImportArticlesIndexRoute
@@ -137,6 +145,7 @@ export interface FileRoutesByTo {
   '/articles/$id': typeof ProtectedArticlesIdRoute
   '/admin': typeof ProtectedAdminIndexRoute
   '/articles': typeof ProtectedWithLayoutArticlesIndexRoute
+  '/feeds': typeof ProtectedWithLayoutFeedsIndexRoute
   '/settings': typeof ProtectedWithLayoutSettingsIndexRoute
   '/settings/import-articles/$sessionId': typeof ProtectedWithLayoutSettingsImportArticlesSessionIdRoute
   '/settings/import-articles': typeof ProtectedWithLayoutSettingsImportArticlesIndexRoute
@@ -156,6 +165,7 @@ export interface FileRoutesById {
   '/_protected/_with-layout/': typeof ProtectedWithLayoutIndexRoute
   '/_protected/admin/': typeof ProtectedAdminIndexRoute
   '/_protected/_with-layout/articles/': typeof ProtectedWithLayoutArticlesIndexRoute
+  '/_protected/_with-layout/feeds/': typeof ProtectedWithLayoutFeedsIndexRoute
   '/_protected/_with-layout/settings/': typeof ProtectedWithLayoutSettingsIndexRoute
   '/_protected/_with-layout/settings/import-articles/$sessionId': typeof ProtectedWithLayoutSettingsImportArticlesSessionIdRoute
   '/_protected/_with-layout/settings/import-articles/': typeof ProtectedWithLayoutSettingsImportArticlesIndexRoute
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/articles/$id'
     | '/admin/'
     | '/articles/'
+    | '/feeds/'
     | '/settings/'
     | '/settings/import-articles/$sessionId'
     | '/settings/import-articles/'
@@ -187,6 +198,7 @@ export interface FileRouteTypes {
     | '/articles/$id'
     | '/admin'
     | '/articles'
+    | '/feeds'
     | '/settings'
     | '/settings/import-articles/$sessionId'
     | '/settings/import-articles'
@@ -205,6 +217,7 @@ export interface FileRouteTypes {
     | '/_protected/_with-layout/'
     | '/_protected/admin/'
     | '/_protected/_with-layout/articles/'
+    | '/_protected/_with-layout/feeds/'
     | '/_protected/_with-layout/settings/'
     | '/_protected/_with-layout/settings/import-articles/$sessionId'
     | '/_protected/_with-layout/settings/import-articles/'
@@ -308,6 +321,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedWithLayoutSettingsIndexRouteImport
       parentRoute: typeof ProtectedWithLayoutRoute
     }
+    '/_protected/_with-layout/feeds/': {
+      id: '/_protected/_with-layout/feeds/'
+      path: '/feeds'
+      fullPath: '/feeds/'
+      preLoaderRoute: typeof ProtectedWithLayoutFeedsIndexRouteImport
+      parentRoute: typeof ProtectedWithLayoutRoute
+    }
     '/_protected/_with-layout/articles/': {
       id: '/_protected/_with-layout/articles/'
       path: '/articles'
@@ -349,6 +369,7 @@ interface ProtectedWithLayoutRouteChildren {
   ProtectedWithLayoutPrototypeFeedsRoute: typeof ProtectedWithLayoutPrototypeFeedsRoute
   ProtectedWithLayoutIndexRoute: typeof ProtectedWithLayoutIndexRoute
   ProtectedWithLayoutArticlesIndexRoute: typeof ProtectedWithLayoutArticlesIndexRoute
+  ProtectedWithLayoutFeedsIndexRoute: typeof ProtectedWithLayoutFeedsIndexRoute
   ProtectedWithLayoutSettingsIndexRoute: typeof ProtectedWithLayoutSettingsIndexRoute
   ProtectedWithLayoutSettingsImportArticlesSessionIdRoute: typeof ProtectedWithLayoutSettingsImportArticlesSessionIdRoute
   ProtectedWithLayoutSettingsImportArticlesIndexRoute: typeof ProtectedWithLayoutSettingsImportArticlesIndexRoute
@@ -360,6 +381,7 @@ const ProtectedWithLayoutRouteChildren: ProtectedWithLayoutRouteChildren = {
     ProtectedWithLayoutPrototypeFeedsRoute,
   ProtectedWithLayoutIndexRoute: ProtectedWithLayoutIndexRoute,
   ProtectedWithLayoutArticlesIndexRoute: ProtectedWithLayoutArticlesIndexRoute,
+  ProtectedWithLayoutFeedsIndexRoute: ProtectedWithLayoutFeedsIndexRoute,
   ProtectedWithLayoutSettingsIndexRoute: ProtectedWithLayoutSettingsIndexRoute,
   ProtectedWithLayoutSettingsImportArticlesSessionIdRoute:
     ProtectedWithLayoutSettingsImportArticlesSessionIdRoute,
