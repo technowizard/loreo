@@ -840,9 +840,12 @@
       "failures": "Failures"
     },
     "actions": {
-      "save": "Save",
+      "save": "Save article",
       "dismiss": "Dismiss",
-      "refresh": "Refresh"
+      "refresh": "Refresh feed",
+      "saving": "Saving...",
+      "dismissing": "Dismissing...",
+      "refreshing": "Refreshing..."
     },
     "empty": {
       "title": "No feeds yet",
@@ -851,6 +854,28 @@
     "error": {
       "title": "Could not load feeds",
       "description": "Refresh the page or try again in a moment."
+    },
+    "reviewNote": "New feed items stay here until you save them.",
+    "form": {
+      "urlLabel": "Feed URL",
+      "urlPlaceholder": "https://example.com/feed.xml",
+      "help": "Use a public RSS or Atom feed. Loreo checks the feed before adding it.",
+      "autoSaveHelp": "Auto-save new items from this feed instead of staging them for review.",
+      "invalidUrl": "Enter a valid public feed URL.",
+      "adding": "Adding feed...",
+      "success": "{{count}} new items staged for review.",
+      "alreadyAdded": "This feed is already on your shelf."
+    },
+    "shelf": {
+      "aria": "Feed shelves",
+      "toggle": "Toggle",
+      "itemCount": "{{count}} item",
+      "itemCount_plural": "{{count}} items",
+      "lastFetched": "Fetched {{date}}"
+    },
+    "warning": {
+      "title": "Feed needs attention",
+      "nextTry": "Loreo will try again after {{date}}."
     }
   }
 }
