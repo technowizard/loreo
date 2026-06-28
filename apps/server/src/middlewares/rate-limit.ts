@@ -81,6 +81,20 @@ export const createLinkRateLimit = rateLimiter({
   store: makeStore('rl:links:create:')
 });
 
+export const addFeedRateLimit = rateLimiter({
+  windowMs: ONE_HOUR_WINDOW,
+  limit: 20,
+  keyGenerator: keyByUser,
+  store: makeStore('rl:feeds:add:')
+});
+
+export const refreshFeedRateLimit = rateLimiter({
+  windowMs: ONE_HOUR_WINDOW,
+  limit: 60,
+  keyGenerator: keyByUser,
+  store: makeStore('rl:feeds:refresh:')
+});
+
 export const importUploadRateLimit = rateLimiter({
   windowMs: ONE_HOUR_WINDOW,
   limit: 10,

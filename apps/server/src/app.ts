@@ -14,6 +14,7 @@ import { createDrizzleTagsAdapter } from './repositories/tags.repository.js';
 
 import admin from './routes/admin/admin.index.js';
 import auth from './routes/auth/auth.index.js';
+import feeds from './routes/feeds/feeds.index.js';
 import files from './routes/files/files.index.js';
 import health from './routes/health/health.index.js';
 import highlights from './routes/highlights/highlights.index.js';
@@ -47,6 +48,7 @@ const router = app
   .route('/', auth)
   .route('/', home)
   .route('/', links)
+  .route('/', feeds)
   .route('/', highlights)
   .route('/', tags)
   .route('/', files)
