@@ -52,6 +52,7 @@ export const useFeedItems = ({ filters = {}, queryConfig }: UseFeedItemsOptions 
     isError: infiniteQuery.isError,
     isFetchingNextPage: infiniteQuery.isFetchingNextPage,
     isLoading: infiniteQuery.isLoading,
+    refetch: infiniteQuery.refetch,
     total: infiniteQuery.data?.pages[0]?.pagination.total ?? 0
   };
 };

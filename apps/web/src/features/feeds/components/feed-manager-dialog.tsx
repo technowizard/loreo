@@ -1,13 +1,17 @@
 import {
   ArrowLeftIcon,
+  CopyIcon,
   MagnifyingGlassIcon,
   PlusIcon,
   RssIcon,
-  WarningCircleIcon
+  TrashIcon,
+  WarningCircleIcon,
+  XIcon
 } from '@phosphor-icons/react';
 import { Link } from '@tanstack/react-router';
 import { useEffect, useId, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -20,21 +24,32 @@ import {
   DialogTitle
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 
+import { useDeleteFeedSubscription } from '@/features/feeds/api/delete-feed-subscription';
 import { useFeedSubscriptionSummary } from '@/features/feeds/api/get-feed-subscription-summary';
 import { useUpdateFeedSubscription } from '@/features/feeds/api/update-feed-subscription';
 
 import { cn } from '@/lib/utils';
 
-import type { FeedItemState, FeedSubscription } from '@/types/feeds';
+import type { CreateFeedSubscriptionResult, FeedItemState, FeedSubscription } from '@/types/feeds';
 
 import { AddFeedForm } from './add-feed-form';
+import { DeleteFeedDialog } from './delete-feed-dialog';
 
 export type FeedManagerStatusFilter = 'all' | 'active' | 'paused' | 'attention';
 
 type FeedManagerDialogProps = {
+  onClearFilters?: () => void;
   onOpenChange: (open: boolean) => void;
   onQueryChange: (query: string) => void;
   onSelectFeed: (feedId: string) => void;
@@ -87,6 +102,16 @@ function getFeedInitials(title: string) {
     .join('');
 }
 
+function getFeedWebsiteLabel(subscription: FeedSubscription) {
+  const sourceUrl = subscription.siteUrl ?? subscription.feedUrl;
+
+  try {
+    return new URL(sourceUrl).hostname.replace(/^www\./, '');
+  } catch {
+    return sourceUrl;
+  }
+}
+
 function FeedIdentity({
   subscription,
   size = 'md'
@@ -94,14 +119,18 @@ function FeedIdentity({
   subscription: FeedSubscription;
   size?: 'lg' | 'md';
 }) {
+  const [imageFailed, setImageFailed] = useState(false);
   const dimensions = size === 'lg' ? 'size-14 text-lg' : 'size-11 text-sm';
 
-  return subscription.imageUrl ? (
+  useEffect(() => setImageFailed(false), [subscription.imageUrl]);
+
+  return subscription.imageUrl && !imageFailed ? (
     <img
       alt=""
       className={cn('shrink-0 rounded-2xl border border-border object-cover', dimensions)}
       height={size === 'lg' ? 56 : 44}
       loading="lazy"
+      onError={() => setImageFailed(true)}
       src={subscription.imageUrl}
       width={size === 'lg' ? 56 : 44}
     />
@@ -134,16 +163,20 @@ function FeedStatusBadge({ subscription }: { subscription: FeedSubscription }) {
 
 function FeedManagerList({
   filteredSubscriptions,
+  onClearFilters,
   onSelectFeed,
   query,
   selectedFeedId,
+  selectionDisabled = false,
   subscriptions,
   subscriptionsLoading
 }: {
   filteredSubscriptions: FeedSubscription[];
+  onClearFilters: () => void;
   onSelectFeed: (feedId: string) => void;
   query: string;
   selectedFeedId?: string;
+  selectionDisabled?: boolean;
   subscriptions: FeedSubscription[];
   subscriptionsLoading: boolean;
 }) {
@@ -185,8 +218,13 @@ function FeedManagerList({
       <div className="flex flex-1 flex-col items-center justify-center gap-2 px-6 py-12 text-center">
         <h3 className="font-semibold text-foreground">{t('feeds.manager.noResults.title')}</h3>
         <p className="max-w-xs text-sm text-muted-foreground">
-          {t('feeds.manager.noResults.description', { query })}
+          {query.trim().length > 0
+            ? t('feeds.manager.noResults.searchDescription', { query })
+            : t('feeds.manager.noResults.filterDescription')}
         </p>
+        <Button onClick={onClearFilters} size="sm" type="button" variant="outline">
+          {t('feeds.manager.noResults.clear')}
+        </Button>
       </div>
     );
   }
@@ -201,6 +239,7 @@ function FeedManagerList({
             selectedFeedId === subscription.id &&
               'bg-primary/5 shadow-[inset_3px_0_0_var(--color-primary)]'
           )}
+          disabled={selectionDisabled}
           key={subscription.id}
           onClick={() => onSelectFeed(subscription.id)}
           type="button"
@@ -212,7 +251,7 @@ function FeedManagerList({
               <FeedStatusBadge subscription={subscription} />
             </span>
             <span className="block truncate text-xs text-muted-foreground">
-              {subscription.feedUrl}
+              {getFeedWebsiteLabel(subscription)}
             </span>
             <span className="block text-xs text-muted-foreground">
               {subscription.lastSuccessfulFetchAt
@@ -243,7 +282,7 @@ function SummaryLink({
   const tab = state === 'new' ? 'new' : state;
 
   return (
-    <div className="min-w-0 space-y-2 border-r border-border px-3 last:border-r-0 first:pl-0 last:pr-0">
+    <div className="min-w-0 space-y-1">
       <p className="text-xs text-muted-foreground">{label}</p>
       <p className="text-lg font-semibold tabular-nums text-foreground">{count}</p>
       <Link
@@ -258,12 +297,29 @@ function SummaryLink({
   );
 }
 
-function FeedDetail({ subscription }: { subscription: FeedSubscription }) {
+function FeedDetail({
+  onDeleted,
+  subscription
+}: {
+  onDeleted: (subscriptionId: string) => void;
+  subscription: FeedSubscription;
+}) {
   const { i18n, t } = useTranslation();
   const statusSwitchId = useId();
   const autoSaveSwitchId = useId();
+  const [copiedFeedUrl, setCopiedFeedUrl] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [updateMessage, setUpdateMessage] = useState<string | null>(null);
   const summaryQuery = useFeedSubscriptionSummary({ subscriptionId: subscription.id });
+  const deleteFeed = useDeleteFeedSubscription({
+    mutationConfig: {
+      onSuccess: () => {
+        setDeleteDialogOpen(false);
+        toast.success(t('feeds.manager.delete.success', { title: subscription.title }));
+        onDeleted(subscription.id);
+      }
+    }
+  });
   const updateFeed = useUpdateFeedSubscription({
     mutationConfig: {
       onError: () => setUpdateMessage(null),
@@ -277,6 +333,16 @@ function FeedDetail({ subscription }: { subscription: FeedSubscription }) {
   );
   const summary = summaryQuery.data?.result;
   const mutationError = updateFeed.error instanceof Error ? updateFeed.error.message : null;
+  const deleteError = deleteFeed.error instanceof Error ? deleteFeed.error.message : null;
+
+  const copyFeedUrl = async () => {
+    try {
+      await navigator.clipboard.writeText(subscription.feedUrl);
+      setCopiedFeedUrl(true);
+    } catch {
+      toast.error(t('feeds.manager.source.copyError'));
+    }
+  };
 
   return (
     <div className="space-y-6 p-4 sm:p-6">
@@ -287,14 +353,16 @@ function FeedDetail({ subscription }: { subscription: FeedSubscription }) {
             <h2 className="truncate text-lg font-semibold text-foreground">{subscription.title}</h2>
             <FeedStatusBadge subscription={subscription} />
           </div>
-          <a
-            className="block truncate text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring"
-            href={subscription.feedUrl}
-            rel="noreferrer"
-            target="_blank"
-          >
-            {subscription.feedUrl}
-          </a>
+          {subscription.siteUrl ? (
+            <a
+              className="block truncate text-sm text-primary underline-offset-4 hover:underline focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring"
+              href={subscription.siteUrl}
+              rel="noreferrer"
+              target="_blank"
+            >
+              {subscription.siteUrl}
+            </a>
+          ) : null}
         </div>
       </div>
 
@@ -305,92 +373,62 @@ function FeedDetail({ subscription }: { subscription: FeedSubscription }) {
         </Alert>
       ) : null}
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="space-y-2">
-          <p className="text-sm font-medium text-foreground">{t('feeds.manager.feedUrl')}</p>
-          <p className="break-all rounded-2xl border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
-            {subscription.feedUrl}
-          </p>
+      <section aria-labelledby="feed-settings-title" className="space-y-3">
+        <h3 className="font-semibold text-foreground" id="feed-settings-title">
+          {t('feeds.manager.controls.title')}
+        </h3>
+        <div
+          aria-busy={updateFeed.isPending}
+          className="divide-y divide-border border-y border-border"
+        >
+          <label className="flex min-h-18 cursor-pointer items-center justify-between gap-4 py-3">
+            <span className="min-w-0">
+              <span className="block text-sm font-medium text-foreground">
+                {t('feeds.manager.controls.status')}
+              </span>
+              <span className="block text-xs leading-5 text-muted-foreground">
+                {subscription.status === 'active'
+                  ? t('feeds.manager.controls.activeHelp')
+                  : t('feeds.manager.controls.pausedHelp')}
+              </span>
+            </span>
+            <Switch
+              checked={subscription.status === 'active'}
+              disabled={updateFeed.isPending}
+              id={statusSwitchId}
+              name="feedStatus"
+              onCheckedChange={(checked) =>
+                updateFeed.mutate({
+                  body: { status: checked ? 'active' : 'paused' },
+                  subscriptionId: subscription.id
+                })
+              }
+            />
+          </label>
+          <label className="flex min-h-18 cursor-pointer items-center justify-between gap-4 py-3">
+            <span className="min-w-0">
+              <span className="block text-sm font-medium text-foreground">
+                {t('feeds.manager.controls.autoSave')}
+              </span>
+              <span className="block text-xs leading-5 text-muted-foreground">
+                {t('feeds.manager.controls.autoSaveHelp')}
+              </span>
+            </span>
+            <Switch
+              checked={subscription.autoSave}
+              disabled={updateFeed.isPending}
+              id={autoSaveSwitchId}
+              name="feedAutoSave"
+              onCheckedChange={(checked) =>
+                updateFeed.mutate({
+                  body: { autoSave: checked },
+                  subscriptionId: subscription.id
+                })
+              }
+            />
+          </label>
         </div>
-        <div className="space-y-2">
-          <p className="text-sm font-medium text-foreground">{t('feeds.manager.website')}</p>
-          {subscription.siteUrl ? (
-            <a
-              className="block break-all rounded-2xl border border-border bg-muted/40 px-3 py-2 text-sm text-primary underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring"
-              href={subscription.siteUrl}
-              rel="noreferrer"
-              target="_blank"
-            >
-              {subscription.siteUrl}
-            </a>
-          ) : (
-            <p className="rounded-2xl border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
-              {t('feeds.manager.notAvailable')}
-            </p>
-          )}
-        </div>
-      </div>
-
-      {subscription.description ? (
-        <div className="space-y-2">
-          <p className="text-sm font-medium text-foreground">{t('feeds.manager.description')}</p>
-          <p className="break-words text-pretty text-sm leading-6 text-muted-foreground">
-            {subscription.description}
-          </p>
-        </div>
-      ) : null}
-
-      <div
-        aria-busy={updateFeed.isPending}
-        className="grid gap-4 rounded-3xl border border-border bg-muted/20 p-4 sm:grid-cols-2"
-      >
-        <label className="flex min-h-12 cursor-pointer items-center justify-between gap-4 rounded-2xl px-2 hover:bg-accent">
-          <span className="min-w-0">
-            <span className="block text-sm font-medium text-foreground">
-              {t('feeds.manager.controls.status')}
-            </span>
-            <span className="block text-xs text-muted-foreground">
-              {subscription.status === 'active'
-                ? t('feeds.manager.controls.activeHelp')
-                : t('feeds.manager.controls.pausedHelp')}
-            </span>
-          </span>
-          <Switch
-            checked={subscription.status === 'active'}
-            disabled={updateFeed.isPending}
-            id={statusSwitchId}
-            name="feedStatus"
-            onCheckedChange={(checked) =>
-              updateFeed.mutate({
-                body: { status: checked ? 'active' : 'paused' },
-                subscriptionId: subscription.id
-              })
-            }
-          />
-        </label>
-        <label className="flex min-h-12 cursor-pointer items-center justify-between gap-4 rounded-2xl px-2 hover:bg-accent">
-          <span className="min-w-0">
-            <span className="block text-sm font-medium text-foreground">
-              {t('feeds.manager.controls.autoSave')}
-            </span>
-            <span className="block text-xs text-muted-foreground">
-              {t('feeds.manager.controls.autoSaveHelp')}
-            </span>
-          </span>
-          <Switch
-            checked={subscription.autoSave}
-            disabled={updateFeed.isPending}
-            id={autoSaveSwitchId}
-            name="feedAutoSave"
-            onCheckedChange={(checked) =>
-              updateFeed.mutate({
-                body: { autoSave: checked },
-                subscriptionId: subscription.id
-              })
-            }
-          />
-        </label>
-      </div>
+      </section>
 
       <p aria-live="polite" className="sr-only" role="status">
         {updateFeed.isPending ? t('feeds.manager.controls.updating') : updateMessage}
@@ -413,7 +451,7 @@ function FeedDetail({ subscription }: { subscription: FeedSubscription }) {
             <AlertDescription>{t('feeds.manager.summary.error')}</AlertDescription>
           </Alert>
         ) : (
-          <div className="grid grid-cols-2 gap-y-5 rounded-3xl border border-border bg-primary/5 p-4 sm:grid-cols-5">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-5 border-y border-border py-4 sm:grid-cols-5">
             <SummaryLink
               count={summary.new}
               label={t('feeds.manager.summary.pending')}
@@ -432,13 +470,13 @@ function FeedDetail({ subscription }: { subscription: FeedSubscription }) {
               state="dismissed"
               subscriptionId={subscription.id}
             />
-            <div className="space-y-2 border-r border-border px-3 sm:border-r">
+            <div className="space-y-1">
               <p className="text-xs text-muted-foreground">{t('feeds.manager.summary.failures')}</p>
               <p className="text-lg font-semibold tabular-nums text-foreground">
                 {subscription.failureCount}
               </p>
             </div>
-            <div className="space-y-2 px-3 last:pr-0">
+            <div className="space-y-1">
               <p className="text-xs text-muted-foreground">
                 {t('feeds.manager.summary.lastFetched')}
               </p>
@@ -451,11 +489,83 @@ function FeedDetail({ subscription }: { subscription: FeedSubscription }) {
           </div>
         )}
       </section>
+
+      <section aria-labelledby="feed-source-title" className="space-y-4">
+        <h3 className="font-semibold text-foreground" id="feed-source-title">
+          {t('feeds.manager.source.title')}
+        </h3>
+        {subscription.description ? (
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-foreground">
+              {t('feeds.manager.descriptionLabel')}
+            </p>
+            <p className="break-words text-pretty text-sm leading-6 text-muted-foreground">
+              {subscription.description}
+            </p>
+          </div>
+        ) : null}
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-foreground">{t('feeds.manager.feedUrl')}</p>
+          <div className="flex min-w-0 items-center gap-2">
+            <a
+              className="min-w-0 truncate text-sm text-primary underline-offset-4 hover:underline focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring"
+              href={subscription.feedUrl}
+              rel="noreferrer"
+              target="_blank"
+            >
+              {subscription.feedUrl}
+            </a>
+            <Button
+              aria-label={t('feeds.manager.source.copyLabel')}
+              className="size-10 shrink-0"
+              onClick={() => void copyFeedUrl()}
+              size="icon"
+              type="button"
+              variant="ghost"
+            >
+              <CopyIcon aria-hidden="true" />
+            </Button>
+          </div>
+          <p aria-live="polite" className="text-xs text-muted-foreground">
+            {copiedFeedUrl ? t('feeds.manager.source.copied') : ''}
+          </p>
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-1">
+          <h3 className="font-semibold text-foreground">
+            {t('feeds.manager.delete.sectionTitle')}
+          </h3>
+          <p className="max-w-xl text-sm leading-6 text-muted-foreground">
+            {t('feeds.manager.delete.sectionDescription')}
+          </p>
+        </div>
+        <Button
+          className="shrink-0"
+          onClick={() => setDeleteDialogOpen(true)}
+          type="button"
+          variant="destructive"
+        >
+          <TrashIcon aria-hidden="true" />
+          {t('feeds.manager.delete.trigger')}
+        </Button>
+      </section>
+
+      <DeleteFeedDialog
+        errorMessage={deleteError}
+        isDeleting={deleteFeed.isPending}
+        onConfirm={() => deleteFeed.mutate({ subscriptionId: subscription.id })}
+        onOpenChange={setDeleteDialogOpen}
+        open={deleteDialogOpen}
+        subscription={subscription}
+      />
     </div>
   );
 }
 
 export function FeedManagerDialog({
+  onClearFilters,
   onOpenChange,
   onQueryChange,
   onSelectFeed,
@@ -472,6 +582,7 @@ export function FeedManagerDialog({
   const [mobileView, setMobileView] = useState<'detail' | 'list'>(() =>
     selectedFeedId ? 'detail' : 'list'
   );
+  const [isAddPending, setIsAddPending] = useState(false);
   const selectedSubscription = subscriptions.find(
     (subscription) => subscription.id === selectedFeedId
   );
@@ -513,39 +624,85 @@ export function FeedManagerDialog({
 
   const showDetailOnMobile = mobileView === 'detail';
   const selectFeed = (feedId: string) => {
+    if (isAddPending) return;
     onSelectFeed(feedId);
     setMobileView('detail');
   };
   const openAddFeed = () => {
+    if (isAddPending) return;
     onStartAdd();
+    setMobileView('detail');
+  };
+  const clearFilters = () => {
+    if (onClearFilters) {
+      onClearFilters();
+      return;
+    }
+    onQueryChange('');
+    onStatusFilterChange('all');
+  };
+  const closeManager = () => {
+    if (isAddPending) return;
+    setMobileView('list');
+    onOpenChange(false);
+  };
+  const finishAdding = (result: CreateFeedSubscriptionResult) => {
+    setIsAddPending(false);
+    onSelectFeed(result.subscription.id);
+    setMobileView('detail');
+  };
+  const finishDeleting = (deletedSubscriptionId: string) => {
+    const visibleRemaining = filteredSubscriptions.filter(
+      (subscription) => subscription.id !== deletedSubscriptionId
+    );
+    const allRemaining = subscriptions.filter(
+      (subscription) => subscription.id !== deletedSubscriptionId
+    );
+    const fallsBackOutsideCurrentFilters = visibleRemaining.length === 0 && allRemaining.length > 0;
+    const nextSubscriptionId = getDefaultManagedFeedId(
+      fallsBackOutsideCurrentFilters ? allRemaining : visibleRemaining
+    );
+
+    if (fallsBackOutsideCurrentFilters) clearFilters();
+    onSelectFeed(nextSubscriptionId);
     setMobileView('detail');
   };
 
   return (
     <Dialog
       onOpenChange={(nextOpen) => {
-        if (!nextOpen) setMobileView('list');
-        onOpenChange(nextOpen);
+        if (!nextOpen) {
+          closeManager();
+          return;
+        }
+        onOpenChange(true);
       }}
       open={open}
     >
-      <DialogContent className="inset-0 top-0 left-0 flex h-dvh max-h-none w-screen max-w-none translate-x-0 translate-y-0 flex-col gap-0 overflow-hidden overscroll-contain rounded-none p-0 pb-[env(safe-area-inset-bottom)] [&>[data-slot=dialog-close]]:top-[max(1rem,env(safe-area-inset-top))] [&>[data-slot=dialog-close]]:size-11 sm:top-1/2 sm:left-1/2 sm:h-[min(840px,calc(100dvh-2rem))] sm:max-w-[min(1180px,calc(100vw-2rem))] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-4xl sm:pb-0 sm:[&>[data-slot=dialog-close]]:top-4 sm:[&>[data-slot=dialog-close]]:size-8">
+      <DialogContent
+        className="inset-0 top-0 left-0 flex h-dvh max-h-none w-screen max-w-none translate-x-0 translate-y-0 flex-col gap-0 overflow-hidden overscroll-contain rounded-none p-0 pb-[env(safe-area-inset-bottom)] sm:top-1/2 sm:left-1/2 sm:h-[min(840px,calc(100dvh-2rem))] sm:max-w-[min(1180px,calc(100vw-2rem))] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-4xl sm:pb-0"
+        showCloseButton={false}
+      >
         <DialogHeader className="shrink-0 border-b border-border px-4 pt-[max(1rem,env(safe-area-inset-top))] pr-16 pb-4 sm:px-6 sm:py-5 sm:pr-14">
-          <div className="flex min-w-0 items-start justify-between gap-4">
-            <div className="min-w-0 space-y-1">
-              <DialogTitle className="text-balance text-xl font-semibold sm:text-2xl">
-                {t('feeds.manager.title')}
-              </DialogTitle>
-              <DialogDescription className="text-pretty">
-                {t('feeds.manager.description')}
-              </DialogDescription>
-            </div>
-            <Button className="hidden sm:inline-flex" onClick={openAddFeed} type="button">
-              <PlusIcon aria-hidden="true" />
-              {t('feeds.addFeed')}
-            </Button>
-          </div>
+          <DialogTitle className="text-balance text-xl font-semibold sm:text-2xl">
+            {t('feeds.manager.title')}
+          </DialogTitle>
+          <DialogDescription className="max-w-2xl text-pretty">
+            {t('feeds.manager.subtitle')}
+          </DialogDescription>
         </DialogHeader>
+
+        <Button
+          aria-label={t('common.dialog.close')}
+          className="absolute top-[max(1rem,env(safe-area-inset-top))] right-3 z-20 size-11 sm:top-4 sm:right-4"
+          disabled={isAddPending}
+          onClick={closeManager}
+          size="icon-lg"
+          type="button"
+          variant="ghost"
+        >
+          <XIcon aria-hidden="true" />
+        </Button>
 
         <div className="grid min-h-0 flex-1 md:grid-cols-[21rem_minmax(0,1fr)]">
           <aside
@@ -572,38 +729,50 @@ export function FeedManagerDialog({
                   value={query}
                 />
               </label>
-              <div
-                aria-label={t('feeds.manager.filters.label')}
-                className="flex gap-2 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                role="group"
-              >
-                {statusFilters.map((filter) => (
-                  <Button
-                    aria-pressed={statusFilter === filter}
-                    className="min-h-11 shrink-0"
-                    key={filter}
-                    onClick={() => onStatusFilterChange(filter)}
-                    size="sm"
-                    type="button"
-                    variant={statusFilter === filter ? 'default' : 'outline'}
+              <div className="flex items-center gap-2">
+                <Select
+                  onValueChange={(value) => onStatusFilterChange(value as FeedManagerStatusFilter)}
+                  value={statusFilter}
+                >
+                  <SelectTrigger
+                    aria-label={t('feeds.manager.filters.label')}
+                    className="h-11 min-w-0 flex-1"
                   >
-                    {t(`feeds.manager.filters.${filter}`)}
-                    {filter === 'attention' && attentionCount > 0 ? (
-                      <span className="tabular-nums">{attentionCount}</span>
-                    ) : null}
-                  </Button>
-                ))}
+                    <SelectValue>{t(`feeds.manager.filters.${statusFilter}`)}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent align="start">
+                    <SelectGroup>
+                      {statusFilters.map((filter) => (
+                        <SelectItem key={filter} value={filter}>
+                          {t(`feeds.manager.filters.${filter}`)}
+                          {filter === 'attention' && attentionCount > 0 ? (
+                            <span className="tabular-nums text-muted-foreground">
+                              {attentionCount}
+                            </span>
+                          ) : null}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <Button
+                  className="min-h-11 shrink-0"
+                  disabled={isAddPending}
+                  onClick={openAddFeed}
+                  type="button"
+                >
+                  <PlusIcon aria-hidden="true" />
+                  {t('feeds.addFeed')}
+                </Button>
               </div>
-              <Button className="w-full sm:hidden" onClick={openAddFeed} type="button">
-                <PlusIcon aria-hidden="true" />
-                {t('feeds.addFeed')}
-              </Button>
             </div>
             <FeedManagerList
               filteredSubscriptions={filteredSubscriptions}
+              onClearFilters={clearFilters}
               onSelectFeed={selectFeed}
               query={query}
               selectedFeedId={selectedFeedId}
+              selectionDisabled={isAddPending}
               subscriptions={subscriptions}
               subscriptionsLoading={subscriptionsLoading}
             />
@@ -623,6 +792,7 @@ export function FeedManagerDialog({
               <Button
                 aria-label={t('feeds.manager.back')}
                 className="size-11"
+                disabled={isAddPending}
                 onClick={() => setMobileView('list')}
                 size="icon-lg"
                 type="button"
@@ -637,7 +807,7 @@ export function FeedManagerDialog({
 
             {isAdding ? (
               <div className="mx-auto max-w-2xl space-y-5 p-4 sm:p-6 lg:p-8">
-                <div className="space-y-1">
+                <div className="hidden space-y-1 md:block">
                   <h2 className="text-balance text-xl font-semibold text-foreground">
                     {t('feeds.dialog.title')}
                   </h2>
@@ -646,12 +816,17 @@ export function FeedManagerDialog({
                   </p>
                 </div>
                 <AddFeedForm
-                  onSuccess={(result) => selectFeed(result.subscription.id)}
+                  onPendingChange={setIsAddPending}
+                  onSuccess={finishAdding}
                   presentation="embedded"
                 />
               </div>
             ) : selectedSubscription ? (
-              <FeedDetail key={selectedSubscription.id} subscription={selectedSubscription} />
+              <FeedDetail
+                key={selectedSubscription.id}
+                onDeleted={finishDeleting}
+                subscription={selectedSubscription}
+              />
             ) : (
               <div className="flex min-h-full items-center justify-center p-8 text-center text-sm text-muted-foreground">
                 {t('feeds.manager.selectPrompt')}

@@ -9,6 +9,7 @@ import { saveLink } from '@/services/link-save.service.js';
 
 import type {
   CreateFeedSubscriptionRoute,
+  DeleteFeedSubscriptionRoute,
   DismissFeedItemRoute,
   GetFeedSubscriptionSummaryRoute,
   ListFeedItemsRoute,
@@ -108,6 +109,31 @@ export const updateFeedSubscription: AppRouteHandler<UpdateFeedSubscriptionRoute
   } catch {
     const response = errorResponse(
       'An error occurred when updating feed subscription',
+      HttpStatus.BAD_REQUEST
+    );
+    return c.json(response, response.status);
+  }
+};
+
+export const deleteFeedSubscription: AppRouteHandler<DeleteFeedSubscriptionRoute> = async (c) => {
+  if (isDemoMode()) return c.json(demoModeForbiddenResponse(), HttpStatus.FORBIDDEN);
+
+  const user = c.get('user');
+  const repos = requireFeedRepos(c);
+  const { id } = c.req.valid('param');
+
+  try {
+    const deleted = await repos.feedSubscriptions.delete(id, user.id);
+    if (!deleted) {
+      const response = errorResponse('Feed subscription not found', HttpStatus.NOT_FOUND);
+      return c.json(response, response.status);
+    }
+
+    const response = successResponse({ id }, 'Feed subscription deleted successfully');
+    return c.json(response, response.status);
+  } catch {
+    const response = errorResponse(
+      'An error occurred when deleting feed subscription',
       HttpStatus.BAD_REQUEST
     );
     return c.json(response, response.status);

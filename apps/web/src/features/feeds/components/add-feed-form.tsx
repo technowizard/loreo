@@ -141,7 +141,7 @@ export function AddFeedForm({
         </div>
 
         <div className="border-t border-border pt-6">
-          <label className="flex min-h-14 cursor-pointer items-center justify-between gap-4 rounded-2xl border border-border bg-muted/20 px-4 py-3 transition-colors hover:bg-accent focus-within:ring-2 focus-within:ring-ring motion-reduce:transition-none">
+          <label className="flex min-h-14 cursor-pointer items-center justify-between gap-4 rounded-2xl border border-border bg-muted/20 px-4 py-3 focus-within:ring-2 focus-within:ring-ring">
             <span className="min-w-0">
               <span className="flex flex-wrap items-center gap-2 text-sm font-medium text-foreground">
                 {t('feeds.form.autoSaveLabel')}
@@ -170,8 +170,10 @@ export function AddFeedForm({
 
         <Alert role="status" variant="info">
           <InfoIcon aria-hidden="true" />
-          <AlertTitle>{t('feeds.form.nextTitle')}</AlertTitle>
-          <AlertDescription>
+          <AlertTitle className="text-sm font-semibold text-info-700 dark:text-info-400">
+            {t('feeds.form.nextTitle')}
+          </AlertTitle>
+          <AlertDescription className="gap-1 text-sm leading-6">
             <p>{autoSave ? t('feeds.form.nextAutoSave') : t('feeds.form.nextReview')}</p>
             <p>{t('feeds.form.nextManage')}</p>
           </AlertDescription>

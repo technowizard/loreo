@@ -1,7 +1,8 @@
+import { eq } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 
 import { db } from '@/db/index.js';
-import { usersTable } from '@/db/schemas/index.js';
+import { feedItemsTable, linksTable, usersTable } from '@/db/schemas/index.js';
 
 import { createDrizzleFeedSubscriptionsAdapter } from './feed-subscriptions.repository.js';
 
@@ -40,6 +41,52 @@ describe('feed subscriptions repository', () => {
       title: 'Example Feed'
     });
     await expect(repo.findById(subscription.id, USER_B_ID)).resolves.toBeNull();
+  });
+
+  it('deletes feed item history while preserving saved library articles', async () => {
+    const repo = createDrizzleFeedSubscriptionsAdapter(db);
+    await seedUser(USER_A_ID, 'feeds-a@example.com');
+
+    const subscription = await repo.create({
+      feedUrl: 'https://example.com/feed.xml',
+      normalizedFeedUrl: 'https://example.com/feed.xml',
+      title: 'Example Feed',
+      userId: USER_A_ID
+    });
+    const [link] = await db
+      .insert(linksTable)
+      .values({
+        readingTime: 0,
+        title: 'Saved Article',
+        url: 'https://example.com/article',
+        userId: USER_A_ID
+      })
+      .returning({ id: linksTable.id });
+    if (!link) throw new Error('Expected saved article fixture');
+
+    await db.insert(feedItemsTable).values({
+      linkId: link.id,
+      normalizedUrl: 'https://example.com/article',
+      state: 'saved',
+      subscriptionId: subscription.id,
+      title: 'Saved Article',
+      url: 'https://example.com/article',
+      userId: USER_A_ID
+    });
+
+    await expect(repo.delete(subscription.id, USER_A_ID)).resolves.toBe(true);
+
+    const feedItems = await db
+      .select({ id: feedItemsTable.id })
+      .from(feedItemsTable)
+      .where(eq(feedItemsTable.subscriptionId, subscription.id));
+    const savedLinks = await db
+      .select({ id: linksTable.id })
+      .from(linksTable)
+      .where(eq(linksTable.id, link.id));
+
+    expect(feedItems).toHaveLength(0);
+    expect(savedLinks).toEqual([{ id: link.id }]);
   });
 
   it('finds duplicate normalized feed URLs per user while allowing another user', async () => {

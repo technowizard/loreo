@@ -1,4 +1,5 @@
 import { BookmarkSimpleIcon } from '@phosphor-icons/react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
@@ -14,10 +15,10 @@ type FeedItemCardProps = {
   sourceTitle?: string;
 };
 
-const formatPublishedDate = (value: string | null) => {
+const formatPublishedDate = (value: string | null, locale: string) => {
   if (!value) return null;
 
-  return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(new Date(value));
+  return new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(value));
 };
 
 const getActionError = (error: unknown) => (error instanceof Error ? error.message : null);
@@ -62,6 +63,10 @@ function FeedItemActions({ item }: { item: FeedItem }) {
 }
 
 function FeedThumbnail({ item }: { item: FeedItem }) {
+  const [imageFailed, setImageFailed] = useState(false);
+
+  useEffect(() => setImageFailed(false), [item.imageUrl]);
+
   return (
     <a
       aria-label={item.title}
@@ -70,12 +75,13 @@ function FeedThumbnail({ item }: { item: FeedItem }) {
       rel="noreferrer"
       target="_blank"
     >
-      {item.imageUrl ? (
+      {item.imageUrl && !imageFailed ? (
         <img
           alt=""
           className="size-full object-cover"
           height={200}
           loading="lazy"
+          onError={() => setImageFailed(true)}
           src={item.imageUrl}
           width={356}
         />
@@ -89,10 +95,11 @@ function FeedThumbnail({ item }: { item: FeedItem }) {
 }
 
 function GridFeedItemCard({ item, showActions, sourceTitle }: FeedItemCardProps) {
-  const publishedAt = formatPublishedDate(item.publishedAt);
+  const { i18n } = useTranslation();
+  const publishedAt = formatPublishedDate(item.publishedAt, i18n.language);
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-4xl border border-border bg-card transition-colors hover:bg-accent/30">
+    <article className="group flex h-full flex-col overflow-hidden rounded-4xl border border-border bg-card">
       <FeedThumbnail item={item} />
       <div className="flex flex-1 flex-col gap-4 p-4">
         <div className="space-y-2">

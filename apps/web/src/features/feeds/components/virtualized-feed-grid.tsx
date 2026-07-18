@@ -1,11 +1,16 @@
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import type { FocusEvent } from 'react';
 
 import type { FeedItem } from '@/types/feeds';
 
 import { FeedItemCard } from './feed-collection';
 
 const VIRTUALIZATION_THRESHOLD = 36;
+
+export function shouldVirtualizeFeedGrid(itemCount: number, focusWithin: boolean) {
+  return itemCount > VIRTUALIZATION_THRESHOLD && !focusWithin;
+}
 
 function getColumnCount() {
   if (typeof window === 'undefined') return 1;
@@ -58,6 +63,7 @@ export function VirtualizedFeedGrid({
   sourceTitleBySubscriptionId
 }: VirtualizedFeedGridProps) {
   const gridRef = useRef<HTMLElement>(null);
+  const [focusWithin, setFocusWithin] = useState(false);
   const [scrollMargin, setScrollMargin] = useState(0);
   const columnCount = useFeedGridColumnCount();
   const rows = useMemo(() => chunkFeedItems(items, columnCount), [columnCount, items]);
@@ -88,20 +94,35 @@ export function VirtualizedFeedGrid({
     };
   }, []);
 
-  if (items.length <= VIRTUALIZATION_THRESHOLD) {
+  const handleBlurCapture = (event: FocusEvent<HTMLElement>) => {
+    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+      setFocusWithin(false);
+    }
+  };
+  const shouldVirtualize = shouldVirtualizeFeedGrid(items.length, focusWithin);
+
+  if (!shouldVirtualize) {
     return (
       <section
         aria-label={ariaLabel}
-        className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+        className="flex flex-col gap-4"
+        onBlurCapture={handleBlurCapture}
+        onFocusCapture={() => setFocusWithin(true)}
         ref={gridRef}
       >
-        {items.map((item) => (
-          <FeedItemCard
-            item={item}
-            key={item.id}
-            showActions={showActions}
-            sourceTitle={sourceTitleBySubscriptionId.get(item.subscriptionId) ?? ''}
-          />
+        {rows.map((row, rowIndex) => (
+          <div className="w-full" data-index={rowIndex} key={row[0]?.id ?? rowIndex}>
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {row.map((item) => (
+                <FeedItemCard
+                  item={item}
+                  key={item.id}
+                  showActions={showActions}
+                  sourceTitle={sourceTitleBySubscriptionId.get(item.subscriptionId) ?? ''}
+                />
+              ))}
+            </div>
+          </div>
         ))}
       </section>
     );
@@ -111,6 +132,8 @@ export function VirtualizedFeedGrid({
     <section
       aria-label={ariaLabel}
       className="relative w-full"
+      onBlurCapture={handleBlurCapture}
+      onFocusCapture={() => setFocusWithin(true)}
       ref={gridRef}
       style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
     >

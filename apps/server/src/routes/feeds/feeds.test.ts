@@ -493,6 +493,29 @@ describe('feed routes', () => {
     expect(deniedResponse.status).toBe(HttpStatus.NOT_FOUND);
   });
 
+  it('deletes only user-owned feed subscriptions', async () => {
+    const userFeed = subscriptionFixture({ id: 'feed-user', userId: TEST_USER.id });
+    const otherFeed = subscriptionFixture({ id: 'feed-other', userId: OTHER_USER_ID });
+    built.subscriptions.set(userFeed.id, userFeed);
+    built.subscriptions.set(otherFeed.id, otherFeed);
+
+    const response = await built.client.feeds.subscriptions[':id'].$delete(
+      { param: { id: userFeed.id } },
+      { headers: { Cookie: authCookie } }
+    );
+    const deniedResponse = await built.client.feeds.subscriptions[':id'].$delete(
+      { param: { id: otherFeed.id } },
+      { headers: { Cookie: authCookie } }
+    );
+    const json = (await response.json()) as { result: { id: string } };
+
+    expect(response.status).toBe(HttpStatus.OK);
+    expect(json.result.id).toBe(userFeed.id);
+    expect(built.subscriptions.has(userFeed.id)).toBe(false);
+    expect(deniedResponse.status).toBe(HttpStatus.NOT_FOUND);
+    expect(built.subscriptions.has(otherFeed.id)).toBe(true);
+  });
+
   it('saves and dismisses feed items', async () => {
     const item = itemFixture({ id: 'item-user', url: 'https://example.com/feed-item' });
     built.items.set(item.id, item);
@@ -517,11 +540,20 @@ describe('feed routes', () => {
   it('blocks feed mutations in demo mode', async () => {
     demoMode = true;
 
-    const response = await built.client.feeds.subscriptions.$post(
+    const feed = subscriptionFixture({ id: 'feed-user', userId: TEST_USER.id });
+    built.subscriptions.set(feed.id, feed);
+
+    const createResponse = await built.client.feeds.subscriptions.$post(
       { json: { feedUrl: 'https://example.com/feed.xml' } },
       { headers: { Cookie: authCookie } }
     );
+    const deleteResponse = await built.client.feeds.subscriptions[':id'].$delete(
+      { param: { id: feed.id } },
+      { headers: { Cookie: authCookie } }
+    );
 
-    expect(response.status).toBe(HttpStatus.FORBIDDEN);
+    expect(createResponse.status).toBe(HttpStatus.FORBIDDEN);
+    expect(deleteResponse.status).toBe(HttpStatus.FORBIDDEN);
+    expect(built.subscriptions.has(feed.id)).toBe(true);
   });
 });

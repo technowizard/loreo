@@ -145,6 +145,23 @@ export const updateFeedSubscription = createRoute({
   }
 });
 
+export const deleteFeedSubscription = createRoute({
+  tags,
+  method: 'delete',
+  path: '/feeds/subscriptions/:id',
+  middleware: [currentUser],
+  request: { params: z.object({ id: z.string() }) },
+  responses: {
+    [HttpStatus.OK]: jsonContent(
+      successResponseSchema(z.object({ id: z.string() })),
+      'Feed subscription deleted successfully'
+    ),
+    [HttpStatus.FORBIDDEN]: jsonContent(errorResponseSchema(HttpStatus.FORBIDDEN), ''),
+    [HttpStatus.NOT_FOUND]: jsonContent(errorResponseSchema(HttpStatus.NOT_FOUND), ''),
+    [HttpStatus.BAD_REQUEST]: jsonContent(errorResponseSchema(HttpStatus.BAD_REQUEST), '')
+  }
+});
+
 export const refreshFeedSubscription = createRoute({
   tags,
   method: 'post',

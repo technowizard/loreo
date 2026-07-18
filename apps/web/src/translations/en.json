@@ -822,6 +822,7 @@
     "addFeed": "Add feed",
     "manageFeeds": "Manage feeds",
     "emptyFeed": "No items for this filter",
+    "loading": "Loading feed items…",
     "loadingMore": "Loading more feed items…",
     "yes": "Yes",
     "no": "No",
@@ -842,6 +843,9 @@
       "failures": "Failures"
     },
     "overview": {
+      "loading": "Loading feed overview…",
+      "unavailable": "Pending review count unavailable",
+      "retry": "Retry count",
       "total": "Total feeds",
       "active": "Active feeds",
       "pending": "Pending review"
@@ -851,7 +855,8 @@
       "sortAria": "Change feed item sort order",
       "newestFirst": "Newest first",
       "oldestFirst": "Oldest first",
-      "all": "All"
+      "all": "All",
+      "showAll": "Show all feeds"
     },
     "actions": {
       "save": "Save article",
@@ -871,9 +876,15 @@
       "title": "No feeds yet",
       "description": "Add one trusted RSS source to start reviewing fresh articles here."
     },
+    "emptyItems": {
+      "new": "No articles are waiting for review.",
+      "saved": "No saved feed items yet.",
+      "dismissed": "No dismissed feed items yet."
+    },
     "error": {
       "title": "Could not load feeds",
-      "description": "Refresh the page or try again in a moment"
+      "description": "The feed collection could not be loaded. Try again in a moment.",
+      "retry": "Try again"
     },
     "reviewNote": "New feed items stay here until you save them",
     "dialog": {
@@ -905,7 +916,7 @@
     },
     "manager": {
       "title": "Manage Feeds",
-      "description": "Manage trusted sources, review behavior, and feed health.",
+      "subtitle": "Manage trusted sources, review behavior, and feed health.",
       "detailLabel": "Selected feed details",
       "loading": "Loading feeds…",
       "back": "Back to feeds",
@@ -913,9 +924,9 @@
       "feedCount": "{{count}} feeds",
       "lastFetched": "Fetched {{date}}",
       "neverFetched": "Not fetched yet",
-      "feedUrl": "Feed URL",
+      "feedUrl": "Feed source",
       "website": "Website",
-      "description": "Description",
+      "descriptionLabel": "Description",
       "notAvailable": "Not available",
       "updateError": "Couldn’t update this feed: {{message}}. Try again.",
       "search": {
@@ -935,6 +946,7 @@
         "attention": "Needs attention"
       },
       "controls": {
+        "title": "Feed Settings",
         "status": "Feed status",
         "activeHelp": "Active feeds continue polling for new items.",
         "pausedHelp": "Paused feeds remain available but do not poll.",
@@ -958,9 +970,31 @@
         "title": "No feeds yet",
         "description": "Add your first trusted source to start curating articles."
       },
+      "source": {
+        "title": "About This Feed",
+        "copyLabel": "Copy feed URL",
+        "copied": "Feed URL copied.",
+        "copyError": "Couldn’t copy the feed URL."
+      },
+      "delete": {
+        "sectionTitle": "Remove Feed",
+        "sectionDescription": "Stop following this source and clear its feed review history.",
+        "trigger": "Delete Feed",
+        "title": "Delete {{title}}?",
+        "description": "This deletes the feed subscription and its pending, saved, and dismissed feed-item history.",
+        "savedArticlesRemain": "Articles already saved to your Loreo library will remain.",
+        "cannotUndo": "This action cannot be undone.",
+        "cancel": "Cancel",
+        "confirm": "Delete Feed",
+        "deleting": "Deleting Feed…",
+        "success": "{{title}} deleted",
+        "error": "Couldn’t delete this feed: {{message}}"
+      },
       "noResults": {
         "title": "No matching feeds",
-        "description": "No feeds match “{{query}}”. Try another search or status filter."
+        "searchDescription": "No feeds match “{{query}}”. Try another search.",
+        "filterDescription": "No feeds match this status filter.",
+        "clear": "Clear filters"
       }
     },
     "shelf": {

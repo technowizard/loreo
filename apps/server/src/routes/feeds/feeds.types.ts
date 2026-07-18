@@ -1,5 +1,6 @@
 import type {
   createFeedSubscription,
+  deleteFeedSubscription,
   dismissFeedItem,
   getFeedSubscriptionSummary,
   listFeedItems,
@@ -11,6 +12,7 @@ import type {
 
 export type ListFeedSubscriptionsRoute = typeof listFeedSubscriptions;
 export type CreateFeedSubscriptionRoute = typeof createFeedSubscription;
+export type DeleteFeedSubscriptionRoute = typeof deleteFeedSubscription;
 export type GetFeedSubscriptionSummaryRoute = typeof getFeedSubscriptionSummary;
 export type UpdateFeedSubscriptionRoute = typeof updateFeedSubscription;
 export type RefreshFeedSubscriptionRoute = typeof refreshFeedSubscription;

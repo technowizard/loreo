@@ -752,6 +752,7 @@
     "addFeed": "Tambah feed",
     "manageFeeds": "Kelola feed",
     "emptyFeed": "Tidak ada item untuk filter ini.",
+    "loading": "Memuat item feed…",
     "loadingMore": "Memuat item feed lainnya…",
     "yes": "Ya",
     "no": "Tidak",
@@ -772,6 +773,9 @@
       "failures": "Kegagalan"
     },
     "overview": {
+      "loading": "Memuat ringkasan feed…",
+      "unavailable": "Jumlah tinjauan tertunda tidak tersedia",
+      "retry": "Coba muat jumlah",
       "total": "Total feed",
       "active": "Feed aktif",
       "pending": "Menunggu tinjauan"
@@ -781,7 +785,8 @@
       "sortAria": "Ubah urutan item feed",
       "newestFirst": "Terbaru dulu",
       "oldestFirst": "Terlama dulu",
-      "all": "Semua"
+      "all": "Semua",
+      "showAll": "Tampilkan semua feed"
     },
     "actions": {
       "save": "Simpan artikel",
@@ -801,9 +806,15 @@
       "title": "Belum ada feed",
       "description": "Tambahkan satu sumber RSS tepercaya untuk mulai meninjau artikel baru di sini."
     },
+    "emptyItems": {
+      "new": "Tidak ada artikel yang menunggu tinjauan.",
+      "saved": "Belum ada item feed yang disimpan.",
+      "dismissed": "Belum ada item feed yang dilewati."
+    },
     "error": {
       "title": "Feed tidak dapat dimuat",
-      "description": "Segarkan halaman atau coba lagi sebentar lagi."
+      "description": "Koleksi feed tidak dapat dimuat. Coba lagi sebentar lagi.",
+      "retry": "Coba lagi"
     },
     "reviewNote": "Item feed baru tetap di sini sampai kamu menyimpannya.",
     "dialog": {
@@ -835,7 +846,7 @@
     },
     "manager": {
       "title": "Kelola Feed",
-      "description": "Kelola sumber tepercaya, perilaku tinjauan, dan kesehatan feed.",
+      "subtitle": "Kelola sumber tepercaya, perilaku tinjauan, dan kesehatan feed.",
       "detailLabel": "Detail feed terpilih",
       "loading": "Memuat feed…",
       "back": "Kembali ke feed",
@@ -843,9 +854,9 @@
       "feedCount": "{{count}} feed",
       "lastFetched": "Diambil {{date}}",
       "neverFetched": "Belum pernah diambil",
-      "feedUrl": "URL feed",
+      "feedUrl": "Sumber feed",
       "website": "Situs web",
-      "description": "Deskripsi",
+      "descriptionLabel": "Deskripsi",
       "notAvailable": "Tidak tersedia",
       "updateError": "Feed ini tidak dapat diperbarui: {{message}}. Coba lagi.",
       "search": {
@@ -865,6 +876,7 @@
         "attention": "Perlu perhatian"
       },
       "controls": {
+        "title": "Pengaturan Feed",
         "status": "Status feed",
         "activeHelp": "Feed aktif terus memeriksa item baru.",
         "pausedHelp": "Feed yang dijeda tetap tersedia tetapi tidak diperiksa.",
@@ -888,9 +900,31 @@
         "title": "Belum ada feed",
         "description": "Tambahkan sumber tepercaya pertamamu untuk mulai memilih artikel."
       },
+      "source": {
+        "title": "Tentang Feed Ini",
+        "copyLabel": "Salin URL feed",
+        "copied": "URL feed disalin.",
+        "copyError": "URL feed tidak dapat disalin."
+      },
+      "delete": {
+        "sectionTitle": "Hapus Feed",
+        "sectionDescription": "Berhenti mengikuti sumber ini dan hapus riwayat tinjauan feed-nya.",
+        "trigger": "Hapus Feed",
+        "title": "Hapus {{title}}?",
+        "description": "Ini menghapus langganan feed beserta riwayat item yang menunggu, disimpan, dan dilewati.",
+        "savedArticlesRemain": "Artikel yang sudah disimpan di perpustakaan Loreo-mu akan tetap ada.",
+        "cannotUndo": "Tindakan ini tidak dapat dibatalkan.",
+        "cancel": "Batal",
+        "confirm": "Hapus Feed",
+        "deleting": "Menghapus Feed…",
+        "success": "{{title}} dihapus",
+        "error": "Feed ini tidak dapat dihapus: {{message}}"
+      },
       "noResults": {
         "title": "Tidak ada feed yang cocok",
-        "description": "Tidak ada feed yang cocok dengan “{{query}}”. Coba pencarian atau filter status lain."
+        "searchDescription": "Tidak ada feed yang cocok dengan “{{query}}”. Coba pencarian lain.",
+        "filterDescription": "Tidak ada feed yang cocok dengan filter status ini.",
+        "clear": "Hapus filter"
       }
     },
     "shelf": {

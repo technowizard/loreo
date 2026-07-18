@@ -1,9 +1,10 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const createFeedMutate = vi.hoisted(() => vi.fn());
+const deleteFeedMutate = vi.hoisted(() => vi.fn());
 const saveFeedMutate = vi.hoisted(() => vi.fn());
 const dismissFeedMutate = vi.hoisted(() => vi.fn());
 const updateFeedMutate = vi.hoisted(() => vi.fn());
@@ -54,6 +55,14 @@ vi.mock('@/features/feeds/api/save-feed-item', () => ({
   })
 }));
 
+vi.mock('@/features/feeds/api/delete-feed-subscription', () => ({
+  useDeleteFeedSubscription: () => ({
+    error: null,
+    isPending: false,
+    mutate: deleteFeedMutate
+  })
+}));
+
 vi.mock('@/features/feeds/api/dismiss-feed-item', () => ({
   useDismissFeedItem: () => ({
     error: null,
@@ -83,7 +92,10 @@ import {
   filterManagedFeeds,
   getDefaultManagedFeedId
 } from '@/features/feeds/components/feed-manager-dialog';
-import { chunkFeedItems } from '@/features/feeds/components/virtualized-feed-grid';
+import {
+  chunkFeedItems,
+  shouldVirtualizeFeedGrid
+} from '@/features/feeds/components/virtualized-feed-grid';
 
 import type { FeedItem, FeedSubscription } from '@/types/feeds';
 
@@ -165,6 +177,12 @@ describe('feeds page helpers', () => {
     ]);
   });
 
+  it('suspends virtualization while keyboard focus is inside the collection', () => {
+    expect(shouldVirtualizeFeedGrid(37, false)).toBe(true);
+    expect(shouldVirtualizeFeedGrid(37, true)).toBe(false);
+    expect(shouldVirtualizeFeedGrid(36, false)).toBe(false);
+  });
+
   it('chunks feed items into responsive virtual rows', () => {
     const items = [
       item({ id: 'one' }),
@@ -231,6 +249,19 @@ describe('feed page components', () => {
     expect(
       screen.queryByRole('button', { name: /feeds.actions.dismiss/i })
     ).not.toBeInTheDocument();
+  });
+
+  it('renders a feed item image as the article cover', () => {
+    const coverUrl = 'https://publisher.example/article-cover.jpg';
+    const { container } = render(
+      <FeedItemCard item={item({ imageUrl: coverUrl })} sourceTitle="Example Source" />
+    );
+
+    const cover = container.querySelector(`img[src="${coverUrl}"]`);
+    expect(cover).toBeInTheDocument();
+
+    fireEvent.error(cover!);
+    expect(container.querySelector(`img[src="${coverUrl}"]`)).not.toBeInTheDocument();
   });
 
   it('updates status and auto-save from the selected feed detail', async () => {
