@@ -8,13 +8,13 @@ This guide walks through deploying Loreo with Docker Compose, including domain s
 
 Loreo's production stack consists of five containers:
 
-| Service          | Image                                | Role                                    |
-| ---------------- | ------------------------------------ | --------------------------------------- |
-| `loreo-postgres` | `postgres:17-alpine`                 | Database                                |
-| `loreo-redis`    | `redis:7-alpine`                     | Job queue (BullMQ)                      |
-| `loreo-browser`  | `ghcr.io/technowizard/loreo-browser` | Headless browser for article extraction |
-| `loreo-server`   | `ghcr.io/technowizard/loreo-server`  | Hono API, background jobs               |
-| `loreo-web`      | `ghcr.io/technowizard/loreo-web`     | Nginx + static React app                |
+| Service          | Image                                | Role                                                        |
+| ---------------- | ------------------------------------ | ----------------------------------------------------------- |
+| `loreo-postgres` | `postgres:17-alpine`                 | Database                                                    |
+| `loreo-redis`    | `redis:7-alpine`                     | Job queue (BullMQ) for extraction, imports, and RSS polling |
+| `loreo-browser`  | `ghcr.io/technowizard/loreo-browser` | Headless browser for article extraction                     |
+| `loreo-server`   | `ghcr.io/technowizard/loreo-server`  | Hono API, background jobs                                   |
+| `loreo-web`      | `ghcr.io/technowizard/loreo-web`     | Nginx + static React app                                    |
 
 The web container serves the React app through nginx and proxies API requests to the server.
 
@@ -103,7 +103,7 @@ Data is persisted in the `postgres_data` Docker volume. The database runs on an 
 
 ### Redis
 
-Used by BullMQ for background job processing (article extraction, image downloads). Data is persisted in the `redis_data` volume.
+Used by BullMQ for background job processing (article extraction, image downloads, CSV imports, and RSS feed polling/manual refresh). Data is persisted in the `redis_data` volume.
 
 ### Browser Service
 
@@ -111,7 +111,7 @@ The browser container runs a Camoufox-compatible Playwright server. It requires 
 
 ### Server
 
-The API server handles authentication, article management, and background job scheduling. It automatically runs database migrations on startup via `docker-entrypoint.sh`.
+The API server handles authentication, article management, RSS feed subscriptions, and background job scheduling. It automatically runs database migrations on startup via `docker-entrypoint.sh`.
 
 The server uses `STORAGE_PROVIDER: local-docker` by default, storing uploaded files in the `storage_data` volume. See the Storage section for S3 configuration.
 

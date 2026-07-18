@@ -34,6 +34,7 @@ Loreo is a read-it-later app for saving articles worth revisiting, built with se
 ### Saving & Organization
 
 - Save links with automatic article extraction
+- Subscribe to RSS/Atom feeds and review new items by source before saving
 - Favorite articles for quick access
 - Archive articles to hide them from your reading list
 - Organize with tag groups and tags
@@ -43,6 +44,7 @@ Loreo is a read-it-later app for saving articles worth revisiting, built with se
 ### Utilities
 
 - CSV import with field mapping
+- RSS feed polling through the existing Redis/BullMQ worker stack
 - Docker Compose support, run locally or as separate web/server processes
 
 ## Why Loreo?
