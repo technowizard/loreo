@@ -8,6 +8,7 @@ import { createInMemoryLinksAdapter } from '@/tests/in-memory/links.js';
 import { createInMemoryTagsAdapter } from '@/tests/in-memory/tags.js';
 
 import { createTestApp } from '@/lib/create-app.js';
+import { decodeCursor, encodeCursor } from '@/lib/cursor.js';
 import { generateToken } from '@/lib/jwt.js';
 import { HttpStatus } from '@/lib/response.js';
 import type { Repos } from '@/lib/types.js';
@@ -164,13 +165,47 @@ function buildFeedRepos() {
     findById: async (id, userId) =>
       [...items.values()].find((item) => item.id === id && item.userId === userId) ?? null,
     findBySubscriptionAndIdentity: async () => null,
-    findManyForReview: async ({ state, subscriptionId, userId }) =>
-      [...items.values()].filter(
-        (item) =>
-          item.userId === userId &&
-          (!state || item.state === state) &&
-          (!subscriptionId || item.subscriptionId === subscriptionId)
-      ),
+    findManyForReview: async ({
+      cursor,
+      limit = 24,
+      sort = 'newest',
+      state,
+      subscriptionId,
+      userId
+    }) => {
+      const matching = [...items.values()]
+        .filter(
+          (item) =>
+            item.userId === userId &&
+            (!state || item.state === state) &&
+            (!subscriptionId || item.subscriptionId === subscriptionId)
+        )
+        .sort((a, b) => {
+          const aDate = (a.publishedAt ?? a.discoveredAt).getTime();
+          const bDate = (b.publishedAt ?? b.discoveredAt).getTime();
+          const difference = bDate - aDate || b.id.localeCompare(a.id);
+          return sort === 'newest' ? difference : -difference;
+        });
+      const cursorData = cursor ? decodeCursor(cursor) : null;
+      const cursorIndex = cursorData ? matching.findIndex((item) => item.id === cursorData.id) : -1;
+      const remaining = matching.slice(cursorIndex + 1);
+      const pageItems = remaining.slice(0, limit);
+      const hasMore = remaining.length > limit;
+      const lastItem = pageItems.at(-1);
+
+      return {
+        hasMore,
+        items: pageItems,
+        nextCursor:
+          hasMore && lastItem
+            ? encodeCursor({
+                createdAt: (lastItem.publishedAt ?? lastItem.discoveredAt).toISOString(),
+                id: lastItem.id
+              })
+            : undefined,
+        total: matching.length
+      };
+    },
     pruneForSubscription: async () => 0,
     reconcileSavedByUrl: async ({ linkId, normalizedUrl, savedAt = NOW, userId }) => {
       const matching = [...items.values()].filter(
@@ -188,6 +223,16 @@ function buildFeedRepos() {
       const updated = { ...existing, linkId, savedAt, state: 'saved' as const, updatedAt: NOW };
       items.set(id, updated);
       return updated;
+    },
+    summarizeBySubscription: async (subscriptionId, userId) => {
+      const matching = [...items.values()].filter(
+        (item) => item.subscriptionId === subscriptionId && item.userId === userId
+      );
+      return {
+        dismissed: matching.filter((item) => item.state === 'dismissed').length,
+        new: matching.filter((item) => item.state === 'new').length,
+        saved: matching.filter((item) => item.state === 'saved').length
+      };
     },
     upsertByIdentity: async (data) => feedItems.create(data)
   };
@@ -322,6 +367,102 @@ describe('feed routes', () => {
 
     expect(subscriptionsJson.result).toHaveLength(1);
     expect(itemsJson.result).toHaveLength(1);
+  });
+
+  it('paginates feed items and exposes total matching count', async () => {
+    const feed = subscriptionFixture({ id: 'feed-user', userId: TEST_USER.id });
+    built.subscriptions.set(feed.id, feed);
+    for (let index = 0; index < 3; index += 1) {
+      const item = itemFixture({
+        discoveredAt: new Date(`2026-06-2${index + 1}T12:00:00.000Z`),
+        id: `00000000-0000-0000-0000-00000000000${index + 3}`,
+        publishedAt: null,
+        subscriptionId: feed.id,
+        title: `Article ${index + 1}`,
+        userId: TEST_USER.id
+      });
+      built.items.set(item.id, item);
+    }
+
+    const firstResponse = await built.client.feeds.items.$get(
+      { query: { limit: '2', sort: 'newest', state: 'new' } },
+      { headers: { Cookie: authCookie } }
+    );
+    const firstJson = (await firstResponse.json()) as {
+      pagination: { hasMore: boolean; nextCursor?: string; total: number; totalReturned: number };
+      result: Array<{ title: string }>;
+    };
+
+    expect(firstJson.result.map((item) => item.title)).toEqual(['Article 3', 'Article 2']);
+    expect(firstJson.pagination).toMatchObject({
+      hasMore: true,
+      total: 3,
+      totalReturned: 2
+    });
+
+    const secondResponse = await built.client.feeds.items.$get(
+      {
+        query: {
+          cursor: firstJson.pagination.nextCursor,
+          limit: '2',
+          sort: 'newest',
+          state: 'new'
+        }
+      },
+      { headers: { Cookie: authCookie } }
+    );
+    const secondJson = (await secondResponse.json()) as {
+      pagination: { hasMore: boolean; total: number };
+      result: Array<{ title: string }>;
+    };
+
+    expect(secondJson.result.map((item) => item.title)).toEqual(['Article 1']);
+    expect(secondJson.pagination).toMatchObject({ hasMore: false, total: 3 });
+  });
+
+  it('returns a user-scoped subscription item summary', async () => {
+    const userFeed = subscriptionFixture({ id: 'feed-user', userId: TEST_USER.id });
+    const otherFeed = subscriptionFixture({ id: 'feed-other', userId: OTHER_USER_ID });
+    built.subscriptions.set(userFeed.id, userFeed);
+    built.subscriptions.set(otherFeed.id, otherFeed);
+    built.items.set(
+      'item-new',
+      itemFixture({ id: 'item-new', subscriptionId: userFeed.id, userId: TEST_USER.id })
+    );
+    built.items.set(
+      'item-saved',
+      itemFixture({
+        id: 'item-saved',
+        state: 'saved',
+        subscriptionId: userFeed.id,
+        userId: TEST_USER.id
+      })
+    );
+    built.items.set(
+      'item-dismissed',
+      itemFixture({
+        id: 'item-dismissed',
+        state: 'dismissed',
+        subscriptionId: userFeed.id,
+        userId: TEST_USER.id
+      })
+    );
+
+    const response = await built.client.feeds.subscriptions[':id'].summary.$get(
+      { param: { id: userFeed.id } },
+      { headers: { Cookie: authCookie } }
+    );
+    const missingResponse = await built.client.feeds.subscriptions[':id'].summary.$get(
+      { param: { id: otherFeed.id } },
+      { headers: { Cookie: authCookie } }
+    );
+    const json = (await response.json()) as {
+      result: { dismissed: number; new: number; saved: number };
+    };
+
+    expect(response.status).toBe(HttpStatus.OK);
+    expect(json.result).toEqual({ dismissed: 1, new: 1, saved: 1 });
+    expect(missingResponse.status).toBe(HttpStatus.NOT_FOUND);
   });
 
   it('updates and refreshes user-owned subscriptions only', async () => {

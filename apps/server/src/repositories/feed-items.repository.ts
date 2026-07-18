@@ -1,12 +1,18 @@
-import { and, desc, eq, inArray, lt, ne, or } from 'drizzle-orm';
+import { and, asc, desc, eq, gt, inArray, lt, ne, or, sql } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
 import type * as schema from '@/db/schemas/index.js';
 import { feedItemsTable } from '@/db/schemas/index.js';
 
+import { decodeCursor, encodeCursor } from '@/lib/cursor.js';
+
+import type { CursorQueryResult } from '@/types/pagination.js';
+
 type DrizzleClient = NodePgDatabase<typeof schema>;
 
 export type FeedItemState = 'new' | 'dismissed' | 'saved';
+
+export type FeedItemStateSummary = Record<FeedItemState, number>;
 
 export interface FeedItemData {
   id: string;
@@ -98,10 +104,13 @@ export interface FeedItemsRepository {
     userId: string;
   }): Promise<FeedItemData | null>;
   findManyForReview(input: {
+    cursor?: string;
+    limit?: number;
+    sort?: 'newest' | 'oldest';
     state?: FeedItemState;
     subscriptionId?: string;
     userId: string;
-  }): Promise<FeedItemData[]>;
+  }): Promise<CursorQueryResult<FeedItemData> & { total: number }>;
   pruneForSubscription(input: {
     before: Date;
     keepLatest: number;
@@ -115,6 +124,7 @@ export interface FeedItemsRepository {
     userId: string;
   }): Promise<FeedItemData[]>;
   save(id: string, userId: string, linkId: string, savedAt?: Date): Promise<FeedItemData | null>;
+  summarizeBySubscription(subscriptionId: string, userId: string): Promise<FeedItemStateSummary>;
   upsertByIdentity(data: CreateFeedItemData): Promise<FeedItemData>;
 }
 
@@ -194,19 +204,68 @@ export function createDrizzleFeedItemsAdapter(db: DrizzleClient): FeedItemsRepos
       return (row as FeedItemData | undefined) ?? null;
     },
 
-    async findManyForReview({ state, subscriptionId, userId }) {
-      const conditions = [eq(feedItemsTable.userId, userId)];
+    async findManyForReview({
+      cursor,
+      limit: requestedLimit,
+      sort = 'newest',
+      state,
+      subscriptionId,
+      userId
+    }) {
+      const limit = Math.max(1, Math.min(requestedLimit ?? 24, 60));
+      const ascending = sort === 'oldest';
+      const effectiveDate = sql<Date>`coalesce(${feedItemsTable.publishedAt}, ${feedItemsTable.discoveredAt})`;
+      const baseConditions = [eq(feedItemsTable.userId, userId)];
 
-      if (state) conditions.push(eq(feedItemsTable.state, state));
-      if (subscriptionId) conditions.push(eq(feedItemsTable.subscriptionId, subscriptionId));
+      if (state) baseConditions.push(eq(feedItemsTable.state, state));
+      if (subscriptionId) {
+        baseConditions.push(eq(feedItemsTable.subscriptionId, subscriptionId));
+      }
 
-      const rows = await db
+      const [{ count: total = 0 } = {}] = await db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(feedItemsTable)
+        .where(and(...baseConditions));
+
+      const pageConditions = [...baseConditions];
+      if (cursor) {
+        const cursorData = decodeCursor(cursor);
+        const cursorDate = new Date(cursorData.createdAt);
+        const cursorCondition = ascending
+          ? or(
+              gt(effectiveDate, cursorDate),
+              and(eq(effectiveDate, cursorDate), gt(feedItemsTable.id, cursorData.id))
+            )
+          : or(
+              lt(effectiveDate, cursorDate),
+              and(eq(effectiveDate, cursorDate), lt(feedItemsTable.id, cursorData.id))
+            );
+
+        if (cursorCondition) pageConditions.push(cursorCondition);
+      }
+
+      const rows = (await db
         .select(itemColumns)
         .from(feedItemsTable)
-        .where(and(...conditions))
-        .orderBy(desc(feedItemsTable.publishedAt), desc(feedItemsTable.discoveredAt));
+        .where(and(...pageConditions))
+        .orderBy(
+          ascending ? asc(effectiveDate) : desc(effectiveDate),
+          ascending ? asc(feedItemsTable.id) : desc(feedItemsTable.id)
+        )
+        .limit(limit + 1)) as FeedItemData[];
 
-      return rows as FeedItemData[];
+      const hasMore = rows.length > limit;
+      const items = hasMore ? rows.slice(0, limit) : rows;
+      const lastItem = items.at(-1);
+      const nextCursor =
+        hasMore && lastItem
+          ? encodeCursor({
+              createdAt: (lastItem.publishedAt ?? lastItem.discoveredAt).toISOString(),
+              id: lastItem.id
+            })
+          : undefined;
+
+      return { hasMore, items, nextCursor, total };
     },
 
     async pruneForSubscription({ before, keepLatest, subscriptionId, userId }) {
@@ -264,6 +323,21 @@ export function createDrizzleFeedItemsAdapter(db: DrizzleClient): FeedItemsRepos
 
     async save(id, userId, linkId, savedAt = new Date()) {
       return update(id, userId, { linkId, savedAt, state: 'saved' });
+    },
+
+    async summarizeBySubscription(subscriptionId, userId) {
+      const [summary] = await db
+        .select({
+          dismissed: sql<number>`count(*) filter (where ${feedItemsTable.state} = 'dismissed')::int`,
+          new: sql<number>`count(*) filter (where ${feedItemsTable.state} = 'new')::int`,
+          saved: sql<number>`count(*) filter (where ${feedItemsTable.state} = 'saved')::int`
+        })
+        .from(feedItemsTable)
+        .where(
+          and(eq(feedItemsTable.subscriptionId, subscriptionId), eq(feedItemsTable.userId, userId))
+        );
+
+      return summary ?? { dismissed: 0, new: 0, saved: 0 };
     },
 
     async upsertByIdentity(data) {

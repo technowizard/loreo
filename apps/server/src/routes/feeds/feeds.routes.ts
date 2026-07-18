@@ -1,7 +1,12 @@
 import { createRoute, z } from '@hono/zod-openapi';
 
 import { jsonContent, jsonContentRequired } from '@/lib/openapi.js';
-import { errorResponseSchema, HttpStatus, successResponseSchema } from '@/lib/response.js';
+import {
+  errorResponseSchema,
+  HttpStatus,
+  paginatedSuccessResponseSchema,
+  successResponseSchema
+} from '@/lib/response.js';
 
 import { currentUser } from '@/middlewares/current-user.js';
 import { addFeedRateLimit, refreshFeedRateLimit } from '@/middlewares/rate-limit.js';
@@ -96,6 +101,24 @@ export const createFeedSubscription = createRoute({
   }
 });
 
+export const getFeedSubscriptionSummary = createRoute({
+  tags,
+  method: 'get',
+  path: '/feeds/subscriptions/:id/summary',
+  middleware: [currentUser],
+  request: { params: z.object({ id: z.string() }) },
+  responses: {
+    [HttpStatus.OK]: jsonContent(
+      successResponseSchema(
+        z.object({ dismissed: z.number(), new: z.number(), saved: z.number() })
+      ),
+      'Feed subscription summary fetched successfully'
+    ),
+    [HttpStatus.NOT_FOUND]: jsonContent(errorResponseSchema(HttpStatus.NOT_FOUND), ''),
+    [HttpStatus.BAD_REQUEST]: jsonContent(errorResponseSchema(HttpStatus.BAD_REQUEST), '')
+  }
+});
+
 export const updateFeedSubscription = createRoute({
   tags,
   method: 'patch',
@@ -151,13 +174,16 @@ export const listFeedItems = createRoute({
   middleware: [currentUser],
   request: {
     query: z.object({
+      cursor: z.string().optional(),
+      limit: z.string().regex(/^\d+$/).optional(),
+      sort: z.enum(['newest', 'oldest']).optional(),
       state: z.enum(['new', 'dismissed', 'saved']).optional(),
       subscriptionId: z.string().optional()
     })
   },
   responses: {
     [HttpStatus.OK]: jsonContent(
-      successResponseSchema(z.array(feedItemSchema)),
+      paginatedSuccessResponseSchema(feedItemSchema),
       'Feed items fetched successfully'
     ),
     [HttpStatus.BAD_REQUEST]: jsonContent(errorResponseSchema(HttpStatus.BAD_REQUEST), '')

@@ -90,10 +90,117 @@ describe('feed items repository', () => {
     await expect(items.findById(itemA.id, USER_B_ID)).resolves.toBeNull();
     await expect(
       items.findManyForReview({ state: 'new', userId: USER_A_ID })
-    ).resolves.toMatchObject([{ id: itemA.id, title: 'Item A' }]);
+    ).resolves.toMatchObject({ items: [{ id: itemA.id, title: 'Item A' }], total: 1 });
     await expect(
       items.findManyForReview({ state: 'new', userId: USER_B_ID })
-    ).resolves.toHaveLength(1);
+    ).resolves.toMatchObject({ items: [expect.any(Object)], total: 1 });
+  });
+
+  it('paginates review items with stable newest and oldest cursors', async () => {
+    const items = createDrizzleFeedItemsAdapter(db);
+    await seedUser(USER_A_ID, 'feed-items-a@example.com');
+    const subscription = await seedSubscription(USER_A_ID);
+
+    const oldest = await items.create({
+      discoveredAt: new Date('2026-06-20T12:00:00Z'),
+      normalizedUrl: 'https://example.com/oldest',
+      subscriptionId: subscription.id,
+      title: 'Oldest',
+      url: 'https://example.com/oldest',
+      userId: USER_A_ID
+    });
+    const middle = await items.create({
+      discoveredAt: new Date('2026-06-24T12:00:00Z'),
+      normalizedUrl: 'https://example.com/middle',
+      publishedAt: new Date('2026-06-24T12:00:00Z'),
+      subscriptionId: subscription.id,
+      title: 'Middle',
+      url: 'https://example.com/middle',
+      userId: USER_A_ID
+    });
+    const newest = await items.create({
+      discoveredAt: new Date('2026-06-28T12:00:00Z'),
+      normalizedUrl: 'https://example.com/newest',
+      subscriptionId: subscription.id,
+      title: 'Newest',
+      url: 'https://example.com/newest',
+      userId: USER_A_ID
+    });
+
+    const firstPage = await items.findManyForReview({
+      limit: 2,
+      sort: 'newest',
+      userId: USER_A_ID
+    });
+    expect(firstPage.items.map((item) => item.id)).toEqual([newest.id, middle.id]);
+    expect(firstPage).toMatchObject({ hasMore: true, total: 3 });
+    expect(firstPage.nextCursor).toBeDefined();
+
+    const secondPage = await items.findManyForReview({
+      cursor: firstPage.nextCursor,
+      limit: 2,
+      sort: 'newest',
+      userId: USER_A_ID
+    });
+    expect(secondPage.items.map((item) => item.id)).toEqual([oldest.id]);
+    expect(secondPage).toMatchObject({ hasMore: false, total: 3 });
+
+    const oldestFirst = await items.findManyForReview({
+      limit: 2,
+      sort: 'oldest',
+      userId: USER_A_ID
+    });
+    expect(oldestFirst.items.map((item) => item.id)).toEqual([oldest.id, middle.id]);
+  });
+
+  it('summarizes item states for one user-owned subscription', async () => {
+    const items = createDrizzleFeedItemsAdapter(db);
+    await seedUser(USER_A_ID, 'feed-items-a@example.com');
+    await seedUser(USER_B_ID, 'feed-items-b@example.com');
+    const subscriptionA = await seedSubscription(USER_A_ID);
+    const subscriptionB = await seedSubscription(USER_B_ID, 'https://other.example/feed.xml');
+
+    await items.create({
+      normalizedUrl: 'https://example.com/new',
+      subscriptionId: subscriptionA.id,
+      title: 'New item',
+      url: 'https://example.com/new',
+      userId: USER_A_ID
+    });
+    await items.create({
+      normalizedUrl: 'https://example.com/saved',
+      state: 'saved',
+      subscriptionId: subscriptionA.id,
+      title: 'Saved item',
+      url: 'https://example.com/saved',
+      userId: USER_A_ID
+    });
+    await items.create({
+      normalizedUrl: 'https://example.com/dismissed',
+      state: 'dismissed',
+      subscriptionId: subscriptionA.id,
+      title: 'Dismissed item',
+      url: 'https://example.com/dismissed',
+      userId: USER_A_ID
+    });
+    await items.create({
+      normalizedUrl: 'https://other.example/new',
+      subscriptionId: subscriptionB.id,
+      title: 'Other user item',
+      url: 'https://other.example/new',
+      userId: USER_B_ID
+    });
+
+    await expect(items.summarizeBySubscription(subscriptionA.id, USER_A_ID)).resolves.toEqual({
+      dismissed: 1,
+      new: 1,
+      saved: 1
+    });
+    await expect(items.summarizeBySubscription(subscriptionA.id, USER_B_ID)).resolves.toEqual({
+      dismissed: 0,
+      new: 0,
+      saved: 0
+    });
   });
 
   it('upserts by GUID or normalized URL within a subscription', async () => {
@@ -129,7 +236,10 @@ describe('feed items repository', () => {
     expect(updatedByGuid.title).toBe('Updated title');
     expect(updatedByUrl.id).toBe(created.id);
     expect(updatedByUrl.title).toBe('Updated by URL');
-    await expect(items.findManyForReview({ userId: USER_A_ID })).resolves.toHaveLength(1);
+    await expect(items.findManyForReview({ userId: USER_A_ID })).resolves.toMatchObject({
+      items: [expect.any(Object)],
+      total: 1
+    });
   });
 
   it('marks items dismissed and saved only for the owning user', async () => {
@@ -193,7 +303,7 @@ describe('feed items repository', () => {
     expect(reconciled[0]).toMatchObject({ linkId, state: 'saved' });
     await expect(
       items.findManyForReview({ state: 'new', userId: USER_B_ID })
-    ).resolves.toHaveLength(1);
+    ).resolves.toMatchObject({ items: [expect.any(Object)], total: 1 });
   });
 
   it('prunes old and excess unsaved items while keeping saved items', async () => {

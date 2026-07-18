@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm';
 import { index, pgTable, text, timestamp, uniqueIndex, uuid, varchar } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
@@ -43,6 +44,19 @@ export const feedItemsTable = pgTable(
       table.userId,
       table.state,
       table.publishedAt.desc()
+    ),
+    index('idx_feed_items_user_state_effective_date_id').on(
+      table.userId,
+      table.state,
+      sql`coalesce(${table.publishedAt}, ${table.discoveredAt})`,
+      table.id
+    ),
+    index('idx_feed_items_user_state_subscription_effective_date_id').on(
+      table.userId,
+      table.state,
+      table.subscriptionId,
+      sql`coalesce(${table.publishedAt}, ${table.discoveredAt})`,
+      table.id
     ),
     index('idx_feed_items_user_normalized_url').on(table.userId, table.normalizedUrl),
     index('idx_feed_items_subscription_discovered').on(

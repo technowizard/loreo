@@ -10,6 +10,7 @@ import { saveLink } from '@/services/link-save.service.js';
 import type {
   CreateFeedSubscriptionRoute,
   DismissFeedItemRoute,
+  GetFeedSubscriptionSummaryRoute,
   ListFeedItemsRoute,
   ListFeedSubscriptionsRoute,
   RefreshFeedSubscriptionRoute,
@@ -57,6 +58,32 @@ export const createFeedSubscription: AppRouteHandler<CreateFeedSubscriptionRoute
   } catch (error) {
     const message = error instanceof Error ? error.message : 'An error occurred when adding feed';
     const response = errorResponse(message, HttpStatus.BAD_REQUEST);
+    return c.json(response, response.status);
+  }
+};
+
+export const getFeedSubscriptionSummary: AppRouteHandler<GetFeedSubscriptionSummaryRoute> = async (
+  c
+) => {
+  const user = c.get('user');
+  const repos = requireFeedRepos(c);
+  const { id } = c.req.valid('param');
+
+  try {
+    const subscription = await repos.feedSubscriptions.findById(id, user.id);
+    if (!subscription) {
+      const response = errorResponse('Feed subscription not found', HttpStatus.NOT_FOUND);
+      return c.json(response, response.status);
+    }
+
+    const summary = await repos.feedItems.summarizeBySubscription(id, user.id);
+    const response = successResponse(summary, 'Feed subscription summary fetched successfully');
+    return c.json(response, response.status);
+  } catch {
+    const response = errorResponse(
+      'An error occurred when fetching feed subscription summary',
+      HttpStatus.BAD_REQUEST
+    );
     return c.json(response, response.status);
   }
 };
@@ -125,16 +152,33 @@ export const refreshFeedSubscription: AppRouteHandler<RefreshFeedSubscriptionRou
 export const listFeedItems: AppRouteHandler<ListFeedItemsRoute> = async (c) => {
   const user = c.get('user');
   const repos = requireFeedRepos(c);
-  const { state, subscriptionId } = c.req.valid('query');
+  const { cursor, limit, sort, state, subscriptionId } = c.req.valid('query');
+  const pageLimit = Math.max(1, Math.min(limit ? Number(limit) : 24, 60));
 
   try {
-    const items = await repos.feedItems.findManyForReview({
+    const page = await repos.feedItems.findManyForReview({
+      cursor,
+      limit: pageLimit,
+      sort,
       state,
       subscriptionId,
       userId: user.id
     });
-    const response = successResponse(items, 'Feed items fetched successfully');
-    return c.json(response, response.status);
+    return c.json(
+      {
+        message: 'Feed items fetched successfully',
+        pagination: {
+          hasMore: page.hasMore,
+          limit: pageLimit,
+          nextCursor: page.nextCursor,
+          total: page.total,
+          totalReturned: page.items.length
+        },
+        result: page.items,
+        status: HttpStatus.OK
+      },
+      HttpStatus.OK
+    );
   } catch {
     const response = errorResponse(
       'An error occurred when fetching feed items',

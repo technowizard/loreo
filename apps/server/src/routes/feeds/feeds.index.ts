@@ -6,6 +6,7 @@ import * as routes from './feeds.routes.js';
 const router = createRouter()
   .openapi(routes.listFeedSubscriptions, handlers.listFeedSubscriptions)
   .openapi(routes.createFeedSubscription, handlers.createFeedSubscription)
+  .openapi(routes.getFeedSubscriptionSummary, handlers.getFeedSubscriptionSummary)
   .openapi(routes.updateFeedSubscription, handlers.updateFeedSubscription)
   .openapi(routes.refreshFeedSubscription, handlers.refreshFeedSubscription)
   .openapi(routes.listFeedItems, handlers.listFeedItems)

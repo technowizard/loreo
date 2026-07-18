@@ -78,6 +78,7 @@ export const paginationMetadataSchema = z.object({
   nextCursor: z.string().optional(),
   previousCursor: z.string().optional(),
   limit: z.number(),
+  total: z.number().optional(),
   totalReturned: z.number()
 });
 
