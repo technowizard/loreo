@@ -1,3 +1,5 @@
+import type { JobsOptions } from 'bullmq';
+
 import type { ContentExtractionJobData } from '@/queues/content-extraction.queue.js';
 import { enqueueContentExtraction } from '@/queues/content-extraction.queue.js';
 
@@ -14,7 +16,8 @@ export type LinkSaveResult = {
 
 type EnqueueExtraction = (
   jobName: string,
-  data: ContentExtractionJobData
+  data: ContentExtractionJobData,
+  options?: JobsOptions
 ) => Promise<{ id?: string }>;
 
 export type SaveLinkInput = {
@@ -64,8 +67,23 @@ export async function saveLink(input: SaveLinkInput): Promise<LinkSaveResult> {
   const normalizedUrl = normalizedLinkUrl(url);
 
   const shouldReconcileFeedItems = input.reconcileFeedItems ?? true;
+  const enqueueExtraction =
+    input.enqueueExtraction ?? enqueueContentExtraction.add.bind(enqueueContentExtraction);
+  const enqueuePendingExtraction = (link: LinkData, targetUrl = link.url) =>
+    enqueueExtraction(
+      'process-new-article',
+      {
+        linkId: link.id,
+        url: targetUrl,
+        user
+      },
+      { jobId: `content-extraction-${link.id}` }
+    );
 
   if (existing) {
+    if (existing.processingStatus === 'pending') {
+      await enqueuePendingExtraction(existing);
+    }
     const reconciled = shouldReconcileFeedItems
       ? await repos.feedItems?.reconcileSavedByUrl({
           linkId: existing.id,
@@ -84,13 +102,7 @@ export async function saveLink(input: SaveLinkInput): Promise<LinkSaveResult> {
   const link = await repos.links.create(newPendingLink(url, user.id));
   if (!link) throw new Error('Failed to create link');
 
-  const enqueueExtraction =
-    input.enqueueExtraction ?? enqueueContentExtraction.add.bind(enqueueContentExtraction);
-  await enqueueExtraction('process-new-article', {
-    linkId: link.id,
-    url,
-    user
-  });
+  await enqueuePendingExtraction(link, url);
 
   const reconciled = shouldReconcileFeedItems
     ? await repos.feedItems?.reconcileSavedByUrl({

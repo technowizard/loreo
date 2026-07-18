@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 
 import { db } from '@/db/index.js';
@@ -119,6 +119,25 @@ describe('feed subscriptions repository', () => {
         title: 'Duplicate Feed',
         userId: USER_A_ID
       })
+    ).rejects.toThrow();
+  });
+
+  it('rejects invalid subscription statuses at the database boundary', async () => {
+    const repo = createDrizzleFeedSubscriptionsAdapter(db);
+    await seedUser(USER_A_ID, 'feeds-a@example.com');
+    const subscription = await repo.create({
+      feedUrl: 'https://example.com/feed.xml',
+      normalizedFeedUrl: 'https://example.com/feed.xml',
+      title: 'Example Feed',
+      userId: USER_A_ID
+    });
+
+    await expect(
+      db.execute(sql`
+        update feed_subscriptions
+        set status = 'unexpected'
+        where id = ${subscription.id}::uuid
+      `)
     ).rejects.toThrow();
   });
 

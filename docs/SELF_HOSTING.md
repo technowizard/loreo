@@ -251,7 +251,50 @@ docker compose --env-file .env.prod -f docker-compose.prod.yml up -d
 
 Database migrations run automatically when the server container starts. The server's `docker-entrypoint.sh` applies any pending migrations before starting the API.
 
-Migration `0004_feed_item_pagination_query_shapes` builds two `feed_items` indexes with standard `CREATE INDEX`, which briefly blocks writes to that table while each index is built. Installations with a large existing RSS collection should schedule this update during a low-traffic maintenance window.
+Migrations `0004_feed_item_pagination_query_shapes` and `0005_feed_owner_constraints` use standard index creation. Migration 0004 builds two `feed_items` indexes; migration 0005 builds ownership indexes on `feed_subscriptions` and `links` before adding same-owner constraints. These operations scan the affected tables and block writes while each index is created. On a large article library or RSS collection, startup downtime may be longer than a brief restart.
+
+Before applying migration 0005 on a populated installation:
+
+1. Take a PostgreSQL backup and confirm enough free disk space for temporary index construction.
+2. Schedule a low-traffic maintenance window. Monitor `pg_stat_progress_create_index`, `pg_stat_activity`, and `pg_locks` from a separate database session while the server starts.
+3. After startup, audit legacy rows. The new constraints are installed as `NOT VALID`: they protect new writes immediately while allowing an installation with old inconsistent rows to start.
+
+```sql
+-- Feed items whose user does not own the referenced subscription.
+select item.id, item.user_id, item.subscription_id
+from feed_items item
+left join feed_subscriptions subscription
+  on subscription.id = item.subscription_id
+ and subscription.user_id = item.user_id
+where subscription.id is null;
+
+-- Feed items whose optional saved link belongs to another user.
+select item.id, item.user_id, item.link_id
+from feed_items item
+left join links link
+  on link.id = item.link_id
+ and link.user_id = item.user_id
+where item.link_id is not null and link.id is null;
+
+select id, state from feed_items
+where state not in ('new', 'dismissed', 'saved');
+
+select id, status from feed_subscriptions
+where status not in ('active', 'paused');
+```
+
+Back up and review every returned row before changing it. A cross-owner `link_id` can be detached with `update feed_items set link_id = null where id = '<reviewed-id>';`. Subscription-owner mismatches and invalid states/statuses require an operator decision; do not reassign or delete them automatically.
+
+Once all four audits return no rows, validate the constraints during a maintenance window:
+
+```sql
+alter table feed_items validate constraint fk_feed_items_subscription_owner;
+alter table feed_items validate constraint fk_feed_items_link_owner;
+alter table feed_items validate constraint chk_feed_items_state;
+alter table feed_subscriptions validate constraint chk_feed_subscriptions_status;
+```
+
+If migration 0005 must be rolled back together with the application version, restore the pre-upgrade backup. For a schema-only rollback before constraint validation, drop the four constraints first, then `uq_feed_subscriptions_id_user` and `uq_links_id_user`; retain the backup until the prior server version is healthy.
 
 ### Pinning Versions
 

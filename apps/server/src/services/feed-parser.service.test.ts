@@ -55,6 +55,34 @@ describe('parseFeedXml', () => {
     expect(feed.items[0]?.publishedAt?.toISOString()).toBe('2026-06-28T12:00:00.000Z');
   });
 
+  it('maps RSS 1.0 items that are siblings of the channel', async () => {
+    const feed = await parseFeedXml(
+      `<?xml version="1.0"?>
+      <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        xmlns="http://purl.org/rss/1.0/">
+        <channel rdf:about="https://example.com/feed.rdf">
+          <title>Example RDF</title>
+          <link>https://example.com/</link>
+          <description>RDF summary</description>
+        </channel>
+        <item rdf:about="https://example.com/rdf-item">
+          <title>RDF article</title>
+          <link>https://example.com/rdf-item</link>
+          <description>RDF excerpt</description>
+        </item>
+      </rdf:RDF>`,
+      'https://example.com/feed.rdf'
+    );
+
+    expect(feed).toMatchObject({ title: 'Example RDF' });
+    expect(feed.items).toHaveLength(1);
+    expect(feed.items[0]).toMatchObject({
+      excerpt: 'RDF excerpt',
+      title: 'RDF article',
+      url: 'https://example.com/rdf-item'
+    });
+  });
+
   it('maps Atom feed metadata and entries into normalized records', async () => {
     const feed = await parseFeedXml(
       `<?xml version="1.0"?>
@@ -123,6 +151,38 @@ describe('parseFeedXml', () => {
     expect(feed.description).toHaveLength(1000);
     expect(feed.items[0]?.title).toHaveLength(300);
     expect(feed.items[0]?.excerpt).toHaveLength(1000);
+  });
+
+  it('caps item validation work before processing oversized entry lists', async () => {
+    const items = Array.from(
+      { length: 600 },
+      (_, index) =>
+        `<item><title>Item ${index}</title><link>https://example.com/items/${index}</link><pubDate>${new Date(2026, 0, 1, 0, index).toUTCString()}</pubDate></item>`
+    ).join('');
+
+    const feed = await parseFeedXml(
+      `<rss><channel><title>Large feed</title>${items}</channel></rss>`,
+      'https://example.com/feed.xml'
+    );
+
+    expect(feed.items).toHaveLength(500);
+    expect(isSafeFeedEntryUrlMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects feeds that exceed the unique-host validation budget', async () => {
+    const items = Array.from(
+      { length: 51 },
+      (_, index) =>
+        `<item><title>Item ${index}</title><link>https://host-${index}.example/items/${index}</link></item>`
+    ).join('');
+
+    await expect(
+      parseFeedXml(
+        `<rss><channel><title>Too many hosts</title>${items}</channel></rss>`,
+        'https://example.com/feed.xml'
+      )
+    ).rejects.toThrow(/too many unique hosts/i);
+    expect(isSafeFeedEntryUrlMock).toHaveBeenCalledTimes(50);
   });
 
   it('rejects unsupported or invalid XML documents', async () => {

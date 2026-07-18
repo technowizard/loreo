@@ -1,5 +1,15 @@
 import { sql } from 'drizzle-orm';
-import { index, pgTable, text, timestamp, uniqueIndex, uuid, varchar } from 'drizzle-orm/pg-core';
+import {
+  check,
+  foreignKey,
+  index,
+  pgTable,
+  text,
+  timestamp,
+  uniqueIndex,
+  uuid,
+  varchar
+} from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
 import { feedSubscriptionsTable } from './feed-subscriptions.js';
@@ -35,6 +45,17 @@ export const feedItemsTable = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
   },
   (table) => [
+    check('chk_feed_items_state', sql`${table.state} in ('new', 'dismissed', 'saved')`),
+    foreignKey({
+      columns: [table.subscriptionId, table.userId],
+      foreignColumns: [feedSubscriptionsTable.id, feedSubscriptionsTable.userId],
+      name: 'fk_feed_items_subscription_owner'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.linkId, table.userId],
+      foreignColumns: [linksTable.id, linksTable.userId],
+      name: 'fk_feed_items_link_owner'
+    }),
     uniqueIndex('uq_feed_items_subscription_guid').on(table.subscriptionId, table.guid),
     uniqueIndex('uq_feed_items_subscription_normalized_url').on(
       table.subscriptionId,

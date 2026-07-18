@@ -3,6 +3,8 @@ import { isIP } from 'node:net';
 
 import isPrivateIP from 'private-ip';
 
+const DNS_LOOKUP_TIMEOUT_MS = 2000;
+
 function isBlockedIpv4Address(address: string): boolean {
   const [firstOctet = Number.NaN, secondOctet = Number.NaN] = address
     .split('.')
@@ -88,6 +90,23 @@ function withoutIpv6Brackets(hostname: string): string {
   return hostname.startsWith('[') && hostname.endsWith(']') ? hostname.slice(1, -1) : hostname;
 }
 
+async function lookupAllWithTimeout(hostname: string) {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      lookup(hostname, { all: true }),
+      new Promise<never>((_, reject) => {
+        timeout = setTimeout(
+          () => reject(new Error('DNS lookup timed out')),
+          DNS_LOOKUP_TIMEOUT_MS
+        );
+      })
+    ]);
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
+}
+
 export async function resolvePublicAddresses(url: string): Promise<PublicAddress[] | null> {
   try {
     const parsed = new URL(url);
@@ -106,7 +125,7 @@ export async function resolvePublicAddresses(url: string): Promise<PublicAddress
       return [{ address: hostname, family: literalFamily === 4 ? 4 : 6 }];
     }
 
-    const results = await lookup(hostname, { all: true });
+    const results = await lookupAllWithTimeout(hostname);
     if (results.length === 0 || results.some(({ address }) => isBlockedAddress(address))) {
       return null;
     }

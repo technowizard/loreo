@@ -1,5 +1,7 @@
+import { sql } from 'drizzle-orm';
 import {
   boolean,
+  check,
   index,
   integer,
   pgTable,
@@ -41,6 +43,8 @@ export const feedSubscriptionsTable = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
   },
   (table) => [
+    check('chk_feed_subscriptions_status', sql`${table.status} in ('active', 'paused')`),
+    uniqueIndex('uq_feed_subscriptions_id_user').on(table.id, table.userId),
     uniqueIndex('uq_feed_subscriptions_user_normalized_url').on(
       table.userId,
       table.normalizedFeedUrl

@@ -68,6 +68,7 @@ export const linksTable = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
   },
   (table) => [
+    uniqueIndex('uq_links_id_user').on(table.id, table.userId),
     index('idx_links_user_id').on(table.userId),
     index('idx_links_url').on(table.url),
     index('idx_links_title').on(table.title),

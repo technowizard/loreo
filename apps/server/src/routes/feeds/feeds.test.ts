@@ -155,6 +155,10 @@ function buildFeedRepos() {
       items.set(item.id, item);
       return item;
     },
+    delete: async (id, userId) => {
+      const existing = await feedItems.findById(id, userId);
+      return existing ? items.delete(id) : false;
+    },
     dismiss: async (id, userId, dismissedAt = NOW) => {
       const existing = await feedItems.findById(id, userId);
       if (!existing) return null;
@@ -234,7 +238,9 @@ function buildFeedRepos() {
         saved: matching.filter((item) => item.state === 'saved').length
       };
     },
-    upsertByIdentity: async (data) => feedItems.create(data)
+    upsertByIdentity: async (data) => ({ created: true, item: await feedItems.create(data) }),
+    upsertManyByIdentity: async (data) =>
+      Promise.all(data.map((item) => feedItems.upsertByIdentity(item)))
   };
 
   return { feedItems, feedSubscriptions, items, subscriptions };

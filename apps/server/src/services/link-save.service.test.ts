@@ -89,11 +89,15 @@ describe('saveLink', () => {
         userId: TEST_USER.id
       })
     );
-    expect(enqueueExtraction).toHaveBeenCalledWith('process-new-article', {
-      linkId: createdLink.id,
-      url: 'https://example.com/article?b=2&a=1#section',
-      user: TEST_USER
-    });
+    expect(enqueueExtraction).toHaveBeenCalledWith(
+      'process-new-article',
+      {
+        linkId: createdLink.id,
+        url: 'https://example.com/article?b=2&a=1#section',
+        user: TEST_USER
+      },
+      { jobId: `content-extraction-${createdLink.id}` }
+    );
     expect(repos.feedItems?.reconcileSavedByUrl).toHaveBeenCalledWith({
       linkId: createdLink.id,
       normalizedUrl: 'https://example.com/article?a=1&b=2',
@@ -101,8 +105,11 @@ describe('saveLink', () => {
     });
   });
 
-  it('reuses an existing user link without enqueueing extraction', async () => {
-    const existingLink = linkFixture({ id: '00000000-0000-0000-0000-000000000200' });
+  it('reuses an existing completed user link without enqueueing extraction', async () => {
+    const existingLink = linkFixture({
+      id: '00000000-0000-0000-0000-000000000200',
+      processingStatus: 'completed'
+    });
     const { repos } = buildRepos(existingLink);
     const enqueueExtraction = vi.fn(async () => ({ id: 'job-1' }));
 
@@ -121,6 +128,26 @@ describe('saveLink', () => {
       normalizedUrl: existingLink.url,
       userId: TEST_USER.id
     });
+  });
+
+  it('idempotently re-enqueues extraction for an existing pending link', async () => {
+    const existingLink = linkFixture({ id: '00000000-0000-0000-0000-000000000201' });
+    const { repos } = buildRepos(existingLink);
+    const enqueueExtraction = vi.fn(async () => ({ id: 'job-1' }));
+
+    await saveLink({
+      enqueueExtraction,
+      reconcileFeedItems: false,
+      repos,
+      user: TEST_USER,
+      url: existingLink.url
+    });
+
+    expect(enqueueExtraction).toHaveBeenCalledWith(
+      'process-new-article',
+      { linkId: existingLink.id, url: existingLink.url, user: TEST_USER },
+      { jobId: `content-extraction-${existingLink.id}` }
+    );
   });
 
   it('does not reconcile feed items when link creation fails', async () => {

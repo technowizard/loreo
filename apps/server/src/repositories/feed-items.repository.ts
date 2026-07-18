@@ -53,6 +53,11 @@ export type CreateFeedItemData = Pick<
     >
   >;
 
+export type UpsertFeedItemResult = {
+  created: boolean;
+  item: FeedItemData;
+};
+
 type UpdateFeedItemData = Partial<
   Pick<
     FeedItemData,
@@ -71,6 +76,24 @@ type UpdateFeedItemData = Partial<
     | 'url'
   >
 >;
+
+function createFeedItemValues(data: CreateFeedItemData): typeof feedItemsTable.$inferInsert {
+  return {
+    author: data.author ?? null,
+    discoveredAt: data.discoveredAt ?? new Date(),
+    excerpt: data.excerpt ?? null,
+    guid: data.guid ?? null,
+    imageUrl: data.imageUrl ?? null,
+    linkId: data.linkId ?? null,
+    normalizedUrl: data.normalizedUrl,
+    publishedAt: data.publishedAt ?? null,
+    state: data.state ?? 'new',
+    subscriptionId: data.subscriptionId,
+    title: data.title,
+    url: data.url,
+    userId: data.userId
+  };
+}
 
 const itemColumns = {
   id: feedItemsTable.id,
@@ -95,6 +118,7 @@ const itemColumns = {
 
 export interface FeedItemsRepository {
   create(data: CreateFeedItemData): Promise<FeedItemData>;
+  delete(id: string, userId: string): Promise<boolean>;
   dismiss(id: string, userId: string, dismissedAt?: Date): Promise<FeedItemData | null>;
   findById(id: string, userId: string): Promise<FeedItemData | null>;
   findBySubscriptionAndIdentity(input: {
@@ -125,7 +149,8 @@ export interface FeedItemsRepository {
   }): Promise<FeedItemData[]>;
   save(id: string, userId: string, linkId: string, savedAt?: Date): Promise<FeedItemData | null>;
   summarizeBySubscription(subscriptionId: string, userId: string): Promise<FeedItemStateSummary>;
-  upsertByIdentity(data: CreateFeedItemData): Promise<FeedItemData>;
+  upsertByIdentity(data: CreateFeedItemData): Promise<UpsertFeedItemResult>;
+  upsertManyByIdentity(data: CreateFeedItemData[]): Promise<UpsertFeedItemResult[]>;
 }
 
 export function createDrizzleFeedItemsAdapter(db: DrizzleClient): FeedItemsRepository {
@@ -139,12 +164,61 @@ export function createDrizzleFeedItemsAdapter(db: DrizzleClient): FeedItemsRepos
     return (row as FeedItemData | undefined) ?? null;
   }
 
-  async function update(
+  async function findIdentityMatches(
+    client: DrizzleClient,
+    {
+      guid,
+      normalizedUrl,
+      subscriptionId,
+      userId
+    }: {
+      guid?: string | null;
+      normalizedUrl: string;
+      subscriptionId: string;
+      userId: string;
+    }
+  ): Promise<FeedItemData[]> {
+    const identityCondition = guid
+      ? or(eq(feedItemsTable.guid, guid), eq(feedItemsTable.normalizedUrl, normalizedUrl))
+      : eq(feedItemsTable.normalizedUrl, normalizedUrl);
+
+    const rows = await client
+      .select(itemColumns)
+      .from(feedItemsTable)
+      .where(
+        and(
+          eq(feedItemsTable.subscriptionId, subscriptionId),
+          eq(feedItemsTable.userId, userId),
+          identityCondition
+        )
+      );
+
+    return (rows as FeedItemData[]).sort((left, right) => {
+      const leftPriority =
+        guid && left.guid === guid ? 0 : left.normalizedUrl === normalizedUrl ? 1 : 2;
+      const rightPriority =
+        guid && right.guid === guid ? 0 : right.normalizedUrl === normalizedUrl ? 1 : 2;
+      return leftPriority - rightPriority || left.createdAt.getTime() - right.createdAt.getTime();
+    });
+  }
+
+  async function findBySubscriptionAndIdentity(input: {
+    guid?: string | null;
+    normalizedUrl: string;
+    subscriptionId: string;
+    userId: string;
+  }): Promise<FeedItemData | null> {
+    const [row] = await findIdentityMatches(db, input);
+    return row ?? null;
+  }
+
+  async function updateWithClient(
+    client: DrizzleClient,
     id: string,
     userId: string,
     updates: UpdateFeedItemData
   ): Promise<FeedItemData | null> {
-    const [row] = await db
+    const [row] = await client
       .update(feedItemsTable)
       .set({ ...updates, updatedAt: new Date() })
       .where(and(eq(feedItemsTable.id, id), eq(feedItemsTable.userId, userId)))
@@ -153,55 +227,80 @@ export function createDrizzleFeedItemsAdapter(db: DrizzleClient): FeedItemsRepos
     return (row as FeedItemData | undefined) ?? null;
   }
 
+  async function update(
+    id: string,
+    userId: string,
+    updates: UpdateFeedItemData
+  ): Promise<FeedItemData | null> {
+    return updateWithClient(db, id, userId, updates);
+  }
+
+  async function upsertByIdentityWithClient(
+    client: DrizzleClient,
+    data: CreateFeedItemData
+  ): Promise<UpsertFeedItemResult> {
+    const [inserted] = await client
+      .insert(feedItemsTable)
+      .values(createFeedItemValues(data))
+      .onConflictDoNothing()
+      .returning(itemColumns);
+
+    if (inserted) {
+      return { created: true, item: inserted as FeedItemData };
+    }
+
+    const matches = await findIdentityMatches(client, {
+      guid: data.guid,
+      normalizedUrl: data.normalizedUrl,
+      subscriptionId: data.subscriptionId,
+      userId: data.userId
+    });
+    const existing = matches[0];
+    if (!existing) throw new Error('Failed to resolve feed item identity conflict');
+
+    const urlBelongsToAnotherIdentity = matches.some(
+      (match) => match.id !== existing.id && match.normalizedUrl === data.normalizedUrl
+    );
+    const updated = await updateWithClient(client, existing.id, data.userId, {
+      author: data.author ?? existing.author,
+      excerpt: data.excerpt ?? existing.excerpt,
+      guid: data.guid ?? existing.guid,
+      imageUrl: data.imageUrl ?? existing.imageUrl,
+      normalizedUrl: urlBelongsToAnotherIdentity ? existing.normalizedUrl : data.normalizedUrl,
+      publishedAt: data.publishedAt ?? existing.publishedAt,
+      title: data.title,
+      url: urlBelongsToAnotherIdentity ? existing.url : data.url
+    });
+
+    if (!updated) throw new Error('Failed to update feed item');
+    return { created: false, item: updated };
+  }
+
   return {
     findById,
+    findBySubscriptionAndIdentity,
 
     async create(data) {
       const [row] = await db
         .insert(feedItemsTable)
-        .values({
-          author: data.author ?? null,
-          discoveredAt: data.discoveredAt ?? new Date(),
-          excerpt: data.excerpt ?? null,
-          guid: data.guid ?? null,
-          imageUrl: data.imageUrl ?? null,
-          linkId: data.linkId ?? null,
-          normalizedUrl: data.normalizedUrl,
-          publishedAt: data.publishedAt ?? null,
-          state: data.state ?? 'new',
-          subscriptionId: data.subscriptionId,
-          title: data.title,
-          url: data.url,
-          userId: data.userId
-        })
+        .values(createFeedItemValues(data))
         .returning(itemColumns);
 
       if (!row) throw new Error('Failed to create feed item');
       return row as FeedItemData;
     },
 
-    async dismiss(id, userId, dismissedAt = new Date()) {
-      return update(id, userId, { dismissedAt, state: 'dismissed' });
+    async delete(id, userId) {
+      const rows = await db
+        .delete(feedItemsTable)
+        .where(and(eq(feedItemsTable.id, id), eq(feedItemsTable.userId, userId)))
+        .returning({ id: feedItemsTable.id });
+
+      return rows.length > 0;
     },
 
-    async findBySubscriptionAndIdentity({ guid, normalizedUrl, subscriptionId, userId }) {
-      const identityCondition = guid
-        ? or(eq(feedItemsTable.guid, guid), eq(feedItemsTable.normalizedUrl, normalizedUrl))
-        : eq(feedItemsTable.normalizedUrl, normalizedUrl);
-
-      const [row] = await db
-        .select(itemColumns)
-        .from(feedItemsTable)
-        .where(
-          and(
-            eq(feedItemsTable.subscriptionId, subscriptionId),
-            eq(feedItemsTable.userId, userId),
-            identityCondition
-          )
-        )
-        .limit(1);
-
-      return (row as FeedItemData | undefined) ?? null;
+    async dismiss(id, userId, dismissedAt = new Date()) {
+      return update(id, userId, { dismissedAt, state: 'dismissed' });
     },
 
     async findManyForReview({
@@ -271,18 +370,6 @@ export function createDrizzleFeedItemsAdapter(db: DrizzleClient): FeedItemsRepos
     },
 
     async pruneForSubscription({ before, keepLatest, subscriptionId, userId }) {
-      const oldRows = await db
-        .delete(feedItemsTable)
-        .where(
-          and(
-            eq(feedItemsTable.subscriptionId, subscriptionId),
-            eq(feedItemsTable.userId, userId),
-            ne(feedItemsTable.state, 'saved'),
-            lt(feedItemsTable.discoveredAt, before)
-          )
-        )
-        .returning({ id: feedItemsTable.id });
-
       const excessIds = db
         .select({ id: feedItemsTable.id })
         .from(feedItemsTable)
@@ -296,19 +383,19 @@ export function createDrizzleFeedItemsAdapter(db: DrizzleClient): FeedItemsRepos
         .orderBy(desc(feedItemsTable.discoveredAt), desc(feedItemsTable.createdAt))
         .offset(keepLatest);
 
-      const removedExcess = await db
+      const removed = await db
         .delete(feedItemsTable)
         .where(
           and(
             eq(feedItemsTable.subscriptionId, subscriptionId),
             eq(feedItemsTable.userId, userId),
             ne(feedItemsTable.state, 'saved'),
-            inArray(feedItemsTable.id, excessIds)
+            or(lt(feedItemsTable.discoveredAt, before), inArray(feedItemsTable.id, excessIds))
           )
         )
         .returning({ id: feedItemsTable.id });
 
-      return oldRows.length + removedExcess.length;
+      return removed.length;
     },
 
     async reconcileSavedByUrl({ linkId, normalizedUrl, savedAt = new Date(), userId }) {
@@ -343,28 +430,16 @@ export function createDrizzleFeedItemsAdapter(db: DrizzleClient): FeedItemsRepos
     },
 
     async upsertByIdentity(data) {
-      const existing = await this.findBySubscriptionAndIdentity({
-        guid: data.guid,
-        normalizedUrl: data.normalizedUrl,
-        subscriptionId: data.subscriptionId,
-        userId: data.userId
+      return upsertByIdentityWithClient(db, data);
+    },
+
+    async upsertManyByIdentity(data) {
+      return db.transaction(async (transaction) => {
+        const client = transaction as unknown as DrizzleClient;
+        const results: UpsertFeedItemResult[] = [];
+        for (const item of data) results.push(await upsertByIdentityWithClient(client, item));
+        return results;
       });
-
-      if (!existing) return this.create(data);
-
-      const updated = await update(existing.id, data.userId, {
-        author: data.author ?? existing.author,
-        excerpt: data.excerpt ?? existing.excerpt,
-        guid: data.guid ?? existing.guid,
-        imageUrl: data.imageUrl ?? existing.imageUrl,
-        normalizedUrl: data.normalizedUrl,
-        publishedAt: data.publishedAt ?? existing.publishedAt,
-        title: data.title,
-        url: data.url
-      });
-
-      if (!updated) throw new Error('Failed to update feed item');
-      return updated;
     }
   };
 }

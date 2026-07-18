@@ -35,6 +35,20 @@ describe('isValidUrl', () => {
     expect(lookupMock).toHaveBeenCalledWith('example.com', { all: true });
   });
 
+  it('rejects a hostname when DNS resolution exceeds the timeout', async () => {
+    vi.useFakeTimers();
+    try {
+      lookupMock.mockReturnValue(new Promise(() => undefined));
+      const validation = isValidUrl('https://slow.example/article');
+
+      await vi.advanceTimersByTimeAsync(2000);
+
+      await expect(validation).resolves.toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('rejects a public hostname that resolves to a private IP', async () => {
     lookupMock.mockResolvedValue([
       {

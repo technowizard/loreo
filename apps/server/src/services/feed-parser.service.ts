@@ -8,6 +8,9 @@ const MAX_TITLE_LENGTH = 300;
 const MAX_DESCRIPTION_LENGTH = 1000;
 const MAX_EXCERPT_LENGTH = 1000;
 const MAX_AUTHOR_LENGTH = 200;
+const MAX_FEED_ENTRIES = 500;
+const MAX_UNIQUE_ENTRY_HOSTS = 50;
+const URL_VALIDATION_BUDGET_MS = 5000;
 
 export type NormalizedFeedItem = {
   author: string | null;
@@ -57,6 +60,16 @@ function firstText(parent: Element | ParsedFeedDocument, tagNames: string[]): st
   return null;
 }
 
+function firstDirectText(parent: Element, tagNames: string[]): string | null {
+  const normalizedNames = new Set(tagNames.map((name) => name.toLowerCase()));
+  for (const child of Array.from(parent.children)) {
+    if (!normalizedNames.has(child.tagName.toLowerCase())) continue;
+    const text = sanitizeText(child.textContent, Number.MAX_SAFE_INTEGER);
+    if (text) return text;
+  }
+  return null;
+}
+
 function resolveUrl(value: string | null | undefined, baseUrl: string): string | null {
   const sanitized = sanitizeText(value, 2048);
   if (!sanitized) return null;
@@ -83,10 +96,61 @@ function parseDate(value: string | null | undefined): Date | null {
   return Number.isNaN(timestamp) ? null : new Date(timestamp);
 }
 
-async function safeUrl(value: string | null, baseUrl: string): Promise<string | null> {
-  const url = resolveUrl(value, baseUrl);
-  if (!url) return null;
-  return (await isSafeFeedEntryUrl(url)) ? url : null;
+type SafeUrlResolver = (value: string | null, baseUrl: string) => Promise<string | null>;
+
+function createSafeUrlResolver(): SafeUrlResolver {
+  const deadline = Date.now() + URL_VALIDATION_BUDGET_MS;
+  const safetyByHostname = new Map<string, Promise<boolean>>();
+
+  return async (value, baseUrl) => {
+    const url = resolveUrl(value, baseUrl);
+    if (!url) return null;
+
+    const parsed = new URL(url);
+    if (
+      !['http:', 'https:'].includes(parsed.protocol) ||
+      parsed.username.length > 0 ||
+      parsed.password.length > 0
+    ) {
+      return null;
+    }
+
+    if (Date.now() >= deadline) {
+      throw new FeedParseError('Feed URL validation exceeded its time budget');
+    }
+
+    const hostname = parsed.hostname.toLowerCase();
+    let safety = safetyByHostname.get(hostname);
+    if (!safety) {
+      if (safetyByHostname.size >= MAX_UNIQUE_ENTRY_HOSTS) {
+        throw new FeedParseError('Feed contains too many unique hosts');
+      }
+      safety = isSafeFeedEntryUrl(url);
+      safetyByHostname.set(hostname, safety);
+    }
+
+    const isSafe = await safety;
+    if (Date.now() >= deadline) {
+      throw new FeedParseError('Feed URL validation exceeded its time budget');
+    }
+    return isSafe ? url : null;
+  };
+}
+
+function boundedNewestElements(elements: Element[], dateTags: string[]): Element[] {
+  return elements
+    .map((element, sourceIndex) => ({
+      element,
+      publishedAt: parseDate(firstText(element, dateTags)),
+      sourceIndex
+    }))
+    .sort((left, right) => {
+      const leftTimestamp = left.publishedAt?.getTime() ?? Number.NEGATIVE_INFINITY;
+      const rightTimestamp = right.publishedAt?.getTime() ?? Number.NEGATIVE_INFINITY;
+      return rightTimestamp - leftTimestamp || left.sourceIndex - right.sourceIndex;
+    })
+    .slice(0, MAX_FEED_ENTRIES)
+    .map(({ element }) => element);
 }
 
 function rssChannel(document: ParsedFeedDocument): Element {
@@ -105,8 +169,10 @@ function atomFeed(document: ParsedFeedDocument): Element {
   return feed;
 }
 
-function atomLink(parent: Element | ParsedFeedDocument): string | null {
-  const links = Array.from(parent.querySelectorAll('link')) as Element[];
+function atomLink(parent: Element): string | null {
+  const links = Array.from(parent.children).filter(
+    (child) => child.tagName.toLowerCase() === 'link'
+  );
   const alternate =
     links.find((link) => !link.getAttribute('rel') || link.getAttribute('rel') === 'alternate') ??
     links[0];
@@ -139,15 +205,24 @@ function atomImage(parent: Element): string | null {
   );
 }
 
-async function parseRss(document: ParsedFeedDocument, feedUrl: string): Promise<NormalizedFeed> {
+async function parseRss(
+  document: ParsedFeedDocument,
+  feedUrl: string,
+  safeUrl: SafeUrlResolver,
+  isRdf: boolean
+): Promise<NormalizedFeed> {
   const channel = rssChannel(document);
-  const rawSiteUrl = firstText(channel, ['link']);
+  const rawSiteUrl = firstDirectText(channel, ['link']);
   const siteUrl = await safeUrl(rawSiteUrl, feedUrl);
   const imageUrl = await safeUrl(rssChannelImage(channel), feedUrl);
-  const title = sanitizeText(firstText(channel, ['title']), MAX_TITLE_LENGTH) ?? 'Untitled feed';
+  const title =
+    sanitizeText(firstDirectText(channel, ['title']), MAX_TITLE_LENGTH) ?? 'Untitled feed';
   const items: NormalizedFeedItem[] = [];
 
-  for (const item of Array.from(channel.querySelectorAll('item'))) {
+  const itemElements = isRdf
+    ? (Array.from(document.querySelectorAll('item')) as Element[])
+    : (Array.from(channel.querySelectorAll('item')) as Element[]);
+  for (const item of boundedNewestElements(itemElements, ['pubDate', 'published', 'updated'])) {
     const url = await safeUrl(firstText(item, ['link']), siteUrl ?? feedUrl);
     if (!url) continue;
 
@@ -174,7 +249,7 @@ async function parseRss(document: ParsedFeedDocument, feedUrl: string): Promise<
 
   return {
     description: sanitizeText(
-      firstText(channel, ['description', 'subtitle']),
+      firstDirectText(channel, ['description', 'subtitle']),
       MAX_DESCRIPTION_LENGTH
     ),
     imageUrl,
@@ -184,14 +259,19 @@ async function parseRss(document: ParsedFeedDocument, feedUrl: string): Promise<
   };
 }
 
-async function parseAtom(document: ParsedFeedDocument, feedUrl: string): Promise<NormalizedFeed> {
+async function parseAtom(
+  document: ParsedFeedDocument,
+  feedUrl: string,
+  safeUrl: SafeUrlResolver
+): Promise<NormalizedFeed> {
   const feed = atomFeed(document);
   const siteUrl = await safeUrl(atomLink(feed), feedUrl);
-  const imageUrl = await safeUrl(firstText(feed, ['icon', 'logo']), feedUrl);
-  const title = sanitizeText(firstText(feed, ['title']), MAX_TITLE_LENGTH) ?? 'Untitled feed';
+  const imageUrl = await safeUrl(firstDirectText(feed, ['icon', 'logo']), feedUrl);
+  const title = sanitizeText(firstDirectText(feed, ['title']), MAX_TITLE_LENGTH) ?? 'Untitled feed';
   const items: NormalizedFeedItem[] = [];
 
-  for (const entry of Array.from(feed.querySelectorAll('entry'))) {
+  const entryElements = Array.from(feed.querySelectorAll('entry')) as Element[];
+  for (const entry of boundedNewestElements(entryElements, ['published', 'updated'])) {
     const url = await safeUrl(atomLink(entry), siteUrl ?? feedUrl);
     if (!url) continue;
 
@@ -214,7 +294,10 @@ async function parseAtom(document: ParsedFeedDocument, feedUrl: string): Promise
   }
 
   return {
-    description: sanitizeText(firstText(feed, ['subtitle', 'description']), MAX_DESCRIPTION_LENGTH),
+    description: sanitizeText(
+      firstDirectText(feed, ['subtitle', 'description']),
+      MAX_DESCRIPTION_LENGTH
+    ),
     imageUrl,
     items,
     siteUrl,
@@ -225,13 +308,14 @@ async function parseAtom(document: ParsedFeedDocument, feedUrl: string): Promise
 export async function parseFeedXml(xml: string, feedUrl: string): Promise<NormalizedFeed> {
   const document = new DOMParser().parseFromString(xml, 'text/xml');
   const rootName = document.documentElement?.tagName.toLowerCase();
+  const safeUrl = createSafeUrlResolver();
 
   if (rootName === 'rss' || rootName === 'rdf:rdf') {
-    return parseRss(document, feedUrl);
+    return parseRss(document, feedUrl, safeUrl, rootName === 'rdf:rdf');
   }
 
   if (rootName === 'feed') {
-    return parseAtom(document, feedUrl);
+    return parseAtom(document, feedUrl, safeUrl);
   }
 
   throw new FeedParseError('Unsupported feed XML');

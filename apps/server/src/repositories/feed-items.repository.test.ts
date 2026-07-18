@@ -97,6 +97,67 @@ describe('feed items repository', () => {
     ).resolves.toMatchObject({ items: [expect.any(Object)], total: 1 });
   });
 
+  it('rejects feed items whose user does not own the subscription', async () => {
+    const items = createDrizzleFeedItemsAdapter(db);
+    await seedUser(USER_A_ID, 'feed-items-a@example.com');
+    await seedUser(USER_B_ID, 'feed-items-b@example.com');
+    const subscriptionA = await seedSubscription(USER_A_ID);
+
+    await expect(
+      items.create({
+        normalizedUrl: 'https://example.com/cross-user-subscription',
+        subscriptionId: subscriptionA.id,
+        title: 'Cross-user subscription',
+        url: 'https://example.com/cross-user-subscription',
+        userId: USER_B_ID
+      })
+    ).rejects.toThrow();
+  });
+
+  it("rejects feed items linked to another user's saved article", async () => {
+    const items = createDrizzleFeedItemsAdapter(db);
+    await seedUser(USER_A_ID, 'feed-items-a@example.com');
+    await seedUser(USER_B_ID, 'feed-items-b@example.com');
+    const subscriptionA = await seedSubscription(USER_A_ID);
+    const linkB = await seedLink(
+      USER_B_ID,
+      '20000000-0000-0000-0000-000000000011',
+      'https://example.com/user-b-post'
+    );
+
+    await expect(
+      items.create({
+        linkId: linkB,
+        normalizedUrl: 'https://example.com/cross-user-link',
+        state: 'saved',
+        subscriptionId: subscriptionA.id,
+        title: 'Cross-user link',
+        url: 'https://example.com/cross-user-link',
+        userId: USER_A_ID
+      })
+    ).rejects.toThrow();
+  });
+
+  it('rejects invalid feed item states at the database boundary', async () => {
+    await seedUser(USER_A_ID, 'feed-items-a@example.com');
+    const subscription = await seedSubscription(USER_A_ID);
+
+    await expect(
+      db.execute(sql`
+        insert into feed_items (
+          subscription_id, user_id, url, normalized_url, title, state
+        ) values (
+          ${subscription.id}::uuid,
+          ${USER_A_ID}::uuid,
+          'https://example.com/invalid-state',
+          'https://example.com/invalid-state',
+          'Invalid state',
+          'unexpected'
+        )
+      `)
+    ).rejects.toThrow();
+  });
+
   it('paginates review items with stable newest and oldest cursors', async () => {
     const items = createDrizzleFeedItemsAdapter(db);
     await seedUser(USER_A_ID, 'feed-items-a@example.com');
@@ -284,13 +345,130 @@ describe('feed items repository', () => {
       userId: USER_A_ID
     });
 
-    expect(updatedByGuid.id).toBe(created.id);
-    expect(updatedByGuid.title).toBe('Updated title');
-    expect(updatedByUrl.id).toBe(created.id);
-    expect(updatedByUrl.title).toBe('Updated by URL');
+    expect(created.created).toBe(true);
+    expect(updatedByGuid.created).toBe(false);
+    expect(updatedByUrl.created).toBe(false);
+    expect(updatedByGuid.item.id).toBe(created.item.id);
+    expect(updatedByGuid.item.title).toBe('Updated title');
+    expect(updatedByUrl.item.id).toBe(created.item.id);
+    expect(updatedByUrl.item.title).toBe('Updated by URL');
     await expect(items.findManyForReview({ userId: USER_A_ID })).resolves.toMatchObject({
       items: [expect.any(Object)],
       total: 1
+    });
+  });
+
+  it('resolves concurrent identity inserts to one feed item', async () => {
+    const items = createDrizzleFeedItemsAdapter(db);
+    await seedUser(USER_A_ID, 'feed-items-a@example.com');
+    const subscription = await seedSubscription(USER_A_ID);
+    const input = {
+      guid: 'concurrent-guid',
+      normalizedUrl: 'https://example.com/concurrent',
+      subscriptionId: subscription.id,
+      title: 'Concurrent item',
+      url: 'https://example.com/concurrent',
+      userId: USER_A_ID
+    };
+
+    const results = await Promise.all([
+      items.upsertByIdentity(input),
+      items.upsertByIdentity(input)
+    ]);
+
+    expect(results.filter(({ created }) => created)).toHaveLength(1);
+    expect(new Set(results.map(({ item }) => item.id)).size).toBe(1);
+    await expect(items.findManyForReview({ userId: USER_A_ID })).resolves.toMatchObject({
+      total: 1
+    });
+  });
+
+  it('resolves a GUID and URL bridge without overwriting either stored identity', async () => {
+    const items = createDrizzleFeedItemsAdapter(db);
+    await seedUser(USER_A_ID, 'feed-items-a@example.com');
+    const subscription = await seedSubscription(USER_A_ID);
+    const guidItem = await items.create({
+      guid: 'stable-guid',
+      normalizedUrl: 'https://example.com/guid-item',
+      subscriptionId: subscription.id,
+      title: 'GUID item',
+      url: 'https://example.com/guid-item',
+      userId: USER_A_ID
+    });
+    const urlItem = await items.create({
+      guid: 'other-guid',
+      normalizedUrl: 'https://example.com/url-item',
+      subscriptionId: subscription.id,
+      title: 'URL item',
+      url: 'https://example.com/url-item',
+      userId: USER_A_ID
+    });
+
+    const result = await items.upsertByIdentity({
+      guid: 'stable-guid',
+      normalizedUrl: 'https://example.com/url-item',
+      subscriptionId: subscription.id,
+      title: 'Updated GUID item',
+      url: 'https://example.com/url-item',
+      userId: USER_A_ID
+    });
+
+    expect(result).toMatchObject({
+      created: false,
+      item: {
+        id: guidItem.id,
+        normalizedUrl: 'https://example.com/guid-item',
+        title: 'Updated GUID item',
+        url: 'https://example.com/guid-item'
+      }
+    });
+    await expect(items.findById(urlItem.id, USER_A_ID)).resolves.toMatchObject({
+      id: urlItem.id,
+      normalizedUrl: 'https://example.com/url-item',
+      title: 'URL item'
+    });
+  });
+
+  it('rolls back every item in a failed identity batch', async () => {
+    const items = createDrizzleFeedItemsAdapter(db);
+    await seedUser(USER_A_ID, 'feed-items-a@example.com');
+    await seedUser(USER_B_ID, 'feed-items-b@example.com');
+    const subscription = await seedSubscription(USER_A_ID);
+    const existing = await items.create({
+      guid: 'existing-guid',
+      normalizedUrl: 'https://example.com/existing',
+      subscriptionId: subscription.id,
+      title: 'Original title',
+      url: 'https://example.com/existing',
+      userId: USER_A_ID
+    });
+
+    await expect(
+      items.upsertManyByIdentity([
+        {
+          guid: 'existing-guid',
+          normalizedUrl: 'https://example.com/existing',
+          subscriptionId: subscription.id,
+          title: 'Partially updated title',
+          url: 'https://example.com/existing',
+          userId: USER_A_ID
+        },
+        {
+          normalizedUrl: 'https://example.com/cross-owner',
+          subscriptionId: subscription.id,
+          title: 'Cross-owner item',
+          url: 'https://example.com/cross-owner',
+          userId: USER_B_ID
+        }
+      ])
+    ).rejects.toThrow();
+
+    await expect(items.findById(existing.id, USER_A_ID)).resolves.toMatchObject({
+      id: existing.id,
+      title: 'Original title'
+    });
+    await expect(items.findManyForReview({ userId: USER_B_ID })).resolves.toMatchObject({
+      total: 0
     });
   });
 
@@ -319,6 +497,29 @@ describe('feed items repository', () => {
     const saved = await items.save(item.id, USER_A_ID, linkId, new Date('2026-06-28T13:00:00Z'));
     expect(saved).toMatchObject({ id: item.id, linkId, state: 'saved' });
     expect(saved?.savedAt?.toISOString()).toBe('2026-06-28T13:00:00.000Z');
+  });
+
+  it('clears the feed item link reference when its saved article is deleted', async () => {
+    const items = createDrizzleFeedItemsAdapter(db);
+    await seedUser(USER_A_ID, 'feed-items-a@example.com');
+    const subscription = await seedSubscription(USER_A_ID);
+    const linkId = await seedLink(USER_A_ID);
+    const item = await items.create({
+      linkId,
+      normalizedUrl: 'https://example.com/post',
+      state: 'saved',
+      subscriptionId: subscription.id,
+      title: 'Saved item',
+      url: 'https://example.com/post',
+      userId: USER_A_ID
+    });
+
+    await db.delete(linksTable).where(sql`${linksTable.id} = ${linkId}::uuid`);
+
+    await expect(items.findById(item.id, USER_A_ID)).resolves.toMatchObject({
+      id: item.id,
+      linkId: null
+    });
   });
 
   it('reconciles matching staged items to an existing saved link by normalized URL', async () => {

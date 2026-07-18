@@ -20,6 +20,20 @@ const RETENTION_ITEM_LIMIT = 500;
 const DEFAULT_SUCCESS_INTERVAL_MS = 60 * 60 * 1000;
 const MAX_FAILURE_BACKOFF_MS = 24 * 60 * 60 * 1000;
 
+class FeedItemPersistenceError extends Error {
+  constructor(cause: unknown) {
+    super('Failed to persist feed items', { cause });
+    this.name = 'FeedItemPersistenceError';
+  }
+}
+
+class FeedAutoSaveError extends Error {
+  constructor(cause: unknown) {
+    super('Failed to auto-save one or more feed items', { cause });
+    this.name = 'FeedAutoSaveError';
+  }
+}
+
 export type FeedIngestionRepos = Pick<Repos, 'feedItems' | 'feedSubscriptions' | 'links'> & {
   feedItems: FeedItemsRepository;
   feedSubscriptions: FeedSubscriptionsRepository;
@@ -79,8 +93,15 @@ function retentionCutoff(now: Date): Date {
 function itemsForInitialIngest(items: NormalizedFeedItem[], now: Date): NormalizedFeedItem[] {
   const cutoff = retentionCutoff(now);
   return items
-    .filter((item) => !item.publishedAt || item.publishedAt >= cutoff)
-    .slice(0, INITIAL_ITEM_LIMIT);
+    .map((item, sourceIndex) => ({ item, sourceIndex }))
+    .filter(({ item }) => !item.publishedAt || item.publishedAt >= cutoff)
+    .sort((left, right) => {
+      const leftTimestamp = left.item.publishedAt?.getTime() ?? Number.NEGATIVE_INFINITY;
+      const rightTimestamp = right.item.publishedAt?.getTime() ?? Number.NEGATIVE_INFINITY;
+      return rightTimestamp - leftTimestamp || left.sourceIndex - right.sourceIndex;
+    })
+    .slice(0, INITIAL_ITEM_LIMIT)
+    .map(({ item }) => item);
 }
 
 function sanitizedError(error: unknown): string {
@@ -100,37 +121,74 @@ export function createFeedIngestionService(dependencies: FeedIngestionDependenci
     subscription: FeedSubscriptionData;
     user: UserWithoutPassword;
   }): Promise<{ autoSaved: number; staged: number }> {
-    let autoSaved = 0;
-    let staged = 0;
+    const itemData = input.items.map((item) => ({
+      author: item.author,
+      excerpt: item.excerpt,
+      guid: item.guid,
+      imageUrl: item.imageUrl,
+      linkId: null,
+      normalizedUrl: item.normalizedUrl,
+      publishedAt: item.publishedAt,
+      state: 'new' as const,
+      subscriptionId: input.subscription.id,
+      title: item.title,
+      url: item.url,
+      userId: input.user.id
+    }));
 
-    for (const item of input.items) {
-      const saved = input.subscription.autoSave
-        ? await saveLinkDependency({
-            repos,
-            user: input.user,
-            url: item.url
-          })
-        : null;
-
-      const feedItem = await repos.feedItems.upsertByIdentity({
-        author: item.author,
-        excerpt: item.excerpt,
-        guid: item.guid,
-        imageUrl: item.imageUrl,
-        linkId: saved?.link.id ?? null,
-        normalizedUrl: item.normalizedUrl,
-        publishedAt: item.publishedAt,
-        state: saved ? 'saved' : 'new',
-        subscriptionId: input.subscription.id,
-        title: item.title,
-        url: item.url,
-        userId: input.user.id
-      });
-
-      if (feedItem.state === 'saved') autoSaved += 1;
-      else staged += 1;
+    let results: Awaited<ReturnType<FeedItemsRepository['upsertManyByIdentity']>>;
+    try {
+      results = await repos.feedItems.upsertManyByIdentity(itemData);
+    } catch (error) {
+      throw new FeedItemPersistenceError(error);
     }
 
+    const persisted = results.map((result, index) => ({
+      created: result.created,
+      feedItem: result.item,
+      parsedItem: input.items[index]!
+    }));
+
+    let autoSaved = 0;
+    let staged = persisted.filter(({ created }) => created).length;
+    let firstAutoSaveError: unknown;
+
+    if (input.subscription.autoSave) {
+      for (const { created, feedItem, parsedItem } of persisted) {
+        if (feedItem.state !== 'new') continue;
+        if (!created) {
+          const existingLink = await repos.links.findByUrl(parsedItem.url, input.user.id);
+          if (!existingLink) continue;
+        }
+
+        try {
+          const saved = await saveLinkDependency({
+            reconcileFeedItems: false,
+            repos,
+            user: input.user,
+            url: parsedItem.url
+          });
+          const updated = await repos.feedItems.save(feedItem.id, input.user.id, saved.link.id);
+          if (!updated) throw new Error('Failed to mark auto-saved feed item as saved');
+          autoSaved += 1;
+          if (created) staged -= 1;
+        } catch (error) {
+          firstAutoSaveError ??= error;
+
+          let persistedLink: Awaited<ReturnType<typeof repos.links.findByUrl>> | undefined;
+          try {
+            persistedLink = await repos.links.findByUrl(parsedItem.url, input.user.id);
+          } catch {
+            persistedLink = undefined;
+          }
+          if (persistedLink === null) {
+            await repos.feedItems.delete(feedItem.id, input.user.id);
+          }
+        }
+      }
+    }
+
+    if (firstAutoSaveError) throw new FeedAutoSaveError(firstAutoSaveError);
     return { autoSaved, staged };
   }
 
@@ -256,6 +314,23 @@ export function createFeedIngestionService(dependencies: FeedIngestionDependenci
     }
   }
 
+  async function resultForExistingSubscription(
+    subscription: FeedSubscriptionData,
+    user: UserWithoutPassword
+  ): Promise<FeedIngestionResult> {
+    if (!subscription.lastSuccessfulFetchAt) {
+      return pollSubscription({ subscription, user });
+    }
+    return {
+      autoSaved: 0,
+      createdSubscription: false,
+      fetched: false,
+      pruned: 0,
+      staged: 0,
+      subscription
+    };
+  }
+
   async function addSubscription(input: AddFeedInput): Promise<FeedIngestionResult> {
     const normalizedFeedUrl = normalizeUrl(input.feedUrl);
     const existing = await repos.feedSubscriptions.findByNormalizedUrl(
@@ -263,14 +338,7 @@ export function createFeedIngestionService(dependencies: FeedIngestionDependenci
       input.user.id
     );
     if (existing) {
-      return {
-        autoSaved: 0,
-        createdSubscription: false,
-        fetched: false,
-        pruned: 0,
-        staged: 0,
-        subscription: existing
-      };
+      return resultForExistingSubscription(existing, input.user);
     }
 
     const fetchedAt = now();
@@ -280,48 +348,62 @@ export function createFeedIngestionService(dependencies: FeedIngestionDependenci
     }
 
     const feed = await parseFeedXmlDependency(fetched.body, input.feedUrl);
-    let subscription = await repos.feedSubscriptions.create({
-      autoSave: input.autoSave ?? false,
-      description: feed.description,
-      etag: fetched.headers.etag,
-      feedUrl: input.feedUrl,
-      imageUrl: feed.imageUrl,
-      lastModified: fetched.headers.lastModified,
-      nextFetchAfter: nextSuccessfulFetchAfter(fetchedAt),
-      normalizedFeedUrl,
-      siteUrl: feed.siteUrl,
-      title: feed.title,
-      userId: input.user.id
-    });
+    let subscription: FeedSubscriptionData;
+    try {
+      subscription = await repos.feedSubscriptions.create({
+        autoSave: input.autoSave ?? false,
+        description: feed.description,
+        etag: fetched.headers.etag,
+        feedUrl: input.feedUrl,
+        imageUrl: feed.imageUrl,
+        lastModified: fetched.headers.lastModified,
+        nextFetchAfter: nextSuccessfulFetchAfter(fetchedAt),
+        normalizedFeedUrl,
+        siteUrl: feed.siteUrl,
+        title: feed.title,
+        userId: input.user.id
+      });
+    } catch (error) {
+      const concurrent = await repos.feedSubscriptions.findByNormalizedUrl(
+        normalizedFeedUrl,
+        input.user.id
+      );
+      if (!concurrent) throw error;
+      return resultForExistingSubscription(concurrent, input.user);
+    }
 
-    subscription =
-      (await repos.feedSubscriptions.updateFetchMetadata(subscription.id, input.user.id, {
-        failureCount: 0,
-        lastError: null,
-        lastFetchedAt: fetchedAt,
-        lastSuccessfulFetchAt: fetchedAt,
-        nextFetchAfter: nextSuccessfulFetchAfter(fetchedAt)
-      })) ?? subscription;
+    try {
+      const stagedResult = await stageItems({
+        items: itemsForInitialIngest(feed.items, fetchedAt),
+        subscription,
+        user: input.user
+      });
+      const pruned = await repos.feedItems.pruneForSubscription({
+        before: retentionCutoff(fetchedAt),
+        keepLatest: RETENTION_ITEM_LIMIT,
+        subscriptionId: subscription.id,
+        userId: input.user.id
+      });
+      subscription = await markSuccess({
+        feed,
+        fetchedAt,
+        headers: fetched.headers,
+        subscription
+      });
 
-    const stagedResult = await stageItems({
-      items: itemsForInitialIngest(feed.items, fetchedAt),
-      subscription,
-      user: input.user
-    });
-    const pruned = await repos.feedItems.pruneForSubscription({
-      before: retentionCutoff(fetchedAt),
-      keepLatest: RETENTION_ITEM_LIMIT,
-      subscriptionId: subscription.id,
-      userId: input.user.id
-    });
-
-    return {
-      ...stagedResult,
-      createdSubscription: true,
-      fetched: true,
-      pruned,
-      subscription
-    };
+      return {
+        ...stagedResult,
+        createdSubscription: true,
+        fetched: true,
+        pruned,
+        subscription
+      };
+    } catch (error) {
+      if (error instanceof FeedItemPersistenceError) {
+        await repos.feedSubscriptions.delete(subscription.id, input.user.id);
+      }
+      throw error;
+    }
   }
 
   return {
