@@ -18,6 +18,7 @@ export type Pagination = {
   hasMore: boolean;
   limit: number;
   nextCursor?: string;
+  total?: number;
   totalReturned: number;
 };
 

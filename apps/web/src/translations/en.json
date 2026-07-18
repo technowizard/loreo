@@ -818,14 +818,16 @@
   "feeds": {
     "eyebrow": "User-curated discovery",
     "title": "Feeds",
-    "description": "Follow trusted sources and review new articles before they enter your library.",
+    "description": "Follow trusted sources and review new articles before they enter your library",
     "addFeed": "Add feed",
-    "emptyFeed": "No items for this filter.",
+    "manageFeeds": "Manage feeds",
+    "emptyFeed": "No items for this filter",
+    "loadingMore": "Loading more feed items…",
     "yes": "Yes",
     "no": "No",
     "tabs": {
       "aria": "Feed review filters",
-      "new": "New",
+      "new": "Review",
       "saved": "Saved",
       "dismissed": "Dismissed",
       "feeds": "Feeds"
@@ -839,13 +841,31 @@
       "autoSave": "Auto-save",
       "failures": "Failures"
     },
+    "overview": {
+      "total": "Total feeds",
+      "active": "Active feeds",
+      "pending": "Pending review"
+    },
+    "filters": {
+      "aria": "Feed item filters",
+      "sortAria": "Change feed item sort order",
+      "newestFirst": "Newest first",
+      "oldestFirst": "Oldest first",
+      "all": "All"
+    },
     "actions": {
       "save": "Save article",
       "dismiss": "Dismiss",
-      "refresh": "Refresh feed",
-      "saving": "Saving...",
-      "dismissing": "Dismissing...",
-      "refreshing": "Refreshing..."
+      "saving": "Saving…",
+      "dismissing": "Dismissing…",
+      "pause": "Pause",
+      "resume": "Resume"
+    },
+    "collection": {
+      "aria": "Feed articles"
+    },
+    "management": {
+      "aria": "Feed subscriptions"
     },
     "empty": {
       "title": "No feeds yet",
@@ -853,18 +873,95 @@
     },
     "error": {
       "title": "Could not load feeds",
-      "description": "Refresh the page or try again in a moment."
+      "description": "Refresh the page or try again in a moment"
     },
-    "reviewNote": "New feed items stay here until you save them.",
+    "reviewNote": "New feed items stay here until you save them",
+    "dialog": {
+      "title": "Add Feed",
+      "description": "Add a public RSS or Atom feed, then choose how new articles enter Loreo."
+    },
     "form": {
       "urlLabel": "Feed URL",
-      "urlPlaceholder": "https://example.com/feed.xml",
-      "help": "Use a public RSS or Atom feed. Loreo checks the feed before adding it.",
-      "autoSaveHelp": "Auto-save new items from this feed instead of staging them for review.",
-      "invalidUrl": "Enter a valid public feed URL.",
-      "adding": "Adding feed...",
-      "success": "{{count}} new items staged for review.",
-      "alreadyAdded": "This feed is already on your shelf."
+      "urlPlaceholder": "e.g. https://example.com/feed.xml…",
+      "help": "Loreo checks that the URL is public, reachable, and a valid feed before adding it.",
+      "invalidUrl": "Enter a complete URL beginning with http:// or https://.",
+      "serverError": "{{message}} Check the feed URL and try again.",
+      "autoSaveLabel": "Auto-save New Items",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "autoSaveEnabledHelp": "New articles go directly to your library.",
+      "autoSaveDisabledHelp": "New articles wait in Review until you save or dismiss them.",
+      "nextTitle": "What Happens Next",
+      "nextReview": "New items from this feed will appear in Review first.",
+      "nextAutoSave": "New items from this feed will be saved directly to your library.",
+      "nextManage": "You can change this behavior later in Manage Feeds.",
+      "cancel": "Cancel",
+      "checking": "Checking and Adding…",
+      "addedTitle": "{{title}} added",
+      "addedReviewDescription": "New articles will wait in Review.",
+      "addedAutoSaveDescription": "New articles will be saved to your library.",
+      "alreadyAddedTitle": "{{title}} is already in your feeds",
+      "alreadyAddedDescription": "No duplicate subscription was created."
+    },
+    "manager": {
+      "title": "Manage Feeds",
+      "description": "Manage trusted sources, review behavior, and feed health.",
+      "detailLabel": "Selected feed details",
+      "loading": "Loading feeds…",
+      "back": "Back to feeds",
+      "selectPrompt": "Select a feed to view its settings and health.",
+      "feedCount": "{{count}} feeds",
+      "lastFetched": "Fetched {{date}}",
+      "neverFetched": "Not fetched yet",
+      "feedUrl": "Feed URL",
+      "website": "Website",
+      "description": "Description",
+      "notAvailable": "Not available",
+      "updateError": "Couldn’t update this feed: {{message}}. Try again.",
+      "search": {
+        "label": "Search feeds",
+        "placeholder": "Search feeds by name or URL…"
+      },
+      "filters": {
+        "label": "Filter feeds by status",
+        "all": "All",
+        "active": "Active",
+        "paused": "Paused",
+        "attention": "Needs attention"
+      },
+      "status": {
+        "active": "Active",
+        "paused": "Paused",
+        "attention": "Needs attention"
+      },
+      "controls": {
+        "status": "Feed status",
+        "activeHelp": "Active feeds continue polling for new items.",
+        "pausedHelp": "Paused feeds remain available but do not poll.",
+        "autoSave": "Auto-save new items",
+        "autoSaveHelp": "Save new articles directly to your library.",
+        "updating": "Updating feed settings…",
+        "updated": "Feed settings updated."
+      },
+      "summary": {
+        "title": "Feed Overview",
+        "pending": "Pending review",
+        "saved": "Saved",
+        "dismissed": "Dismissed",
+        "failures": "Failures",
+        "lastFetched": "Last fetched",
+        "viewItems": "View items",
+        "viewItemsLabel": "View {{label}} items",
+        "error": "Couldn’t load this feed’s item totals. Try again in a moment."
+      },
+      "empty": {
+        "title": "No feeds yet",
+        "description": "Add your first trusted source to start curating articles."
+      },
+      "noResults": {
+        "title": "No matching feeds",
+        "description": "No feeds match “{{query}}”. Try another search or status filter."
+      }
     },
     "shelf": {
       "aria": "Feed shelves",
@@ -875,7 +972,7 @@
     },
     "warning": {
       "title": "Feed needs attention",
-      "nextTry": "Loreo will try again after {{date}}."
+      "nextTry": "Loreo will try again after {{date}}"
     }
   }
 }

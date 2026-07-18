@@ -1,13 +1,29 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const createFeedMutate = vi.hoisted(() => vi.fn());
 const saveFeedMutate = vi.hoisted(() => vi.fn());
 const dismissFeedMutate = vi.hoisted(() => vi.fn());
+const updateFeedMutate = vi.hoisted(() => vi.fn());
+
+vi.mock('@tanstack/react-router', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@tanstack/react-router')>();
+
+  return {
+    ...actual,
+    Link: ({ children }: { children: ReactNode }) => <a href="#feed-items">{children}</a>
+  };
+});
 
 vi.mock('react-i18next', () => ({
+  initReactI18next: {
+    type: '3rdParty',
+    init: vi.fn()
+  },
   useTranslation: () => ({
+    i18n: { language: 'en' },
     t: (key: string, values?: Record<string, unknown>) => {
       if (values?.count !== undefined) return `${key} ${values.count}`;
       return key;
@@ -24,7 +40,8 @@ vi.mock('@/features/feeds/api/create-feed-subscription', async (importOriginal) 
     useCreateFeedSubscription: () => ({
       error: null,
       isPending: false,
-      mutate: createFeedMutate
+      mutate: createFeedMutate,
+      reset: vi.fn()
     })
   };
 });
@@ -45,9 +62,32 @@ vi.mock('@/features/feeds/api/dismiss-feed-item', () => ({
   })
 }));
 
+vi.mock('@/features/feeds/api/get-feed-subscription-summary', () => ({
+  useFeedSubscriptionSummary: () => ({
+    data: { result: { dismissed: 2, new: 3, saved: 4 } },
+    isError: false,
+    isLoading: false
+  })
+}));
+
+vi.mock('@/features/feeds/api/update-feed-subscription', () => ({
+  useUpdateFeedSubscription: () => ({
+    error: null,
+    isPending: false,
+    mutate: updateFeedMutate
+  })
+}));
+
+import {
+  FeedManagerDialog,
+  filterManagedFeeds,
+  getDefaultManagedFeedId
+} from '@/features/feeds/components/feed-manager-dialog';
+import { chunkFeedItems } from '@/features/feeds/components/virtualized-feed-grid';
+
 import type { FeedItem, FeedSubscription } from '@/types/feeds';
 
-import { AddFeedForm, FeedItemCard, buildFeedShelves, groupFeedItemsBySubscription } from './feeds';
+import { AddFeedForm, FeedItemCard } from './feeds';
 
 const NOW = '2026-06-28T12:00:00.000Z';
 
@@ -69,7 +109,7 @@ function subscription(overrides: Partial<FeedSubscription> = {}): FeedSubscripti
     normalizedFeedUrl: 'https://example.com/feed.xml',
     siteUrl: 'https://example.com',
     status: 'active',
-    title: 'Example',
+    title: 'Example Source',
     updatedAt: NOW,
     userId: 'user-1',
     ...overrides
@@ -105,55 +145,44 @@ beforeEach(() => {
 });
 
 describe('feeds page helpers', () => {
-  it('groups items by subscription id', () => {
-    const grouped = groupFeedItemsBySubscription([
-      item({ id: 'one', subscriptionId: 'feed-a' }),
-      item({ id: 'two', subscriptionId: 'feed-b' }),
-      item({ id: 'three', subscriptionId: 'feed-a' })
-    ]);
-
-    expect(grouped.get('feed-a')?.map((feedItem) => feedItem.id)).toEqual(['one', 'three']);
-    expect(grouped.get('feed-b')?.map((feedItem) => feedItem.id)).toEqual(['two']);
-  });
-
-  it('orders shelves by new items, warnings, then quiet feeds', () => {
-    const newFeed = subscription({ id: 'new-feed', title: 'New Feed' });
-    const warningFeed = subscription({
-      id: 'warning-feed',
-      lastError: 'Fetch failed',
-      title: 'Warning Feed'
+  it('prioritizes feeds needing attention and filters by search and status', () => {
+    const active = subscription({ id: 'active', title: 'Active Source' });
+    const warning = subscription({
+      failureCount: 2,
+      id: 'warning',
+      lastError: 'Timed out',
+      title: 'Warning Source'
     });
-    const quietFeed = subscription({ id: 'quiet-feed', title: 'Quiet Feed' });
-    const grouped = groupFeedItemsBySubscription([
-      item({ id: 'new-item', state: 'new', subscriptionId: newFeed.id })
+    const paused = subscription({ id: 'paused', status: 'paused', title: 'Paused Source' });
+    const subscriptions = [active, warning, paused];
+
+    expect(getDefaultManagedFeedId(subscriptions)).toBe('warning');
+    expect(filterManagedFeeds(subscriptions, 'paused', 'all').map((feed) => feed.id)).toEqual([
+      'paused'
     ]);
-
-    const shelves = buildFeedShelves([quietFeed, warningFeed, newFeed], grouped);
-
-    expect(shelves.map((shelf) => shelf.subscription.id)).toEqual([
-      'new-feed',
-      'warning-feed',
-      'quiet-feed'
+    expect(filterManagedFeeds(subscriptions, '', 'attention').map((feed) => feed.id)).toEqual([
+      'warning'
     ]);
   });
 
-  it('opens shelves with new items or warnings by default', () => {
-    const newFeed = subscription({ id: 'new-feed' });
-    const warningFeed = subscription({ id: 'warning-feed', lastError: 'Fetch failed' });
-    const quietFeed = subscription({ id: 'quiet-feed' });
-    const grouped = groupFeedItemsBySubscription([
-      item({ id: 'new-item', subscriptionId: newFeed.id })
+  it('chunks feed items into responsive virtual rows', () => {
+    const items = [
+      item({ id: 'one' }),
+      item({ id: 'two' }),
+      item({ id: 'three' }),
+      item({ id: 'four' }),
+      item({ id: 'five' })
+    ];
+
+    expect(chunkFeedItems(items, 2).map((row) => row.map((feedItem) => feedItem.id))).toEqual([
+      ['one', 'two'],
+      ['three', 'four'],
+      ['five']
     ]);
-
-    const shelves = buildFeedShelves([newFeed, warningFeed, quietFeed], grouped);
-
-    expect(
-      Object.fromEntries(shelves.map((shelf) => [shelf.subscription.id, shelf.defaultOpen]))
-    ).toEqual({
-      'new-feed': true,
-      'warning-feed': true,
-      'quiet-feed': false
-    });
+    expect(chunkFeedItems(items, 3).map((row) => row.map((feedItem) => feedItem.id))).toEqual([
+      ['one', 'two', 'three'],
+      ['four', 'five']
+    ]);
   });
 });
 
@@ -174,7 +203,7 @@ describe('feed page components', () => {
     render(<AddFeedForm />);
 
     await user.type(screen.getByLabelText('feeds.form.urlLabel'), 'https://example.com/feed.xml');
-    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('switch'));
     await user.click(screen.getByRole('button', { name: /feeds.addFeed/i }));
 
     expect(createFeedMutate).toHaveBeenCalledWith({
@@ -185,12 +214,54 @@ describe('feed page components', () => {
 
   it('wires save and dismiss actions for new feed items', async () => {
     const user = userEvent.setup();
-    render(<FeedItemCard item={item({ id: 'item-save' })} />);
+    render(<FeedItemCard item={item({ id: 'item-save' })} sourceTitle="Example Source" />);
 
+    expect(screen.getByText('Example Source')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: /feeds.actions.save/i }));
     await user.click(screen.getByRole('button', { name: /feeds.actions.dismiss/i }));
 
     expect(saveFeedMutate).toHaveBeenCalledWith('item-save');
     expect(dismissFeedMutate).toHaveBeenCalledWith('item-save');
+  });
+
+  it('hides review actions for saved feed items', () => {
+    render(<FeedItemCard item={item({ state: 'saved' })} sourceTitle="Example Source" />);
+
+    expect(screen.queryByRole('button', { name: /feeds.actions.save/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /feeds.actions.dismiss/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it('updates status and auto-save from the selected feed detail', async () => {
+    const user = userEvent.setup();
+    render(
+      <FeedManagerDialog
+        onOpenChange={vi.fn()}
+        onQueryChange={vi.fn()}
+        onSelectFeed={vi.fn()}
+        onStartAdd={vi.fn()}
+        onStatusFilterChange={vi.fn()}
+        open
+        query=""
+        selectedFeedId="feed-1"
+        statusFilter="all"
+        subscriptions={[subscription()]}
+        subscriptionsLoading={false}
+      />
+    );
+
+    const switches = await screen.findAllByRole('switch');
+    await user.click(switches[0]!);
+    await user.click(switches[1]!);
+
+    expect(updateFeedMutate).toHaveBeenNthCalledWith(1, {
+      body: { status: 'paused' },
+      subscriptionId: 'feed-1'
+    });
+    expect(updateFeedMutate).toHaveBeenNthCalledWith(2, {
+      body: { autoSave: true },
+      subscriptionId: 'feed-1'
+    });
   });
 });

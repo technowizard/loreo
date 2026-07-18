@@ -60,6 +60,12 @@ export type CreateFeedSubscriptionResult = {
   subscription: FeedSubscription;
 };
 
+export type FeedSubscriptionSummary = {
+  dismissed: number;
+  new: number;
+  saved: number;
+};
+
 export type RefreshFeedSubscriptionResult = {
   jobId?: string;
   subscriptionId: string;
@@ -72,6 +78,7 @@ export type SaveFeedItemResult = {
 };
 
 export type FeedItemFilters = {
+  sort?: 'newest' | 'oldest';
   state?: FeedItemState;
   subscriptionId?: string;
 };

@@ -1,4 +1,4 @@
-import { BookmarksIcon, HouseIcon, UserIcon } from '@phosphor-icons/react';
+import { BookmarksIcon, HouseIcon, RssIcon, UserIcon } from '@phosphor-icons/react';
 import { Link, useLocation } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
@@ -47,6 +47,21 @@ export function Header() {
                     weight={pathname === '/articles' ? 'fill' : 'regular'}
                   />
                   <span className="font-medium">{t('nav.articles')}</span>
+                </div>
+              </Link>
+              <Link to="/feeds">
+                <div
+                  className={cn(
+                    'hover:bg-primary-50 dark:hover:bg-primary-400/20 hover:text-primary-700 dark:hover:text-primary-400 sepia-theme:hover:bg-sepia-100 sepia-theme:hover:text-sepia-700 flex items-center gap-1 rounded-full px-3 py-2 transition-colors',
+                    pathname.startsWith('/feeds') &&
+                      'bg-primary-50 text-primary-700 sepia-theme:text-sepia-700 dark:bg-primary-400/20 dark:text-primary-400 sepia-theme:bg-sepia-100'
+                  )}
+                >
+                  <RssIcon
+                    className="size-5"
+                    weight={pathname.startsWith('/feeds') ? 'fill' : 'regular'}
+                  />
+                  <span className="font-medium">{t('nav.feeds')}</span>
                 </div>
               </Link>
             </nav>

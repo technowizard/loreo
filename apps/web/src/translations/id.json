@@ -750,12 +750,14 @@
     "title": "Feed",
     "description": "Ikuti sumber tepercaya dan tinjau artikel baru sebelum masuk ke perpustakaanmu.",
     "addFeed": "Tambah feed",
+    "manageFeeds": "Kelola feed",
     "emptyFeed": "Tidak ada item untuk filter ini.",
+    "loadingMore": "Memuat item feed lainnya…",
     "yes": "Ya",
     "no": "Tidak",
     "tabs": {
       "aria": "Filter tinjauan feed",
-      "new": "Baru",
+      "new": "Tinjau",
       "saved": "Disimpan",
       "dismissed": "Dilewati",
       "feeds": "Feed"
@@ -769,13 +771,31 @@
       "autoSave": "Simpan otomatis",
       "failures": "Kegagalan"
     },
+    "overview": {
+      "total": "Total feed",
+      "active": "Feed aktif",
+      "pending": "Menunggu tinjauan"
+    },
+    "filters": {
+      "aria": "Filter item feed",
+      "sortAria": "Ubah urutan item feed",
+      "newestFirst": "Terbaru dulu",
+      "oldestFirst": "Terlama dulu",
+      "all": "Semua"
+    },
     "actions": {
       "save": "Simpan artikel",
       "dismiss": "Lewati",
-      "refresh": "Segarkan feed",
-      "saving": "Menyimpan...",
-      "dismissing": "Melewati...",
-      "refreshing": "Menyegarkan..."
+      "saving": "Menyimpan…",
+      "dismissing": "Melewati…",
+      "pause": "Jeda",
+      "resume": "Lanjutkan"
+    },
+    "collection": {
+      "aria": "Artikel feed"
+    },
+    "management": {
+      "aria": "Langganan feed"
     },
     "empty": {
       "title": "Belum ada feed",
@@ -786,15 +806,92 @@
       "description": "Segarkan halaman atau coba lagi sebentar lagi."
     },
     "reviewNote": "Item feed baru tetap di sini sampai kamu menyimpannya.",
+    "dialog": {
+      "title": "Tambah Feed",
+      "description": "Tambahkan feed RSS atau Atom publik, lalu pilih cara artikel baru masuk ke Loreo."
+    },
     "form": {
-      "urlLabel": "URL feed",
-      "urlPlaceholder": "https://example.com/feed.xml",
-      "help": "Gunakan feed RSS atau Atom publik. Loreo akan memeriksanya sebelum ditambahkan.",
-      "autoSaveHelp": "Simpan otomatis item baru dari feed ini, bukan menaruhnya di tinjauan.",
-      "invalidUrl": "Masukkan URL feed publik yang valid.",
-      "adding": "Menambahkan feed...",
-      "success": "{{count}} item baru siap ditinjau.",
-      "alreadyAdded": "Feed ini sudah ada di rakmu."
+      "urlLabel": "URL Feed",
+      "urlPlaceholder": "mis. https://example.com/feed.xml…",
+      "help": "Loreo memeriksa bahwa URL bersifat publik, dapat dijangkau, dan merupakan feed yang valid sebelum menambahkannya.",
+      "invalidUrl": "Masukkan URL lengkap yang diawali dengan http:// atau https://.",
+      "serverError": "{{message}} Periksa URL feed dan coba lagi.",
+      "autoSaveLabel": "Simpan Otomatis Item Baru",
+      "enabled": "Aktif",
+      "disabled": "Nonaktif",
+      "autoSaveEnabledHelp": "Artikel baru langsung masuk ke perpustakaanmu.",
+      "autoSaveDisabledHelp": "Artikel baru menunggu di Tinjauan sampai kamu menyimpan atau melewatinya.",
+      "nextTitle": "Yang Terjadi Selanjutnya",
+      "nextReview": "Item baru dari feed ini akan muncul di Tinjauan terlebih dahulu.",
+      "nextAutoSave": "Item baru dari feed ini akan langsung disimpan ke perpustakaanmu.",
+      "nextManage": "Kamu dapat mengubah perilaku ini nanti di Kelola Feed.",
+      "cancel": "Batal",
+      "checking": "Memeriksa dan Menambahkan…",
+      "addedTitle": "{{title}} ditambahkan",
+      "addedReviewDescription": "Artikel baru akan menunggu di Tinjauan.",
+      "addedAutoSaveDescription": "Artikel baru akan disimpan ke perpustakaanmu.",
+      "alreadyAddedTitle": "{{title}} sudah ada di feed-mu",
+      "alreadyAddedDescription": "Tidak ada langganan duplikat yang dibuat."
+    },
+    "manager": {
+      "title": "Kelola Feed",
+      "description": "Kelola sumber tepercaya, perilaku tinjauan, dan kesehatan feed.",
+      "detailLabel": "Detail feed terpilih",
+      "loading": "Memuat feed…",
+      "back": "Kembali ke feed",
+      "selectPrompt": "Pilih feed untuk melihat pengaturan dan kesehatannya.",
+      "feedCount": "{{count}} feed",
+      "lastFetched": "Diambil {{date}}",
+      "neverFetched": "Belum pernah diambil",
+      "feedUrl": "URL feed",
+      "website": "Situs web",
+      "description": "Deskripsi",
+      "notAvailable": "Tidak tersedia",
+      "updateError": "Feed ini tidak dapat diperbarui: {{message}}. Coba lagi.",
+      "search": {
+        "label": "Cari feed",
+        "placeholder": "Cari feed berdasarkan nama atau URL…"
+      },
+      "filters": {
+        "label": "Filter feed berdasarkan status",
+        "all": "Semua",
+        "active": "Aktif",
+        "paused": "Dijeda",
+        "attention": "Perlu perhatian"
+      },
+      "status": {
+        "active": "Aktif",
+        "paused": "Dijeda",
+        "attention": "Perlu perhatian"
+      },
+      "controls": {
+        "status": "Status feed",
+        "activeHelp": "Feed aktif terus memeriksa item baru.",
+        "pausedHelp": "Feed yang dijeda tetap tersedia tetapi tidak diperiksa.",
+        "autoSave": "Simpan otomatis item baru",
+        "autoSaveHelp": "Simpan artikel baru langsung ke perpustakaanmu.",
+        "updating": "Memperbarui pengaturan feed…",
+        "updated": "Pengaturan feed diperbarui."
+      },
+      "summary": {
+        "title": "Ringkasan Feed",
+        "pending": "Menunggu tinjauan",
+        "saved": "Disimpan",
+        "dismissed": "Dilewati",
+        "failures": "Kegagalan",
+        "lastFetched": "Terakhir diambil",
+        "viewItems": "Lihat item",
+        "viewItemsLabel": "Lihat item {{label}}",
+        "error": "Jumlah item feed ini tidak dapat dimuat. Coba lagi sebentar lagi."
+      },
+      "empty": {
+        "title": "Belum ada feed",
+        "description": "Tambahkan sumber tepercaya pertamamu untuk mulai memilih artikel."
+      },
+      "noResults": {
+        "title": "Tidak ada feed yang cocok",
+        "description": "Tidak ada feed yang cocok dengan “{{query}}”. Coba pencarian atau filter status lain."
+      }
     },
     "shelf": {
       "aria": "Rak feed",
