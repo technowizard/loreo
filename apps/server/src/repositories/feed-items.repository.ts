@@ -215,6 +215,7 @@ export function createDrizzleFeedItemsAdapter(db: DrizzleClient): FeedItemsRepos
       const limit = Math.max(1, Math.min(requestedLimit ?? 24, 60));
       const ascending = sort === 'oldest';
       const effectiveDate = sql<Date>`coalesce(${feedItemsTable.publishedAt}, ${feedItemsTable.discoveredAt})`;
+      const effectiveCursor = sql<string>`to_char(${effectiveDate} at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')`;
       const baseConditions = [eq(feedItemsTable.userId, userId)];
 
       if (state) baseConditions.push(eq(feedItemsTable.state, state));
@@ -230,7 +231,7 @@ export function createDrizzleFeedItemsAdapter(db: DrizzleClient): FeedItemsRepos
       const pageConditions = [...baseConditions];
       if (cursor) {
         const cursorData = decodeCursor(cursor);
-        const cursorDate = new Date(cursorData.createdAt);
+        const cursorDate = sql<Date>`${cursorData.createdAt}::timestamptz`;
         const cursorCondition = ascending
           ? or(
               gt(effectiveDate, cursorDate),
@@ -245,25 +246,26 @@ export function createDrizzleFeedItemsAdapter(db: DrizzleClient): FeedItemsRepos
       }
 
       const rows = (await db
-        .select(itemColumns)
+        .select({ ...itemColumns, effectiveCursor })
         .from(feedItemsTable)
         .where(and(...pageConditions))
         .orderBy(
           ascending ? asc(effectiveDate) : desc(effectiveDate),
           ascending ? asc(feedItemsTable.id) : desc(feedItemsTable.id)
         )
-        .limit(limit + 1)) as FeedItemData[];
+        .limit(limit + 1)) as (FeedItemData & { effectiveCursor: string })[];
 
       const hasMore = rows.length > limit;
-      const items = hasMore ? rows.slice(0, limit) : rows;
-      const lastItem = items.at(-1);
+      const pageRows = hasMore ? rows.slice(0, limit) : rows;
+      const lastRow = pageRows.at(-1);
       const nextCursor =
-        hasMore && lastItem
+        hasMore && lastRow
           ? encodeCursor({
-              createdAt: (lastItem.publishedAt ?? lastItem.discoveredAt).toISOString(),
-              id: lastItem.id
+              createdAt: lastRow.effectiveCursor,
+              id: lastRow.id
             })
           : undefined;
+      const items = pageRows.map(({ effectiveCursor: _effectiveCursor, ...item }) => item);
 
       return { hasMore, items, nextCursor, total };
     },
@@ -281,7 +283,7 @@ export function createDrizzleFeedItemsAdapter(db: DrizzleClient): FeedItemsRepos
         )
         .returning({ id: feedItemsTable.id });
 
-      const excessRows = await db
+      const excessIds = db
         .select({ id: feedItemsTable.id })
         .from(feedItemsTable)
         .where(
@@ -294,14 +296,14 @@ export function createDrizzleFeedItemsAdapter(db: DrizzleClient): FeedItemsRepos
         .orderBy(desc(feedItemsTable.discoveredAt), desc(feedItemsTable.createdAt))
         .offset(keepLatest);
 
-      if (excessRows.length === 0) return oldRows.length;
-
       const removedExcess = await db
         .delete(feedItemsTable)
         .where(
-          inArray(
-            feedItemsTable.id,
-            excessRows.map((row) => row.id)
+          and(
+            eq(feedItemsTable.subscriptionId, subscriptionId),
+            eq(feedItemsTable.userId, userId),
+            ne(feedItemsTable.state, 'saved'),
+            inArray(feedItemsTable.id, excessIds)
           )
         )
         .returning({ id: feedItemsTable.id });

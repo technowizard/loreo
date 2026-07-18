@@ -69,6 +69,15 @@ cp .env.prod.example .env.prod
 | `SERVER_PUBLIC_PORT` | `3000`  | Host port for the API container. Change if port 3000 is in use. The server always listens on port 3000 internally; this only controls the host mapping. |
 | `WEB_PUBLIC_PORT`    | `3001`  | Host port for the web container. Change if port 3001 is in use.                                                                                         |
 
+### Optional RSS Polling Variables
+
+| Variable                     | Default | Description                                                   |
+| ---------------------------- | ------- | ------------------------------------------------------------- |
+| `FEED_POLL_SCAN_INTERVAL_MS` | `60000` | How often BullMQ scans for subscriptions that are due to poll |
+| `FEED_POLL_SCAN_BATCH_SIZE`  | `100`   | Maximum due subscriptions enqueued by each scan               |
+
+BullMQ stores one stable recurring scan scheduler in Redis, so registering it from multiple server replicas does not multiply scheduled scans.
+
 ### Generating Secrets
 
 ```bash
@@ -241,6 +250,8 @@ docker compose --env-file .env.prod -f docker-compose.prod.yml up -d
 ```
 
 Database migrations run automatically when the server container starts. The server's `docker-entrypoint.sh` applies any pending migrations before starting the API.
+
+Migration `0004_feed_item_pagination_query_shapes` builds two `feed_items` indexes with standard `CREATE INDEX`, which briefly blocks writes to that table while each index is built. Installations with a large existing RSS collection should schedule this update during a low-traffic maintenance window.
 
 ### Pinning Versions
 

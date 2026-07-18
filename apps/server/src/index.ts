@@ -10,9 +10,14 @@ import { browserService } from './services/browser.service.js';
 
 import app from './app.js';
 import { enqueueContentExtraction } from './queues/content-extraction.queue.js';
+import {
+  feedPollSchedulerQueue,
+  registerFeedPollScheduler
+} from './queues/feed-poll-scheduler.queue.js';
 import { enqueueFeedPoll } from './queues/feed-poll.queue.js';
 import contentExtractionWorker from './workers/content-extraction.worker.js';
 import csvImportWorker from './workers/csv-import.worker.js';
+import feedPollSchedulerWorker from './workers/feed-poll-scheduler.worker.js';
 import feedPollWorker from './workers/feed-poll.worker.js';
 
 if (env.isDevelopment) {
@@ -30,6 +35,11 @@ const server = serve(
   }
 );
 
+void registerFeedPollScheduler().catch((error: unknown) => {
+  const message = error instanceof Error ? error.message : String(error);
+  logger.error(`[Queue] Failed to register feed poll scheduler: ${message}`);
+});
+
 let isShuttingDown = false;
 
 function onCloseSignal() {
@@ -43,8 +53,10 @@ function onCloseSignal() {
     await Promise.all([
       contentExtractionWorker.close(),
       csvImportWorker.close(),
+      feedPollSchedulerWorker.close(),
       feedPollWorker.close(),
       enqueueContentExtraction.close(),
+      feedPollSchedulerQueue.close(),
       enqueueFeedPoll.close(),
       browserService.close()
     ]);

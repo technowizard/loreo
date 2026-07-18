@@ -42,9 +42,11 @@ function isBlockedIpv6Address(address: string): boolean {
     return true;
   }
 
+  // IPv4-mapped IPv6 literals may encode the final 32 bits in hexadecimal
+  // (for example ::ffff:7f00:1), which dotted-IPv4 parsers misclassify.
+  // Reject the entire mapped range rather than decoding only one spelling.
   if (normalized.startsWith('::ffff:')) {
-    const mappedAddress = normalized.slice('::ffff:'.length);
-    return isBlockedIpv4Address(mappedAddress);
+    return true;
   }
 
   if (
@@ -77,33 +79,51 @@ function isBlockedAddress(address: string): boolean {
   return false;
 }
 
-async function resolvesToBlockedAddress(hostname: string): Promise<boolean> {
-  const results = await lookup(hostname, { all: true });
-  return results.some(({ address }) => isBlockedAddress(address));
+export interface PublicAddress {
+  address: string;
+  family: 4 | 6;
+}
+
+function withoutIpv6Brackets(hostname: string): string {
+  return hostname.startsWith('[') && hostname.endsWith(']') ? hostname.slice(1, -1) : hostname;
+}
+
+export async function resolvePublicAddresses(url: string): Promise<PublicAddress[] | null> {
+  try {
+    const parsed = new URL(url);
+    if (!['http:', 'https:'].includes(parsed.protocol) || parsed.username || parsed.password) {
+      return null;
+    }
+
+    const hostname = withoutIpv6Brackets(parsed.hostname.toLowerCase());
+    if (hostname === 'localhost' || hostname.endsWith('.localhost')) {
+      return null;
+    }
+
+    const literalFamily = isIP(hostname);
+    if (literalFamily !== 0) {
+      if (isBlockedAddress(hostname)) return null;
+      return [{ address: hostname, family: literalFamily === 4 ? 4 : 6 }];
+    }
+
+    const results = await lookup(hostname, { all: true });
+    if (results.length === 0 || results.some(({ address }) => isBlockedAddress(address))) {
+      return null;
+    }
+
+    const publicAddresses: PublicAddress[] = [];
+    for (const { address, family } of results) {
+      if (family === 4 || family === 6) {
+        publicAddresses.push({ address, family });
+      }
+    }
+
+    return publicAddresses.length > 0 ? publicAddresses : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function isValidUrl(url: string): Promise<boolean> {
-  try {
-    const parsed = new URL(url);
-    if (!['http:', 'https:'].includes(parsed.protocol)) {
-      return false;
-    }
-
-    const hostname = parsed.hostname.toLowerCase();
-    if (hostname === 'localhost' || hostname.endsWith('.localhost')) {
-      return false;
-    }
-
-    if (isBlockedAddress(hostname)) {
-      return false;
-    }
-
-    if (isIP(hostname) !== 0) {
-      return true;
-    }
-
-    return !(await resolvesToBlockedAddress(hostname));
-  } catch {
-    return false;
-  }
+  return (await resolvePublicAddresses(url)) !== null;
 }

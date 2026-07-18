@@ -50,6 +50,10 @@ const envSchema = z
 
     BODY_SIZE_LIMIT: z.coerce.number().int().positive().default(4_194_304),
 
+    FEED_POLL_SCAN_INTERVAL_MS: z.coerce.number().int().min(10_000).default(60_000),
+
+    FEED_POLL_SCAN_BATCH_SIZE: z.coerce.number().int().min(1).max(1_000).default(100),
+
     PUBLIC_URL: z.string().default(''),
 
     STORAGE_PATH: z.string().default(''),

@@ -45,9 +45,20 @@ export const feedItemsTable = pgTable(
       table.state,
       table.publishedAt.desc()
     ),
+    index('idx_feed_items_user_effective_date_id').on(
+      table.userId,
+      sql`coalesce(${table.publishedAt}, ${table.discoveredAt})`,
+      table.id
+    ),
     index('idx_feed_items_user_state_effective_date_id').on(
       table.userId,
       table.state,
+      sql`coalesce(${table.publishedAt}, ${table.discoveredAt})`,
+      table.id
+    ),
+    index('idx_feed_items_user_subscription_effective_date_id').on(
+      table.userId,
+      table.subscriptionId,
       sql`coalesce(${table.publishedAt}, ${table.discoveredAt})`,
       table.id
     ),

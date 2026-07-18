@@ -43,11 +43,15 @@ const importSessionsAdapterMock = vi.hoisted(() => ({
 
 vi.mock('@/db/index.js', () => ({ db: {} }));
 
+vi.mock('@/index.js', () => ({ getIsShuttingDown: vi.fn(() => false) }));
+
 vi.mock('@/lib/job-queue.js', () => ({
   createWorker: createWorkerMock,
   createQueue: vi.fn(() => ({
     add: vi.fn(),
-    on: vi.fn()
+    close: vi.fn(),
+    on: vi.fn(),
+    upsertJobScheduler: vi.fn()
   }))
 }));
 

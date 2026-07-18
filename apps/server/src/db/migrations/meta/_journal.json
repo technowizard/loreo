@@ -29,6 +29,13 @@
       "when": 1783706400000,
       "tag": "0003_feed_item_pagination_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1784366874258,
+      "tag": "0004_feed_item_pagination_query_shapes",
+      "breakpoints": true
     }
   ]
 }

@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 
 import { db } from '@/db/index.js';
@@ -151,6 +152,57 @@ describe('feed items repository', () => {
       userId: USER_A_ID
     });
     expect(oldestFirst.items.map((item) => item.id)).toEqual([oldest.id, middle.id]);
+  });
+
+  it('traverses sub-millisecond timestamp ties without gaps in both directions', async () => {
+    const items = createDrizzleFeedItemsAdapter(db);
+    await seedUser(USER_A_ID, 'feed-items-a@example.com');
+    const subscription = await seedSubscription(USER_A_ID);
+    const ids = [
+      '21000000-0000-0000-0000-000000000001',
+      '21000000-0000-0000-0000-000000000002',
+      '21000000-0000-0000-0000-000000000003'
+    ];
+
+    await db.execute(sql`
+      insert into feed_items (
+        id, subscription_id, user_id, url, normalized_url, title,
+        published_at, discovered_at, state
+      ) values
+        (${ids[0]}::uuid, ${subscription.id}::uuid, ${USER_A_ID}::uuid,
+          'https://example.com/micro-1', 'https://example.com/micro-1', 'Micro 1',
+          '2026-06-28T12:00:00.123100Z'::timestamptz,
+          '2026-06-28T12:00:00.123100Z'::timestamptz, 'new'),
+        (${ids[1]}::uuid, ${subscription.id}::uuid, ${USER_A_ID}::uuid,
+          'https://example.com/micro-2', 'https://example.com/micro-2', 'Micro 2',
+          '2026-06-28T12:00:00.123500Z'::timestamptz,
+          '2026-06-28T12:00:00.123500Z'::timestamptz, 'new'),
+        (${ids[2]}::uuid, ${subscription.id}::uuid, ${USER_A_ID}::uuid,
+          'https://example.com/micro-3', 'https://example.com/micro-3', 'Micro 3',
+          '2026-06-28T12:00:00.123900Z'::timestamptz,
+          '2026-06-28T12:00:00.123900Z'::timestamptz, 'new')
+    `);
+
+    async function traverse(sort: 'newest' | 'oldest') {
+      const visited: string[] = [];
+      let cursor: string | undefined;
+
+      do {
+        const page = await items.findManyForReview({
+          cursor,
+          limit: 1,
+          sort,
+          userId: USER_A_ID
+        });
+        visited.push(...page.items.map((item) => item.id));
+        cursor = page.nextCursor;
+      } while (cursor);
+
+      return visited;
+    }
+
+    await expect(traverse('newest')).resolves.toEqual([...ids].reverse());
+    await expect(traverse('oldest')).resolves.toEqual(ids);
   });
 
   it('summarizes item states for one user-owned subscription', async () => {

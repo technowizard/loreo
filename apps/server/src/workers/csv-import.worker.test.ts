@@ -73,7 +73,9 @@ vi.mock('@/lib/job-queue.js', () => ({
   createWorker: createWorkerMock,
   createQueue: vi.fn(() => ({
     add: vi.fn(),
-    on: vi.fn()
+    close: vi.fn(),
+    on: vi.fn(),
+    upsertJobScheduler: vi.fn()
   }))
 }));
 

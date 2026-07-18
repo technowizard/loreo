@@ -16,7 +16,7 @@ describe('feed poll queue', () => {
     vi.clearAllMocks();
   });
 
-  it('enqueues a single feed poll job with stable identity', async () => {
+  it('deduplicates a subscription only while its poll job is pending or active', async () => {
     await enqueueFeedPollJob({
       reason: 'manual',
       subscriptionId: 'feed-1',
@@ -26,7 +26,12 @@ describe('feed poll queue', () => {
     expect(queueMock.add).toHaveBeenCalledWith(
       'poll-feed',
       { reason: 'manual', subscriptionId: 'feed-1', userId: 'user-1' },
-      { jobId: 'feed-poll:feed-1:manual' }
+      {
+        deduplication: {
+          id: 'feed-poll:feed-1',
+          keepLastIfActive: true
+        }
+      }
     );
   });
 
@@ -49,7 +54,12 @@ describe('feed poll queue', () => {
       2,
       'poll-feed',
       { reason: 'scheduled', subscriptionId: 'feed-2', userId: 'user-2' },
-      { jobId: 'feed-poll:feed-2:scheduled' }
+      {
+        deduplication: {
+          id: 'feed-poll:feed-2',
+          keepLastIfActive: true
+        }
+      }
     );
   });
 });

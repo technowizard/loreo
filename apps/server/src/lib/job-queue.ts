@@ -21,6 +21,10 @@ class NoopQueue {
     return null;
   }
 
+  upsertJobScheduler(): Promise<NoopJob> {
+    return Promise.resolve({ id: `${this.name}:demo-scheduler-job` });
+  }
+
   on(): this {
     return this;
   }

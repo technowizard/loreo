@@ -26,7 +26,10 @@ enqueueFeedPoll.on('error', (error: Error) => {
 
 export async function enqueueFeedPollJob(data: FeedPollJobData): Promise<Job<FeedPollJobData>> {
   return enqueueFeedPoll.add('poll-feed', data, {
-    jobId: `feed-poll:${data.subscriptionId}:${data.reason}`
+    deduplication: {
+      id: `feed-poll:${data.subscriptionId}`,
+      keepLastIfActive: true
+    }
   });
 }
 
