@@ -174,8 +174,10 @@ export function AddFeedForm({
             {t('feeds.form.nextTitle')}
           </AlertTitle>
           <AlertDescription className="gap-1 text-sm leading-6">
-            <p>{autoSave ? t('feeds.form.nextAutoSave') : t('feeds.form.nextReview')}</p>
-            <p>{t('feeds.form.nextManage')}</p>
+            <ul>
+              <li>{autoSave ? t('feeds.form.nextAutoSave') : t('feeds.form.nextReview')}</li>
+              <li>{t('feeds.form.nextManage')}</li>
+            </ul>
           </AlertDescription>
         </Alert>
       </div>
