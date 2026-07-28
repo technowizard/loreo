@@ -18,7 +18,6 @@ import { createDrizzleImportSessionsAdapter } from '@/repositories/import-sessio
 import { createDrizzleLinksAdapter } from '@/repositories/links.repository.js';
 import { createDrizzleTagsAdapter } from '@/repositories/tags.repository.js';
 
-import type { UserWithoutPassword } from '@/types/auth.js';
 import type { Tag } from '@/types/tags.js';
 
 const links = createDrizzleLinksAdapter(db);
@@ -263,7 +262,7 @@ async function csvImportJob(job: Job<CsvImportJobData>): Promise<{
       const jobData: ContentExtractionJobData = {
         linkId: firstLink?.id as string,
         url: firstLink?.url as string,
-        user: { id: userId } as UserWithoutPassword,
+        user: { id: userId },
         importSessionId
       };
 
