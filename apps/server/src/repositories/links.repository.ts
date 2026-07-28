@@ -881,8 +881,12 @@ export function createDrizzleLinksAdapter(db: DrizzleClient): LinksRepository {
 
     async existsByUrl(url, userId) {
       try {
-        const result = await this.findByUrl(url, userId);
-        return result != null;
+        const result = await db
+          .select({ id: linksTable.id })
+          .from(linksTable)
+          .where(and(eq(linksTable.url, url), eq(linksTable.userId, userId)))
+          .limit(1);
+        return result.length > 0;
       } catch (error) {
         logger.error(`Error checking URL existence for user ${userId}: ${error}`);
         throw error;

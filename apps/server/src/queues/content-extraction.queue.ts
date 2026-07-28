@@ -3,12 +3,12 @@ import type { Job } from 'bullmq';
 import { createQueue } from '@/lib/job-queue.js';
 import { logger } from '@/lib/logger.js';
 
-import type { UserWithoutPassword } from '@/types/auth.js';
+import type { UserIdentity } from '@/types/auth.js';
 
 export interface ContentExtractionJobData {
   linkId: string;
   url: string;
-  user: UserWithoutPassword;
+  user: UserIdentity;
   importSessionId?: string; // optional reference to import session for sequential processing
 }
 

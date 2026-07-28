@@ -4,8 +4,9 @@ import type { ContentExtractionJobData } from '@/queues/content-extraction.queue
 import { enqueueContentExtraction } from '@/queues/content-extraction.queue.js';
 
 import type { Repos } from '@/lib/types.js';
+import { normalizeUrl } from '@/lib/url-normalizer.js';
 
-import type { UserWithoutPassword } from '@/types/auth.js';
+import type { UserIdentity } from '@/types/auth.js';
 import type { LinkData } from '@/types/links.js';
 
 export type LinkSaveResult = {
@@ -24,16 +25,9 @@ export type SaveLinkInput = {
   enqueueExtraction?: EnqueueExtraction;
   reconcileFeedItems?: boolean;
   repos: Pick<Repos, 'feedItems' | 'links'>;
-  user: UserWithoutPassword;
+  user: UserIdentity;
   url: string;
 };
-
-function normalizedLinkUrl(url: string): string {
-  const parsed = new URL(url);
-  parsed.hash = '';
-  parsed.searchParams.sort();
-  return parsed.toString();
-}
 
 function newPendingLink(
   url: string,
@@ -64,7 +58,7 @@ function newPendingLink(
 export async function saveLink(input: SaveLinkInput): Promise<LinkSaveResult> {
   const { repos, user, url } = input;
   const existing = await repos.links.findByUrl(url, user.id);
-  const normalizedUrl = normalizedLinkUrl(url);
+  const normalizedUrl = normalizeUrl(url);
 
   const shouldReconcileFeedItems = input.reconcileFeedItems ?? true;
   const enqueueExtraction =

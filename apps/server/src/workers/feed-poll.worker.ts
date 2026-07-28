@@ -14,8 +14,6 @@ import { createDrizzleLinksAdapter } from '@/repositories/links.repository.js';
 
 import { createFeedIngestionService } from '@/services/feed-ingestion.service.js';
 
-import type { UserWithoutPassword } from '@/types/auth.js';
-
 const workerName = 'feed-poll-worker';
 
 const feedItems = createDrizzleFeedItemsAdapter(db);
@@ -23,20 +21,6 @@ const feedSubscriptions = createDrizzleFeedSubscriptionsAdapter(db);
 const links = createDrizzleLinksAdapter(db);
 
 const repos = { feedItems, feedSubscriptions, links };
-
-function minimalUser(userId: string): UserWithoutPassword {
-  return {
-    avatar: null,
-    createdAt: new Date().toISOString(),
-    deletedAt: null,
-    email: '',
-    id: userId,
-    name: '',
-    role: 'user',
-    settings: {},
-    updatedAt: new Date().toISOString()
-  };
-}
 
 function isDue(subscription: { nextFetchAfter: Date | null }, now: Date): boolean {
   return !subscription.nextFetchAfter || subscription.nextFetchAfter <= now;
@@ -76,7 +60,7 @@ export async function feedPollJob(job: Job<FeedPollJobData>): Promise<{
   const ingestion = createFeedIngestionService({ repos });
   const result = await ingestion.pollSubscription({
     subscription,
-    user: minimalUser(userId)
+    user: { id: userId }
   });
 
   logger.info(

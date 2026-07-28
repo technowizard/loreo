@@ -1,6 +1,7 @@
 import { DOMParser } from 'linkedom';
 
 import { isSafeFeedEntryUrl } from '@/lib/feed-url-guard.js';
+import { normalizeUrl } from '@/lib/url-normalizer.js';
 
 type ParsedFeedDocument = ReturnType<DOMParser['parseFromString']>;
 
@@ -79,13 +80,6 @@ function resolveUrl(value: string | null | undefined, baseUrl: string): string |
   } catch {
     return null;
   }
-}
-
-function normalizeUrl(url: string): string {
-  const parsed = new URL(url);
-  parsed.hash = '';
-  parsed.searchParams.sort();
-  return parsed.toString();
 }
 
 function parseDate(value: string | null | undefined): Date | null {

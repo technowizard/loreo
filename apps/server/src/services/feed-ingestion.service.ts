@@ -1,4 +1,5 @@
 import type { Repos } from '@/lib/types.js';
+import { normalizeUrl } from '@/lib/url-normalizer.js';
 
 import type { FeedItemsRepository } from '@/repositories/feed-items.repository.js';
 import type {
@@ -6,7 +7,7 @@ import type {
   FeedSubscriptionsRepository
 } from '@/repositories/feed-subscriptions.repository.js';
 
-import type { UserWithoutPassword } from '@/types/auth.js';
+import type { UserIdentity } from '@/types/auth.js';
 
 import type { FeedFetchResult } from './feed-fetch.service.js';
 import { fetchFeed } from './feed-fetch.service.js';
@@ -50,12 +51,12 @@ export type FeedIngestionDependencies = {
 export type AddFeedInput = {
   autoSave?: boolean;
   feedUrl: string;
-  user: UserWithoutPassword;
+  user: UserIdentity;
 };
 
 export type PollFeedInput = {
   subscription: FeedSubscriptionData;
-  user: UserWithoutPassword;
+  user: UserIdentity;
 };
 
 export type FeedIngestionResult = {
@@ -66,13 +67,6 @@ export type FeedIngestionResult = {
   staged: number;
   subscription: FeedSubscriptionData;
 };
-
-function normalizeUrl(url: string): string {
-  const parsed = new URL(url);
-  parsed.hash = '';
-  parsed.searchParams.sort();
-  return parsed.toString();
-}
 
 function nextSuccessfulFetchAfter(now: Date): Date {
   return new Date(now.getTime() + DEFAULT_SUCCESS_INTERVAL_MS);
@@ -119,7 +113,7 @@ export function createFeedIngestionService(dependencies: FeedIngestionDependenci
   async function stageItems(input: {
     items: NormalizedFeedItem[];
     subscription: FeedSubscriptionData;
-    user: UserWithoutPassword;
+    user: UserIdentity;
   }): Promise<{ autoSaved: number; staged: number }> {
     const itemData = input.items.map((item) => ({
       author: item.author,
@@ -316,7 +310,7 @@ export function createFeedIngestionService(dependencies: FeedIngestionDependenci
 
   async function resultForExistingSubscription(
     subscription: FeedSubscriptionData,
-    user: UserWithoutPassword
+    user: UserIdentity
   ): Promise<FeedIngestionResult> {
     if (!subscription.lastSuccessfulFetchAt) {
       return pollSubscription({ subscription, user });
