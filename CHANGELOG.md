@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.2.0] - 2026-07-29
+
 - Add user-curated RSS and Atom subscriptions with staged Review, Saved, and Dismissed collections.
 - Add source filtering, newest/oldest sorting, cursor-based infinite loading, and responsive feed management.
 - Add per-feed pause, future-only Auto-save, health warnings, and confirmed deletion that preserves saved articles.
