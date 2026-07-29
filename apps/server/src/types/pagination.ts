@@ -26,6 +26,7 @@ export interface PaginationMetadata {
   nextCursor?: string;
   previousCursor?: string;
   limit: number;
+  total?: number;
   totalReturned: number;
 }
 

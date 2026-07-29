@@ -224,7 +224,7 @@ class LocalStorageAdapter implements IStorageService {
         logger.info(`Downloading image from URL: ${imageUrl} (attempt ${attempt})`);
 
         const response = await fetchWithValidatedRedirects(imageUrl, {
-          headers: { 'User-Agent': rotatedUserAgent },
+          headers: { 'User-Agent': rotatedUserAgent ?? 'Mozilla/5.0' },
           timeoutMs: 5000
         });
 
@@ -410,7 +410,7 @@ class S3StorageAdapter implements IStorageService {
       }
 
       const response = await fetchWithValidatedRedirects(imageUrl, {
-        headers: { 'User-Agent': rotatedUserAgent },
+        headers: { 'User-Agent': rotatedUserAgent ?? 'Mozilla/5.0' },
         timeoutMs: 5000
       });
 

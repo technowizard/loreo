@@ -23,6 +23,7 @@ if (!env.DATABASE_DB.includes('test')) {
 
 console.log('Resetting test database schema...');
 await pool.query('DROP SCHEMA IF EXISTS public CASCADE;');
+await pool.query('DROP SCHEMA IF EXISTS drizzle CASCADE;');
 await pool.query('CREATE SCHEMA public;');
 console.log('Test database schema reset complete.');
 

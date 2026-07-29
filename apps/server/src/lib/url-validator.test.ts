@@ -35,6 +35,20 @@ describe('isValidUrl', () => {
     expect(lookupMock).toHaveBeenCalledWith('example.com', { all: true });
   });
 
+  it('rejects a hostname when DNS resolution exceeds the timeout', async () => {
+    vi.useFakeTimers();
+    try {
+      lookupMock.mockReturnValue(new Promise(() => undefined));
+      const validation = isValidUrl('https://slow.example/article');
+
+      await vi.advanceTimersByTimeAsync(2000);
+
+      await expect(validation).resolves.toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('rejects a public hostname that resolves to a private IP', async () => {
     lookupMock.mockResolvedValue([
       {
@@ -47,8 +61,25 @@ describe('isValidUrl', () => {
     expect(lookupMock).toHaveBeenCalledWith('example.com', { all: true });
   });
 
+  it('rejects a hostname when any resolved address is private', async () => {
+    lookupMock.mockResolvedValue([
+      { address: '93.184.216.34', family: 4 },
+      { address: '169.254.169.254', family: 4 }
+    ] as never);
+
+    expect(await isValidUrl('https://example.com/article')).toBe(false);
+  });
+
   it('rejects a private IPv4 literal', async () => {
     expect(await isValidUrl('https://192.168.0.10/article')).toBe(false);
     expect(lookupMock).not.toHaveBeenCalled();
   });
+
+  it.each(['https://[::ffff:7f00:1]/feed.xml', 'https://[::ffff:a9fe:a9fe]/feed.xml'])(
+    'rejects hexadecimal IPv4-mapped IPv6 literals: %s',
+    async (url) => {
+      expect(await isValidUrl(url)).toBe(false);
+      expect(lookupMock).not.toHaveBeenCalled();
+    }
+  );
 });

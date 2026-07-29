@@ -95,6 +95,9 @@ export function createInMemoryLinksAdapter(
     findAllUrls: async (userId) =>
       [...store.values()].filter((l) => l.userId === userId).map((l) => l.url),
 
+    findByUrl: async (url, userId) =>
+      [...store.values()].find((l) => l.url === url && l.userId === userId) ?? null,
+
     existsByUrl: async (url, userId) =>
       [...store.values()].some((l) => l.url === url && l.userId === userId)
   };

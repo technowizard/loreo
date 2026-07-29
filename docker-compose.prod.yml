@@ -54,6 +54,8 @@ services:
       CORS_ORIGINS: ${CORS_ORIGINS}
       REDIS_HOST: loreo-redis
       REDIS_PORT: 6379
+      FEED_POLL_SCAN_INTERVAL_MS: ${FEED_POLL_SCAN_INTERVAL_MS:-60000}
+      FEED_POLL_SCAN_BATCH_SIZE: ${FEED_POLL_SCAN_BATCH_SIZE:-100}
       STORAGE_PROVIDER: local-docker
       STORAGE_PATH: /app/data/storage
       PUBLIC_URL: ${PUBLIC_URL:-http://localhost:3001}

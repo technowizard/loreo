@@ -3,6 +3,8 @@ import type { Schema } from 'hono';
 import type { PinoLogger } from 'hono-pino';
 
 import type { AuthRepository } from '@/repositories/auth.repository.js';
+import type { FeedItemsRepository } from '@/repositories/feed-items.repository.js';
+import type { FeedSubscriptionsRepository } from '@/repositories/feed-subscriptions.repository.js';
 import type { HighlightsRepository } from '@/repositories/highlights.repository.js';
 import type { ImportSessionsRepository } from '@/repositories/import-sessions.repository.js';
 import type { LinksRepository } from '@/repositories/links.repository.js';
@@ -12,6 +14,8 @@ import type { UserWithoutPassword } from '@/types/auth.js';
 
 export interface Repos {
   auth: AuthRepository;
+  feedItems?: FeedItemsRepository;
+  feedSubscriptions?: FeedSubscriptionsRepository;
   highlights: HighlightsRepository;
   importSessions: ImportSessionsRepository;
   links: LinksRepository;

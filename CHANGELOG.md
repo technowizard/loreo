@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Add user-curated RSS and Atom subscriptions with staged Review, Saved, and Dismissed collections.
+- Add source filtering, newest/oldest sorting, cursor-based infinite loading, and responsive feed management.
+- Add per-feed pause, future-only Auto-save, health warnings, and confirmed deletion that preserves saved articles.
+- Add autonomous conditional polling with failure backoff, bounded retention, SSRF-safe fetching, and parser workload limits.
 - Add admin dashboard with dedicated layout for account management and service health visibility.
 - Add admin account management: list, detail, update name/role, reset password, soft delete, and restore users.
 - Expose user role in current-user response; client role gates admin navigation affordance only.

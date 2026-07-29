@@ -28,3 +28,4 @@ export type PublicUserWithSettings = PublicUser & { settings: Record<string, unk
 export type PublicUserWithRole = PublicUser & { role: string };
 
 export type UserWithoutPassword = Omit<User, 'passwordHash'>;
+export type UserIdentity = Pick<User, 'id'>;

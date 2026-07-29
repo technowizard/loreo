@@ -8,13 +8,13 @@ This guide walks through deploying Loreo with Docker Compose, including domain s
 
 Loreo's production stack consists of five containers:
 
-| Service          | Image                                | Role                                    |
-| ---------------- | ------------------------------------ | --------------------------------------- |
-| `loreo-postgres` | `postgres:17-alpine`                 | Database                                |
-| `loreo-redis`    | `redis:7-alpine`                     | Job queue (BullMQ)                      |
-| `loreo-browser`  | `ghcr.io/technowizard/loreo-browser` | Headless browser for article extraction |
-| `loreo-server`   | `ghcr.io/technowizard/loreo-server`  | Hono API, background jobs               |
-| `loreo-web`      | `ghcr.io/technowizard/loreo-web`     | Nginx + static React app                |
+| Service          | Image                                | Role                                                        |
+| ---------------- | ------------------------------------ | ----------------------------------------------------------- |
+| `loreo-postgres` | `postgres:17-alpine`                 | Database                                                    |
+| `loreo-redis`    | `redis:7-alpine`                     | Job queue (BullMQ) for extraction, imports, and RSS polling |
+| `loreo-browser`  | `ghcr.io/technowizard/loreo-browser` | Headless browser for article extraction                     |
+| `loreo-server`   | `ghcr.io/technowizard/loreo-server`  | Hono API, background jobs                                   |
+| `loreo-web`      | `ghcr.io/technowizard/loreo-web`     | Nginx + static React app                                    |
 
 The web container serves the React app through nginx and proxies API requests to the server.
 
@@ -69,6 +69,15 @@ cp .env.prod.example .env.prod
 | `SERVER_PUBLIC_PORT` | `3000`  | Host port for the API container. Change if port 3000 is in use. The server always listens on port 3000 internally; this only controls the host mapping. |
 | `WEB_PUBLIC_PORT`    | `3001`  | Host port for the web container. Change if port 3001 is in use.                                                                                         |
 
+### Optional RSS Polling Variables
+
+| Variable                     | Default | Description                                                   |
+| ---------------------------- | ------- | ------------------------------------------------------------- |
+| `FEED_POLL_SCAN_INTERVAL_MS` | `60000` | How often BullMQ scans for subscriptions that are due to poll |
+| `FEED_POLL_SCAN_BATCH_SIZE`  | `100`   | Maximum due subscriptions enqueued by each scan               |
+
+BullMQ stores one stable recurring scan scheduler in Redis, so registering it from multiple server replicas does not multiply scheduled scans.
+
 ### Generating Secrets
 
 ```bash
@@ -103,7 +112,7 @@ Data is persisted in the `postgres_data` Docker volume. The database runs on an 
 
 ### Redis
 
-Used by BullMQ for background job processing (article extraction, image downloads). Data is persisted in the `redis_data` volume.
+Used by BullMQ for background job processing (article extraction, image downloads, CSV imports, and RSS feed polling/manual refresh). Data is persisted in the `redis_data` volume.
 
 ### Browser Service
 
@@ -111,7 +120,7 @@ The browser container runs a Camoufox-compatible Playwright server. It requires 
 
 ### Server
 
-The API server handles authentication, article management, and background job scheduling. It automatically runs database migrations on startup via `docker-entrypoint.sh`.
+The API server handles authentication, article management, RSS feed subscriptions, and background job scheduling. It automatically runs database migrations on startup via `docker-entrypoint.sh`.
 
 The server uses `STORAGE_PROVIDER: local-docker` by default, storing uploaded files in the `storage_data` volume. See the Storage section for S3 configuration.
 
@@ -241,6 +250,51 @@ docker compose --env-file .env.prod -f docker-compose.prod.yml up -d
 ```
 
 Database migrations run automatically when the server container starts. The server's `docker-entrypoint.sh` applies any pending migrations before starting the API.
+
+Migrations `0004_feed_item_pagination_query_shapes` and `0005_feed_owner_constraints` use standard index creation. Migration 0004 builds two `feed_items` indexes; migration 0005 builds ownership indexes on `feed_subscriptions` and `links` before adding same-owner constraints. These operations scan the affected tables and block writes while each index is created. On a large article library or RSS collection, startup downtime may be longer than a brief restart.
+
+Before applying migration 0005 on a populated installation:
+
+1. Take a PostgreSQL backup and confirm enough free disk space for temporary index construction.
+2. Schedule a low-traffic maintenance window. Monitor `pg_stat_progress_create_index`, `pg_stat_activity`, and `pg_locks` from a separate database session while the server starts.
+3. After startup, audit legacy rows. The new constraints are installed as `NOT VALID`: they protect new writes immediately while allowing an installation with old inconsistent rows to start.
+
+```sql
+-- Feed items whose user does not own the referenced subscription.
+select item.id, item.user_id, item.subscription_id
+from feed_items item
+left join feed_subscriptions subscription
+  on subscription.id = item.subscription_id
+ and subscription.user_id = item.user_id
+where subscription.id is null;
+
+-- Feed items whose optional saved link belongs to another user.
+select item.id, item.user_id, item.link_id
+from feed_items item
+left join links link
+  on link.id = item.link_id
+ and link.user_id = item.user_id
+where item.link_id is not null and link.id is null;
+
+select id, state from feed_items
+where state not in ('new', 'dismissed', 'saved');
+
+select id, status from feed_subscriptions
+where status not in ('active', 'paused');
+```
+
+Back up and review every returned row before changing it. A cross-owner `link_id` can be detached with `update feed_items set link_id = null where id = '<reviewed-id>';`. Subscription-owner mismatches and invalid states/statuses require an operator decision; do not reassign or delete them automatically.
+
+Once all four audits return no rows, validate the constraints during a maintenance window:
+
+```sql
+alter table feed_items validate constraint fk_feed_items_subscription_owner;
+alter table feed_items validate constraint fk_feed_items_link_owner;
+alter table feed_items validate constraint chk_feed_items_state;
+alter table feed_subscriptions validate constraint chk_feed_subscriptions_status;
+```
+
+If migration 0005 must be rolled back together with the application version, restore the pre-upgrade backup. For a schema-only rollback before constraint validation, drop the four constraints first, then `uq_feed_subscriptions_id_user` and `uq_links_id_user`; retain the backup until the prior server version is healthy.
 
 ### Pinning Versions
 

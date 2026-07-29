@@ -136,6 +136,7 @@ function createFakeLinksRepository(): LinksRepository {
     }),
     getTagsForLink: async () => [],
     findAllUrls: async () => [],
+    findByUrl: async () => null,
     existsByUrl: async () => false
   } satisfies LinksRepository;
 }
