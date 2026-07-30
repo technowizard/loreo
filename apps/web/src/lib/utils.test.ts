@@ -13,9 +13,17 @@ describe('getUrlName', () => {
 });
 
 describe('sanitizeUrl', () => {
-  it('should return data URIs unchanged', () => {
+  it('should reject data URIs by default', () => {
+    expect(sanitizeUrl('data:text/html,<script>alert(1)</script>')).toBe('');
+  });
+
+  it('should allow raster data images only when requested for image sources', () => {
     const dataUri = 'data:image/png;base64,abc123';
-    expect(sanitizeUrl(dataUri)).toBe(dataUri);
+
+    expect(sanitizeUrl(dataUri, { allowDataImage: true })).toBe(dataUri);
+    expect(sanitizeUrl('data:text/html,<script>alert(1)</script>', { allowDataImage: true })).toBe(
+      ''
+    );
   });
 
   it('should normalize http URLs', () => {

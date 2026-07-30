@@ -73,7 +73,7 @@ export function ReaderContent({
               )
             }}
             remarkPlugins={[remarkGfm]}
-            urlTransform={(url) => sanitizeUrl(url ?? '')}
+            urlTransform={(url, key) => sanitizeUrl(url ?? '', { allowDataImage: key === 'src' })}
           >
             {textContent}
           </Markdown>
