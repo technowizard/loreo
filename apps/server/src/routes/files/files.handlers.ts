@@ -1,5 +1,6 @@
 import type { Context } from 'hono';
 
+import { env } from '@/lib/env-config.js';
 import { logger } from '@/lib/logger.js';
 import { errorResponse, HttpStatus } from '@/lib/response.js';
 import type { AppBindings, AppRouteHandler } from '@/lib/types.js';
@@ -7,6 +8,26 @@ import type { AppBindings, AppRouteHandler } from '@/lib/types.js';
 import { storageService } from '@/services/storage.service.js';
 
 import type { GetFileRoute } from './files.routes.js';
+
+export interface FileAccessInput {
+  isShared: boolean;
+  isUserOwned: boolean;
+  isLegacySharedArticle: boolean;
+  legacyArticlesAllowed: boolean;
+}
+
+// Pure access-policy predicate (kept env-free) so the legacy-article flag behaviour is unit-testable
+// without touching the process env. New user-scoped article keys are always ownership-checked;
+// this only controls whether the pre-user-scoping shared/articles/* prefix stays readable.
+export function isFileAccessForbidden({
+  isShared,
+  isUserOwned,
+  isLegacySharedArticle,
+  legacyArticlesAllowed
+}: FileAccessInput): boolean {
+  if (!isShared && !isUserOwned) return true;
+  return isLegacySharedArticle && !legacyArticlesAllowed;
+}
 
 const getFileHandler: AppRouteHandler<GetFileRoute> = async (c) => {
   const { key } = c.req.valid('param');
@@ -19,6 +40,7 @@ async function serveFile(c: Context<AppBindings>, key: string) {
 
   try {
     const isShared = storageService.isSharedFile(key);
+    const isLegacySharedArticle = key.startsWith('shared/articles/');
 
     if (!user) {
       const response = errorResponse(
@@ -30,7 +52,14 @@ async function serveFile(c: Context<AppBindings>, key: string) {
     } else {
       const isUserOwned = storageService.isUserFile(key, user.id);
 
-      if (!isShared && !isUserOwned) {
+      if (
+        isFileAccessForbidden({
+          isShared,
+          isUserOwned,
+          isLegacySharedArticle,
+          legacyArticlesAllowed: env.ALLOW_LEGACY_SHARED_ARTICLES
+        })
+      ) {
         const response = errorResponse('Access denied to this file', HttpStatus.FORBIDDEN);
 
         return c.json(response, response.status);

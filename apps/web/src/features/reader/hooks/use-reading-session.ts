@@ -1,6 +1,10 @@
 import { useRouter } from '@tanstack/react-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+type ProgressData = { readingProgress: number; timeSpentReading: number };
+
+type SaveProgress = (data: ProgressData) => void;
+
 interface UseReadingSessionOptions {
   linkId: string;
   link:
@@ -10,7 +14,8 @@ interface UseReadingSessionOptions {
         isRead: boolean;
       }
     | undefined;
-  onSaveProgress: (data: { readingProgress: number; timeSpentReading: number }) => void;
+  onSaveProgress: SaveProgress;
+  onSaveProgressOnUnload?: SaveProgress;
 }
 
 interface ReadingSession {
@@ -22,7 +27,8 @@ interface ReadingSession {
 export function useReadingSession({
   linkId,
   link,
-  onSaveProgress
+  onSaveProgress,
+  onSaveProgressOnUnload
 }: UseReadingSessionOptions): ReadingSession {
   const router = useRouter();
   const storageKey = `reading-position-${linkId}`;
@@ -56,6 +62,7 @@ export function useReadingSession({
   const startTimeRef = useRef(Date.now());
   const linkRef = useRef(link);
   const onSaveProgressRef = useRef(onSaveProgress);
+  const onSaveProgressOnUnloadRef = useRef(onSaveProgressOnUnload);
 
   // keep refs current
   useEffect(() => {
@@ -64,6 +71,9 @@ export function useReadingSession({
   useEffect(() => {
     onSaveProgressRef.current = onSaveProgress;
   }, [onSaveProgress]);
+  useEffect(() => {
+    onSaveProgressOnUnloadRef.current = onSaveProgressOnUnload;
+  }, [onSaveProgressOnUnload]);
 
   // scroll progress tracking
   useEffect(() => {
@@ -116,7 +126,7 @@ export function useReadingSession({
   useEffect(() => {
     startTimeRef.current = Date.now();
 
-    const saveProgress = () => {
+    const saveProgress = (isUnloading = false) => {
       const currentLink = linkRef.current;
       if (!currentLink) return;
 
@@ -129,7 +139,11 @@ export function useReadingSession({
 
       if (!isProgressGreater && !hasSpentTime && currentLink.isRead) return;
 
-      onSaveProgressRef.current({
+      const save = isUnloading
+        ? (onSaveProgressOnUnloadRef.current ?? onSaveProgressRef.current)
+        : onSaveProgressRef.current;
+
+      save({
         readingProgress: currentProgress,
         timeSpentReading: currentLink.timeSpentReading + timeSpentMinutes
       });
@@ -140,11 +154,12 @@ export function useReadingSession({
         saveProgress();
       }
     });
-    window.addEventListener('beforeunload', saveProgress);
+    const handleBeforeUnload = () => saveProgress(true);
+    window.addEventListener('beforeunload', handleBeforeUnload);
 
     return () => {
       unsub();
-      window.removeEventListener('beforeunload', saveProgress);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [router, linkId]);
 

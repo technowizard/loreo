@@ -95,6 +95,45 @@ const sharedUtils = {
     return ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'].includes(extension.toLowerCase());
   },
 
+  detectImageFormat(buffer: Buffer): { extension: string; contentType: string } | null {
+    const pngSignature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+    if (buffer.subarray(0, pngSignature.length).equals(pngSignature)) {
+      return { extension: '.png', contentType: 'image/png' };
+    }
+
+    if (buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) {
+      return { extension: '.jpg', contentType: 'image/jpeg' };
+    }
+
+    const gifSignature = buffer.subarray(0, 6).toString('ascii');
+    if (gifSignature === 'GIF87a' || gifSignature === 'GIF89a') {
+      return { extension: '.gif', contentType: 'image/gif' };
+    }
+
+    if (
+      buffer.length >= 12 &&
+      buffer.subarray(0, 4).toString('ascii') === 'RIFF' &&
+      buffer.subarray(8, 12).toString('ascii') === 'WEBP'
+    ) {
+      return { extension: '.webp', contentType: 'image/webp' };
+    }
+
+    const textPrefix = buffer.subarray(0, 512).toString('utf8').trimStart().toLowerCase();
+    if (
+      textPrefix.startsWith('<svg') ||
+      (textPrefix.startsWith('<?xml') && textPrefix.includes('<svg'))
+    ) {
+      return { extension: '.svg', contentType: 'image/svg+xml' };
+    }
+
+    return null;
+  },
+
+  normalizeImageFilename(filename: string, extension: string): string {
+    const baseName = path.parse(filename).name || 'image';
+    return `${baseName}${extension}`;
+  },
+
   extractFilenameFromUrl(url: string): string | null {
     try {
       const filename = new URL(url).pathname.split('/').pop();
@@ -203,11 +242,13 @@ class LocalStorageAdapter implements IStorageService {
     userId?: string,
     imageType: ImageType = 'uploads'
   ): Promise<UploadResult> {
-    const ext = sharedUtils.getFileExtension(originalName);
-    if (!sharedUtils.isImageFile(ext)) {
+    const imageFormat = sharedUtils.detectImageFormat(buffer);
+    if (!imageFormat) {
       throw new Error('File is not a supported image format');
     }
-    return this.uploadFile(buffer, originalName, userId, imageType);
+
+    const normalizedName = sharedUtils.normalizeImageFilename(originalName, imageFormat.extension);
+    return this.uploadFile(buffer, normalizedName, userId, imageType);
   }
 
   async uploadImageFromUrl(
@@ -230,11 +271,6 @@ class LocalStorageAdapter implements IStorageService {
 
         if (!response.ok) {
           throw new Error(`Failed to download image: ${response.status} ${response.statusText}`);
-        }
-
-        const contentType = response.headers.get('content-type');
-        if (!contentType?.startsWith('image/')) {
-          throw new Error(`URL does not point to an image. Content-Type: ${contentType}`);
         }
 
         const contentLength = response.headers.get('content-length');
@@ -392,11 +428,13 @@ class S3StorageAdapter implements IStorageService {
     userId?: string,
     imageType: ImageType = 'uploads'
   ): Promise<UploadResult> {
-    const ext = sharedUtils.getFileExtension(originalName);
-    if (!sharedUtils.isImageFile(ext)) {
+    const imageFormat = sharedUtils.detectImageFormat(buffer);
+    if (!imageFormat) {
       throw new Error('File is not a supported image format');
     }
-    return this.uploadFile(buffer, originalName, userId, imageType);
+
+    const normalizedName = sharedUtils.normalizeImageFilename(originalName, imageFormat.extension);
+    return this.uploadFile(buffer, normalizedName, userId, imageType);
   }
 
   async uploadImageFromUrl(

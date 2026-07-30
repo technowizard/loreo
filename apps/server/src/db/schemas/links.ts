@@ -1,5 +1,7 @@
+import { sql } from 'drizzle-orm';
 import {
   boolean,
+  customType,
   index,
   integer,
   pgTable,
@@ -16,6 +18,12 @@ import { importSessionsTable } from './import-sessions.js';
 import { tagsTable } from './tags.js';
 import { usersTable } from './users.js';
 
+const tsvector = customType<{ data: string; driverData: string }>({
+  dataType() {
+    return 'tsvector';
+  }
+});
+
 export const linksTable = pgTable(
   'links',
   {
@@ -28,6 +36,11 @@ export const linksTable = pgTable(
     content: text('content'),
     textContent: text('text_content'),
     excerpt: text('excerpt'),
+    searchVector: tsvector('search_vector').generatedAlwaysAs(
+      sql`setweight(to_tsvector('simple', COALESCE(title, '')), 'A') ||
+        setweight(to_tsvector('simple', COALESCE(excerpt, '')), 'B') ||
+        setweight(to_tsvector('simple', COALESCE(text_content, '')), 'C')`
+    ),
     author: text('author'),
     favicon: text('favicon'),
     coverImage: text('cover_image'),
@@ -82,7 +95,11 @@ export const linksTable = pgTable(
     index('idx_links_user_created').on(table.userId, table.createdAt.desc()),
     index('idx_links_user_last_read_at').on(table.userId, table.lastReadAt.desc()),
     index('idx_links_import_session_id').on(table.importSessionId),
-    index('idx_links_processing_started_at').on(table.processingStartedAt)
+    index('idx_links_processing_started_at').on(table.processingStartedAt),
+    index('idx_links_search_vector').using('gin', table.searchVector),
+    index('idx_links_title_trgm').using('gin', table.title.op('gin_trgm_ops')),
+    index('idx_links_url_trgm').using('gin', table.url.op('gin_trgm_ops')),
+    index('idx_links_excerpt_trgm').using('gin', table.excerpt.op('gin_trgm_ops'))
   ]
 );
 
@@ -91,7 +108,8 @@ export const selectLinksSchema = createSelectSchema(linksTable).omit({
   createdAt: true,
   updatedAt: true,
   processingStartedAt: true,
-  importSessionId: true
+  importSessionId: true,
+  searchVector: true
 });
 
 const tagWithGroupColorSchema = z.object({
@@ -117,9 +135,11 @@ const linkHighlightSchema = z.object({
 export const selectLinksListSchema = createSelectSchema(linksTable)
   .omit({
     content: true,
+    textContent: true,
     userId: true,
     processingStartedAt: true,
-    importSessionId: true
+    importSessionId: true,
+    searchVector: true
   })
   .extend({
     createdAt: z.string().optional(),
@@ -128,9 +148,11 @@ export const selectLinksListSchema = createSelectSchema(linksTable)
     highlights: z.array(linkHighlightSchema)
   });
 
-export const selectLinksWithSignedUrlSchema = createSelectSchema(linksTable).extend({
-  coverImageSignedUrl: z.string().optional()
-});
+export const selectLinksWithSignedUrlSchema = createSelectSchema(linksTable)
+  .omit({ searchVector: true })
+  .extend({
+    coverImageSignedUrl: z.string().optional()
+  });
 
 export const insertLinksSchema = createInsertSchema(linksTable).omit({
   id: true,
@@ -173,7 +195,6 @@ export const createLinkSchema = z.object({
   tags: z
     .array(
       z.object({
-        id: z.string(),
         groupId: z.string(),
         name: z.string()
       })

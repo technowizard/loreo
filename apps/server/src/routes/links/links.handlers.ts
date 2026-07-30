@@ -11,7 +11,6 @@ import { isValidUrl } from '@/lib/url-validator.js';
 import { saveLink } from '@/services/link-save.service.js';
 
 import type { CursorPaginationOptions } from '@/types/pagination.js';
-import type { Tag } from '@/types/tags.js';
 
 import type {
   CreateLinkRoute,
@@ -173,15 +172,13 @@ export const createLink: AppRouteHandler<CreateLinkRoute> = async (c) => {
       return c.json(response, response.status);
     }
 
-    const processedTags: Omit<Tag, 'createdAt'>[] = [];
+    const processedTags: Array<{ groupId: string; name: string }> = [];
 
     for (const tag of tags) {
       if (tag && typeof tag === 'object' && tag.name && tag.groupId) {
         processedTags.push({
-          id: tag.id,
           groupId: tag.groupId,
-          name: tag.name.trim(),
-          userId: user.id
+          name: tag.name.trim()
         });
       }
     }

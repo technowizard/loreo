@@ -102,6 +102,8 @@ CORS_ORIGINS=https://loreo.example.com
 JWT_SECRET=<generated-secret>  # minimum 32 characters
 
 PUBLIC_URL=https://loreo.example.com
+BEHIND_PROXY=true
+TRUSTED_PROXIES=127.0.0.1
 ```
 
 ## Service Details
@@ -123,6 +125,8 @@ The browser container runs a Camoufox-compatible Playwright server. It requires 
 The API server handles authentication, article management, RSS feed subscriptions, and background job scheduling. It automatically runs database migrations on startup via `docker-entrypoint.sh`.
 
 The server uses `STORAGE_PROVIDER: local-docker` by default, storing uploaded files in the `storage_data` volume. See the Storage section for S3 configuration.
+
+Article body images extracted before per-user storage are served from the `shared/articles/*` prefix. New installations deny that prefix by default; **existing deployments** that still reference those images should set `ALLOW_LEGACY_SHARED_ARTICLES=true` so older articles keep rendering (new images always use the ownership-checked per-user path). Backfill the legacy assets and unset the flag when ready.
 
 ### Web
 
@@ -182,7 +186,8 @@ When using a reverse proxy:
 1. Set `WEB_PUBLIC_PORT` to match the port your proxy forwards to
 2. Set `PUBLIC_URL` to your HTTPS domain (e.g. `https://loreo.example.com`)
 3. Set `CORS_ORIGINS` to the same HTTPS domain
-4. The server port (`SERVER_PUBLIC_PORT`) does not need to be exposed through the proxy — nginx inside the web container handles API routing
+4. Set `BEHIND_PROXY=true` or list the proxy's peer IP in `TRUSTED_PROXIES` so rate-limit headers are only trusted from your proxy
+5. The server port (`SERVER_PUBLIC_PORT`) does not need to be exposed through the proxy — nginx inside the web container handles API routing
 
 ## Storage
 

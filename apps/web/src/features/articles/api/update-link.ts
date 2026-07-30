@@ -20,6 +20,16 @@ const updateLink = async ({
   return response.json();
 };
 
+export const updateLinkKeepalive = ({
+  body,
+  linkId
+}: {
+  body: UpdateLinkBody;
+  linkId: string;
+}): void => {
+  void apiClient.patchKeepalive(`links/${linkId}`, body);
+};
+
 type UseUpdateLinkOptions = {
   mutationConfig?: MutationConfig<typeof updateLink>;
 };

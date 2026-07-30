@@ -9,6 +9,7 @@ import Tag from '@/components/ui/tag';
 
 import { useGetLink } from '@/features/articles/api/get-link';
 import { useGetUpcomingArticles } from '@/features/articles/api/get-upcoming-articles';
+import { updateLinkKeepalive } from '@/features/articles/api/update-link';
 import { ArticleCard } from '@/features/articles/components/article-card';
 import ArticleTypography from '@/features/reader/components/article-typography';
 import FloatingProgressIndicator from '@/features/reader/components/floating-progress-indicator';
@@ -57,7 +58,10 @@ function ArticleReaderPage() {
   const { progress, restorablePosition, restore } = useReadingSession({
     linkId: id,
     link: article,
-    onSaveProgress: env.isDemo ? () => {} : (data) => actions.updateLink(id, data)
+    onSaveProgress: env.isDemo ? () => {} : (data) => actions.updateLink(id, data),
+    onSaveProgressOnUnload: env.isDemo
+      ? () => {}
+      : (data) => updateLinkKeepalive({ body: data, linkId: id })
   });
 
   const { shouldShowFloating } = useProgressIndicator();

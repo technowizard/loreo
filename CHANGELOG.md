@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Store extracted article body images under per-user, ownership-checked paths so users cannot read each other's images; add `ALLOW_LEGACY_SHARED_ARTICLES` to keep older articles rendering during migration.
+- Scope highlight and tag enrichment to the requesting user across home, upcoming, and search.
+- Validate image uploads by sniffing file content instead of trusting filename or Content-Type.
+- Gate rate-limit client identification on forwarded headers behind `BEHIND_PROXY`/`TRUSTED_PROXIES`; default to the direct connection IP.
+- Assign the first admin account atomically so concurrent initial sign-ups settle on exactly one admin.
+- Save reading progress when closing the tab via a keepalive request instead of dropping the final update.
+- Stop retrying non-idempotent actions such as link create/delete, and drop auth errors from HTTP retry cascades.
+- Resume stalled article extraction and reset stuck processing rows instead of skipping retries.
+- Align the create-link tag shape between web and server, guarded by a contract test that fails on drift.
+- Trim full text content from list and search responses.
+- Parallelize home-suggestion reads and collapse short/long reading counts into a single query.
+- Declare the generated search index column and indexes in the schema so schema sync cannot drop them.
+- Add a production dependency audit step to CI.
+
 ## [v0.2.0] - 2026-07-29
 
 - Add user-curated RSS and Atom subscriptions with staged Review, Saved, and Dismissed collections.

@@ -35,7 +35,10 @@ type LinkHighlight = {
 };
 
 // Omit 'highlights'/'tags' from LinkData to avoid conflict with the enriched shapes below
-export type LinkListItem = Omit<LinkData, 'content' | 'userId' | 'highlights' | 'tags'> & {
+export type LinkListItem = Omit<
+  LinkData,
+  'content' | 'textContent' | 'userId' | 'highlights' | 'tags'
+> & {
   tags: TagWithGroupColor[];
   highlights: LinkHighlight[];
 };
@@ -154,7 +157,6 @@ export function createDrizzleLinksAdapter(db: DrizzleClient): LinksRepository {
           publishedAt: linksTable.publishedAt,
           readingProgress: linksTable.readingProgress,
           readingTime: linksTable.readingTime,
-          textContent: linksTable.textContent,
           timeSpentReading: linksTable.timeSpentReading,
           title: linksTable.title,
           updatedAt: linksTable.updatedAt,
@@ -469,7 +471,7 @@ export function createDrizzleLinksAdapter(db: DrizzleClient): LinksRepository {
             text: highlightsTable.text
           })
           .from(highlightsTable)
-          .where(inArray(highlightsTable.linkId, linkIds));
+          .where(and(inArray(highlightsTable.linkId, linkIds), eq(highlightsTable.userId, userId)));
 
         const highlightsByLinkId = new Map<string, Omit<Highlight, 'linkId' | 'userId'>[]>();
         for (const row of highlightRows) {
@@ -499,26 +501,70 @@ export function createDrizzleLinksAdapter(db: DrizzleClient): LinksRepository {
 
     async getHomeSuggestions(userId) {
       try {
-        const [cont] = await db
-          .select({
-            coverImage: linksTable.coverImage,
-            id: linksTable.id,
-            lastReadAt: linksTable.lastReadAt,
-            readingProgress: linksTable.readingProgress,
-            readingTime: linksTable.readingTime,
-            title: linksTable.title
-          })
-          .from(linksTable)
-          .where(
-            and(
-              eq(linksTable.userId, userId),
-              eq(linksTable.isRead, false),
-              eq(linksTable.processingStatus, 'completed'),
-              or(gt(linksTable.readingProgress, 0), isNotNull(linksTable.lastReadAt))
+        // PERF-02: the four top-level reads are mutually independent, so run them
+        // concurrently (wall-clock = slowest, not the sum). The short/long counts
+        // collapse into a single conditional-aggregation scan of the unread set
+        // instead of two full SELECTs that only `.length`/`.reduce()` their rows.
+        const [continueRows, countRows, recentlySaved, readRows] = await Promise.all([
+          db
+            .select({
+              coverImage: linksTable.coverImage,
+              id: linksTable.id,
+              lastReadAt: linksTable.lastReadAt,
+              readingProgress: linksTable.readingProgress,
+              readingTime: linksTable.readingTime,
+              title: linksTable.title
+            })
+            .from(linksTable)
+            .where(
+              and(
+                eq(linksTable.userId, userId),
+                eq(linksTable.isRead, false),
+                eq(linksTable.processingStatus, 'completed'),
+                or(gt(linksTable.readingProgress, 0), isNotNull(linksTable.lastReadAt))
+              )
             )
-          )
-          .orderBy(desc(linksTable.lastReadAt))
-          .limit(1);
+            .orderBy(desc(linksTable.lastReadAt))
+            .limit(1),
+          db
+            .select({
+              longArticles: sql<number>`count(*) filter (where ${linksTable.readingTime} >= 10)::int`,
+              longReadingTime: sql<number>`coalesce(sum(${linksTable.readingTime}) filter (where ${linksTable.readingTime} >= 10), 0)::int`,
+              shortArticles: sql<number>`count(*) filter (where ${linksTable.readingTime} < 10)::int`,
+              shortReadingTime: sql<number>`coalesce(sum(${linksTable.readingTime}) filter (where ${linksTable.readingTime} < 10), 0)::int`
+            })
+            .from(linksTable)
+            .where(
+              and(
+                eq(linksTable.userId, userId),
+                eq(linksTable.isRead, false),
+                eq(linksTable.isArchived, false),
+                eq(linksTable.processingStatus, 'completed')
+              )
+            ),
+          findMany(userId, { limit: 3, orderDirection: 'desc' }),
+          db
+            .select({ id: linksTable.id })
+            .from(linksTable)
+            .where(
+              and(
+                eq(linksTable.userId, userId),
+                or(eq(linksTable.isRead, true), gt(linksTable.readingProgress, 25))
+              )
+            )
+            .limit(1)
+        ]);
+
+        const cont = continueRows[0];
+        // An aggregate with no GROUP BY always returns exactly one row (zeros over an
+        // empty set), but guard for type-safety regardless.
+        const counts = countRows[0] ?? {
+          longArticles: 0,
+          longReadingTime: 0,
+          shortArticles: 0,
+          shortReadingTime: 0
+        };
+        const readArticle = readRows[0];
 
         const continueReading = cont
           ? {
@@ -531,56 +577,17 @@ export function createDrizzleLinksAdapter(db: DrizzleClient): LinksRepository {
             }
           : null;
 
-        const shortRows = await db
-          .select({ readingTime: linksTable.readingTime })
-          .from(linksTable)
-          .where(
-            and(
-              eq(linksTable.userId, userId),
-              eq(linksTable.isRead, false),
-              eq(linksTable.isArchived, false),
-              eq(linksTable.processingStatus, 'completed'),
-              lt(linksTable.readingTime, 10)
-            )
-          );
-
-        const longRows = await db
-          .select({ readingTime: linksTable.readingTime })
-          .from(linksTable)
-          .where(
-            and(
-              eq(linksTable.userId, userId),
-              eq(linksTable.isRead, false),
-              eq(linksTable.isArchived, false),
-              eq(linksTable.processingStatus, 'completed'),
-              gte(linksTable.readingTime, 10)
-            )
-          );
-
-        const recentlySaved = await findMany(userId, { limit: 3, orderDirection: 'desc' });
-
-        const [readArticle] = await db
-          .select({ id: linksTable.id })
-          .from(linksTable)
-          .where(
-            and(
-              eq(linksTable.userId, userId),
-              or(eq(linksTable.isRead, true), gt(linksTable.readingProgress, 25))
-            )
-          )
-          .limit(1);
-
         return {
           continueReading,
           hasReadArticle: readArticle != null,
           longReads: {
-            totalArticles: longRows.length,
-            totalReadingTime: longRows.reduce((sum, r) => sum + (r.readingTime || 0), 0)
+            totalArticles: counts.longArticles,
+            totalReadingTime: counts.longReadingTime
           },
           recentlySaved: recentlySaved.items as unknown as HomeSuggestions['recentlySaved'],
           shortReads: {
-            totalArticles: shortRows.length,
-            totalReadingTime: shortRows.reduce((sum, r) => sum + (r.readingTime || 0), 0)
+            totalArticles: counts.shortArticles,
+            totalReadingTime: counts.shortReadingTime
           }
         };
       } catch (error) {
@@ -676,9 +683,12 @@ export function createDrizzleLinksAdapter(db: DrizzleClient): LinksRepository {
             .select({ linkId: linkTagsTable.linkId })
             .from(linkTagsTable)
             .where(
-              inArray(
-                linkTagsTable.tagId,
-                tagIdRows.map((t) => t.id)
+              and(
+                inArray(
+                  linkTagsTable.tagId,
+                  tagIdRows.map((t) => t.id)
+                ),
+                eq(linkTagsTable.userId, userId)
               )
             );
           if (linkIdRows.length === 0) return { items: [], hasMore: false, nextCursor: undefined };
@@ -697,9 +707,12 @@ export function createDrizzleLinksAdapter(db: DrizzleClient): LinksRepository {
             .select({ link_id: linkTagsTable.linkId })
             .from(linkTagsTable)
             .where(
-              inArray(
-                linkTagsTable.tagId,
-                tagIdsRows.map((t) => t.id)
+              and(
+                inArray(
+                  linkTagsTable.tagId,
+                  tagIdsRows.map((t) => t.id)
+                ),
+                eq(linkTagsTable.userId, userId)
               )
             );
           if (linkIdRows.length === 0) return { items: [], hasMore: false, nextCursor: undefined };
@@ -730,7 +743,6 @@ export function createDrizzleLinksAdapter(db: DrizzleClient): LinksRepository {
             publishedAt: linksTable.publishedAt,
             readingProgress: linksTable.readingProgress,
             readingTime: linksTable.readingTime,
-            textContent: linksTable.textContent,
             timeSpentReading: linksTable.timeSpentReading,
             title: linksTable.title,
             updatedAt: linksTable.updatedAt,
@@ -795,7 +807,7 @@ export function createDrizzleLinksAdapter(db: DrizzleClient): LinksRepository {
             text: highlightsTable.text
           })
           .from(highlightsTable)
-          .where(inArray(highlightsTable.linkId, linkIds));
+          .where(and(inArray(highlightsTable.linkId, linkIds), eq(highlightsTable.userId, userId)));
 
         const highlightsByLinkId = new Map<string, Omit<Highlight, 'linkId' | 'userId'>[]>();
         for (const row of highlightRows) {

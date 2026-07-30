@@ -18,6 +18,7 @@ import { storageService } from '@/services/storage.service.js';
 
 import type { UserWithoutPassword } from '@/types/auth.js';
 
+import { isFileAccessForbidden } from './files.handlers.js';
 import router from './files.index.js';
 
 const STORAGE_ROOT = path.resolve(process.cwd(), 'data/storage');
@@ -31,6 +32,7 @@ let userId: string;
 let authCookie: string;
 let userFileKey: string;
 let sharedFileKey: string;
+let legacySharedArticleKey: string;
 let testUser: UserWithoutPassword;
 
 beforeAll(async () => {
@@ -51,6 +53,7 @@ beforeAll(async () => {
 
   userFileKey = `user-${userId}/uploads/test.txt`;
   sharedFileKey = 'shared/uploads/test.txt';
+  legacySharedArticleKey = 'shared/articles/test.txt';
 
   await fs.mkdir(path.join(STORAGE_ROOT, `user-${userId}/uploads`), {
     recursive: true
@@ -58,8 +61,12 @@ beforeAll(async () => {
   await fs.mkdir(path.join(STORAGE_ROOT, 'shared/uploads'), {
     recursive: true
   });
+  await fs.mkdir(path.join(STORAGE_ROOT, 'shared/articles'), {
+    recursive: true
+  });
   await fs.writeFile(path.join(STORAGE_ROOT, userFileKey), FILE_CONTENT);
   await fs.writeFile(path.join(STORAGE_ROOT, sharedFileKey), FILE_CONTENT);
+  await fs.writeFile(path.join(STORAGE_ROOT, legacySharedArticleKey), FILE_CONTENT);
 });
 
 afterAll(async () => {
@@ -68,6 +75,9 @@ afterAll(async () => {
     force: true
   });
   await fs.rm(path.join(STORAGE_ROOT, 'shared/uploads/test.txt'), {
+    force: true
+  });
+  await fs.rm(path.join(STORAGE_ROOT, 'shared/articles/test.txt'), {
     force: true
   });
 });
@@ -80,6 +90,14 @@ function createFakeAuthRepository(user: UserWithoutPassword): AuthRepository {
       name: user.name,
       avatar: user.avatar,
       settings: user.settings
+    }),
+    createWithInitialRole: async () => ({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      avatar: user.avatar,
+      settings: user.settings,
+      role: 'user'
     }),
     findByEmail: async () => null,
     findById: async (id) => (id === user.id ? user : null),
@@ -245,6 +263,14 @@ describe('GET /files/:key', () => {
       expect(response.status).toBe(HttpStatus.OK);
     });
 
+    it('returns 403 for legacy shared article files by default (flag off)', async () => {
+      const response = await client.files[':key{.*}'].$get(
+        { param: { key: legacySharedArticleKey } },
+        { headers: { Cookie: authCookie } }
+      );
+      expect(response.status).toBe(HttpStatus.FORBIDDEN);
+    });
+
     it("returns 403 for another user's file", async () => {
       const otherUserKey = `user-${OTHER_USER_ID}/uploads/secret.txt`;
       const response = await client.files[':key{.*}'].$get(
@@ -296,5 +322,62 @@ describe('GET /files/:key', () => {
       const text = await response.text();
       expect(text).toBe(FILE_CONTENT);
     });
+  });
+});
+
+describe('isFileAccessForbidden', () => {
+  it('denies legacy shared article keys by default (flag off)', () => {
+    expect(
+      isFileAccessForbidden({
+        isShared: true,
+        isUserOwned: false,
+        isLegacySharedArticle: true,
+        legacyArticlesAllowed: false
+      })
+    ).toBe(true);
+  });
+
+  it('allows legacy shared article keys when the migration flag is on', () => {
+    expect(
+      isFileAccessForbidden({
+        isShared: true,
+        isUserOwned: false,
+        isLegacySharedArticle: true,
+        legacyArticlesAllowed: true
+      })
+    ).toBe(false);
+  });
+
+  it('denies keys that are neither shared nor user-owned', () => {
+    expect(
+      isFileAccessForbidden({
+        isShared: false,
+        isUserOwned: false,
+        isLegacySharedArticle: false,
+        legacyArticlesAllowed: false
+      })
+    ).toBe(true);
+  });
+
+  it('allows user-owned keys regardless of the flag', () => {
+    expect(
+      isFileAccessForbidden({
+        isShared: false,
+        isUserOwned: true,
+        isLegacySharedArticle: false,
+        legacyArticlesAllowed: false
+      })
+    ).toBe(false);
+  });
+
+  it('allows non-article shared keys regardless of the flag', () => {
+    expect(
+      isFileAccessForbidden({
+        isShared: true,
+        isUserOwned: false,
+        isLegacySharedArticle: false,
+        legacyArticlesAllowed: false
+      })
+    ).toBe(false);
   });
 });

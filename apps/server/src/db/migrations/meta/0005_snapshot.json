@@ -1231,6 +1231,16 @@
           "primaryKey": false,
           "notNull": false
         },
+        "search_vector": {
+          "name": "search_vector",
+          "type": "tsvector",
+          "primaryKey": false,
+          "notNull": false,
+          "generated": {
+            "as": "setweight(to_tsvector('simple', COALESCE(title, '')), 'A') ||\n        setweight(to_tsvector('simple', COALESCE(excerpt, '')), 'B') ||\n        setweight(to_tsvector('simple', COALESCE(text_content, '')), 'C')",
+            "type": "stored"
+          }
+        },
         "author": {
           "name": "author",
           "type": "text",
@@ -1604,6 +1614,69 @@
           "isUnique": false,
           "concurrently": false,
           "method": "btree",
+          "with": {}
+        },
+        "idx_links_search_vector": {
+          "name": "idx_links_search_vector",
+          "columns": [
+            {
+              "expression": "search_vector",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gin",
+          "with": {}
+        },
+        "idx_links_title_trgm": {
+          "name": "idx_links_title_trgm",
+          "columns": [
+            {
+              "expression": "title",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last",
+              "opclass": "gin_trgm_ops"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gin",
+          "with": {}
+        },
+        "idx_links_url_trgm": {
+          "name": "idx_links_url_trgm",
+          "columns": [
+            {
+              "expression": "url",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last",
+              "opclass": "gin_trgm_ops"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gin",
+          "with": {}
+        },
+        "idx_links_excerpt_trgm": {
+          "name": "idx_links_excerpt_trgm",
+          "columns": [
+            {
+              "expression": "excerpt",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last",
+              "opclass": "gin_trgm_ops"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gin",
           "with": {}
         }
       },
