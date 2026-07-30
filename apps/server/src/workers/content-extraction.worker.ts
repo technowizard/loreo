@@ -24,6 +24,7 @@ const links = createDrizzleLinksAdapter(db);
 const importSessions = createDrizzleImportSessionsAdapter(db);
 
 const workerName = 'content-extraction-worker';
+const jobTimeoutMs = 5 * 60 * 1000;
 
 const isDataURI = (uri: string): boolean => uri.startsWith('data:');
 
@@ -86,8 +87,6 @@ async function contentExtractionJob(job: Job<ContentExtractionJobData>): Promise
 
   const { linkId, url: articleUrl, user } = job.data;
 
-  // overall job timeout: 5 minutes
-  const jobTimeoutMs = 5 * 60 * 1000;
   const jobController = new AbortController();
   const jobTimeout = setTimeout(() => {
     jobController.abort(new Error('Job exceeded 5 minute timeout'));
@@ -104,15 +103,35 @@ async function contentExtractionJob(job: Job<ContentExtractionJobData>): Promise
     return { error: 'Link not found', status: 'aborted' };
   }
 
-  if (initialDoc.processingStatus !== 'pending') {
+  let currentDoc = initialDoc;
+
+  if (currentDoc.processingStatus === 'processing') {
+    const startedAtMs = currentDoc.processingStartedAt?.getTime();
+    const isStale = !startedAtMs || Date.now() - startedAtMs >= jobTimeoutMs;
+
+    if (isStale) {
+      await links.update(linkId, user.id, {
+        processingStartedAt: null,
+        processingStatus: 'pending'
+      });
+      currentDoc = {
+        ...currentDoc,
+        processingStartedAt: null,
+        processingStatus: 'pending'
+      };
+    }
+  }
+
+  if (currentDoc.processingStatus !== 'pending') {
     clearTimeout(jobTimeout);
     logger.warn(`Link with id ${linkId} is not pending`);
 
-    return { articleTitle: initialDoc.title as string, status: 'skipped' };
+    return { articleTitle: currentDoc.title as string, status: 'skipped' };
   }
 
   try {
     await links.update(linkId, user.id, {
+      processingStartedAt: new Date(),
       processingStatus: 'processing'
     });
   } catch (error: unknown) {
@@ -205,10 +224,9 @@ async function contentExtractionJob(job: Job<ContentExtractionJobData>): Promise
               `Processing image ${currentImageProgress} of ${images.length}: ${absoluteSrc}`
             );
 
-            // rate limiting 500ms delay between image uploads to avoid anti-bot
-            await new Promise((resolve) => setTimeout(resolve, 500));
-
-            const uploadedImage = await storageService.uploadImageFromUrl(absoluteSrc);
+            const uploadedImage = await storageService.uploadImageFromUrl(absoluteSrc, {
+              userId: user.id
+            });
 
             if (!uploadedImage?.url) {
               // upload failed, hide broken image
@@ -249,6 +267,7 @@ async function contentExtractionJob(job: Job<ContentExtractionJobData>): Promise
         excerpt: readableContent.excerpt,
         favicon: metadata.favicon,
         isPaywalled,
+        processingStartedAt: null,
         processingStatus: 'completed' as const,
         publishedAt: metadata.publishedDate ? new Date(metadata.publishedDate) : null,
         readingTime,
@@ -283,6 +302,7 @@ async function contentExtractionJob(job: Job<ContentExtractionJobData>): Promise
         content: readableContent.content || null,
         errorMessage: 'No content extracted from the article',
         isPaywalled,
+        processingStartedAt: null,
         processingStatus: 'completed' as const,
         textContent: readableContent.textContent || null,
         title: readableContent.title
@@ -310,6 +330,7 @@ async function contentExtractionJob(job: Job<ContentExtractionJobData>): Promise
 
       await links.update(linkId, user.id, {
         errorMessage: 'No content extracted from the article',
+        processingStartedAt: null,
         processingStatus: 'failed'
       });
 
@@ -322,6 +343,7 @@ async function contentExtractionJob(job: Job<ContentExtractionJobData>): Promise
       await links.update(linkId, user.id, {
         content: 'No content extracted from the article',
         errorMessage: "Content couldn't be extracted. Link may be broken",
+        processingStartedAt: null,
         processingStatus: 'failed'
       });
 

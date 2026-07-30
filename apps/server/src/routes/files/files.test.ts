@@ -31,6 +31,7 @@ let userId: string;
 let authCookie: string;
 let userFileKey: string;
 let sharedFileKey: string;
+let legacySharedArticleKey: string;
 let testUser: UserWithoutPassword;
 
 beforeAll(async () => {
@@ -51,6 +52,7 @@ beforeAll(async () => {
 
   userFileKey = `user-${userId}/uploads/test.txt`;
   sharedFileKey = 'shared/uploads/test.txt';
+  legacySharedArticleKey = 'shared/articles/test.txt';
 
   await fs.mkdir(path.join(STORAGE_ROOT, `user-${userId}/uploads`), {
     recursive: true
@@ -58,8 +60,12 @@ beforeAll(async () => {
   await fs.mkdir(path.join(STORAGE_ROOT, 'shared/uploads'), {
     recursive: true
   });
+  await fs.mkdir(path.join(STORAGE_ROOT, 'shared/articles'), {
+    recursive: true
+  });
   await fs.writeFile(path.join(STORAGE_ROOT, userFileKey), FILE_CONTENT);
   await fs.writeFile(path.join(STORAGE_ROOT, sharedFileKey), FILE_CONTENT);
+  await fs.writeFile(path.join(STORAGE_ROOT, legacySharedArticleKey), FILE_CONTENT);
 });
 
 afterAll(async () => {
@@ -68,6 +74,9 @@ afterAll(async () => {
     force: true
   });
   await fs.rm(path.join(STORAGE_ROOT, 'shared/uploads/test.txt'), {
+    force: true
+  });
+  await fs.rm(path.join(STORAGE_ROOT, 'shared/articles/test.txt'), {
     force: true
   });
 });
@@ -80,6 +89,14 @@ function createFakeAuthRepository(user: UserWithoutPassword): AuthRepository {
       name: user.name,
       avatar: user.avatar,
       settings: user.settings
+    }),
+    createWithInitialRole: async () => ({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      avatar: user.avatar,
+      settings: user.settings,
+      role: 'user'
     }),
     findByEmail: async () => null,
     findById: async (id) => (id === user.id ? user : null),
@@ -243,6 +260,14 @@ describe('GET /files/:key', () => {
         { headers: { Cookie: authCookie } }
       );
       expect(response.status).toBe(HttpStatus.OK);
+    });
+
+    it('returns 403 for legacy shared article files', async () => {
+      const response = await client.files[':key{.*}'].$get(
+        { param: { key: legacySharedArticleKey } },
+        { headers: { Cookie: authCookie } }
+      );
+      expect(response.status).toBe(HttpStatus.FORBIDDEN);
     });
 
     it("returns 403 for another user's file", async () => {

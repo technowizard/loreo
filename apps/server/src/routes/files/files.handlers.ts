@@ -19,6 +19,7 @@ async function serveFile(c: Context<AppBindings>, key: string) {
 
   try {
     const isShared = storageService.isSharedFile(key);
+    const isLegacySharedArticle = key.startsWith('shared/articles/');
 
     if (!user) {
       const response = errorResponse(
@@ -30,7 +31,7 @@ async function serveFile(c: Context<AppBindings>, key: string) {
     } else {
       const isUserOwned = storageService.isUserFile(key, user.id);
 
-      if (!isShared && !isUserOwned) {
+      if ((!isShared && !isUserOwned) || isLegacySharedArticle) {
         const response = errorResponse('Access denied to this file', HttpStatus.FORBIDDEN);
 
         return c.json(response, response.status);
