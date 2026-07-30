@@ -52,7 +52,7 @@ export const instance = ky.create({
   prefix: env.API_URL || globalThis.location.origin,
   retry: {
     limit: 1,
-    statusCodes: [401, 403, 429, 500, 502, 503, 504]
+    statusCodes: [429, 500, 502, 503, 504]
   }
 });
 
@@ -71,6 +71,11 @@ export const apiClient = {
     const payload = buildPayload(body, headers);
 
     return instance.patch(url, payload);
+  },
+  patchKeepalive: (url: string, body: RequestBody = {}, headers: object = {}) => {
+    const payload = buildPayload(body, headers);
+
+    return instance.patch(url, { ...payload, keepalive: true, retry: 0 });
   },
   post: (url: string, body: RequestBody = {}, headers: object = {}) => {
     const payload = buildPayload(body, headers);

@@ -16,7 +16,7 @@ declare module '@tanstack/react-query' {
 
 const queryConfig = {
   mutations: {
-    retry: 1,
+    retry: 0,
     retryDelay: 1000
   },
   queries: {
