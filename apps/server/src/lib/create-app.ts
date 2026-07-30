@@ -69,7 +69,7 @@ export default function createApp() {
       )
     );
 
-  if (!env.isTest) {
+  if (env.isProduction) {
     app.use('*', async (c, next) => {
       if (c.req.path === '/health') {
         return next();
