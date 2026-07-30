@@ -1,20 +1,27 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { HttpResponse, http } from 'msw';
 import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { server } from '@/tests/mocks/server';
+import { render } from '@/tests/test-utils';
 
 const createFeedMutate = vi.hoisted(() => vi.fn());
 const deleteFeedMutate = vi.hoisted(() => vi.fn());
 const saveFeedMutate = vi.hoisted(() => vi.fn());
 const dismissFeedMutate = vi.hoisted(() => vi.fn());
 const updateFeedMutate = vi.hoisted(() => vi.fn());
+const navigate = vi.hoisted(() => vi.fn());
 
 vi.mock('@tanstack/react-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@tanstack/react-router')>();
 
   return {
     ...actual,
-    Link: ({ children }: { children: ReactNode }) => <a href="#feed-items">{children}</a>
+    Link: ({ children }: { children: ReactNode }) => <a href="#feed-items">{children}</a>,
+    useNavigate: () => navigate,
+    useSearch: () => ({})
   };
 });
 
@@ -99,8 +106,9 @@ import {
 
 import type { FeedItem, FeedSubscription } from '@/types/feeds';
 
-import { AddFeedForm, FeedItemCard } from './feeds';
+import FeedsPage, { AddFeedForm, FeedItemCard } from './feeds';
 
+const API_URL = 'http://localhost:3000';
 const NOW = '2026-06-28T12:00:00.000Z';
 
 function subscription(overrides: Partial<FeedSubscription> = {}): FeedSubscription {
@@ -205,6 +213,26 @@ describe('feeds page helpers', () => {
 });
 
 describe('feed page components', () => {
+  it('shows the first-use empty state without requesting feed items', async () => {
+    let itemRequests = 0;
+
+    server.use(
+      http.get(`${API_URL}/feeds/subscriptions`, () =>
+        HttpResponse.json({ message: 'ok', result: [], status: 200 })
+      ),
+      http.get(`${API_URL}/feeds/items`, () => {
+        itemRequests++;
+        return HttpResponse.json({ message: 'failed', status: 400 }, { status: 400 });
+      })
+    );
+
+    render(<FeedsPage />);
+
+    expect(await screen.findByText('feeds.empty.title')).toBeInTheDocument();
+    expect(screen.queryByText('feeds.error.title')).not.toBeInTheDocument();
+    expect(itemRequests).toBe(0);
+  });
+
   it('validates add feed input before submitting', async () => {
     const user = userEvent.setup();
     render(<AddFeedForm />);
