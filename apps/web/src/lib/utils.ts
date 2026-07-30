@@ -10,10 +10,12 @@ export function getUrlName(url: string) {
   return urlObject.hostname.replace('www.', '');
 }
 
-export function sanitizeUrl(url: string): string {
+const safeDataImagePattern = /^data:image\/(?:avif|gif|jpeg|png|webp);base64,/i;
+
+export function sanitizeUrl(url: string, options: { allowDataImage?: boolean } = {}): string {
   try {
     if (url.startsWith('data:')) {
-      return url;
+      return options.allowDataImage && safeDataImagePattern.test(url) ? url : '';
     }
 
     const parsedUrl = new URL(url, window.location.origin);

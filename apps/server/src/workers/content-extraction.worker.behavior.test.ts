@@ -88,8 +88,17 @@ vi.mock('@/services/browser.service.js', () => ({ browserService: browserService
 vi.mock('@/services/content-extraction.service.js', () => ({
   contentExtractionService: contentExtractionServiceMock
 }));
-vi.mock('@/services/markdown.service.js', () => ({ markdownService: markdownServiceMock }));
+vi.mock('@/services/markdown.service.js', async () => ({
+  ...(await vi.importActual<typeof import('@/services/markdown.service.js')>(
+    '@/services/markdown.service.js'
+  )),
+  markdownService: markdownServiceMock
+}));
 vi.mock('@/services/storage.service.js', () => ({ storageService: storageServiceMock }));
+
+const { contentExtractionService: actualContentExtractionService } = await vi.importActual<
+  typeof import('@/services/content-extraction.service.js')
+>('@/services/content-extraction.service.js');
 
 await importWithEnv({ DEMO_MODE: 'false' }, async () => import('./content-extraction.worker.js'));
 
@@ -206,7 +215,71 @@ describe('content extraction worker behavior', () => {
       'https://example.com/body.png',
       { userId: 'user-1' }
     );
+    expect(markdownServiceMock.convertToMarkdown).toHaveBeenCalledWith(expect.any(String), {
+      baseUrl: 'https://example.com/article',
+      title: 'Readable Title'
+    });
     expect(setTimeoutSpy.mock.calls.some(([, delay]) => delay === 500)).toBe(false);
+  });
+
+  it('does not upload images used only by Ghost bookmark cards', async () => {
+    expect(contentExtractionJobHandler).toBeDefined();
+
+    const readable = await actualContentExtractionService.extractReadableContent(
+      `
+        <!doctype html>
+        <html>
+          <head><title>Readable Title</title></head>
+          <body>
+            <article>
+              <figure class="kg-card kg-bookmark-card">
+                <a class="kg-bookmark-container" href="https://example.com/bookmark-target">
+                  <div class="kg-bookmark-content">
+                    <div class="kg-bookmark-title">Example bookmark</div>
+                    <div class="kg-bookmark-description">Bookmark description.</div>
+                  </div>
+                  <div class="kg-bookmark-thumbnail">
+                    <img src="/bookmark-icon.png" alt="" />
+                    <img src="/bookmark-thumbnail.png" alt="" />
+                  </div>
+                </a>
+              </figure>
+              <img src="/body.png" alt="Article image" />
+            </article>
+          </body>
+        </html>
+      `,
+      'https://example.com/article'
+    );
+    contentExtractionServiceMock.extractReadableContent.mockResolvedValueOnce(readable);
+    storageServiceMock.uploadImageFromUrl.mockReset();
+    storageServiceMock.uploadImageFromUrl.mockResolvedValue({
+      key: 'user-user-1/articles/body.png',
+      url: 'https://cdn/body.png'
+    });
+
+    const result = await contentExtractionJobHandler!(job());
+
+    expect(result).toMatchObject({ status: 'success', imagesProcessed: 1, imagesFailed: 0 });
+    expect(storageServiceMock.uploadImageFromUrl).toHaveBeenCalledTimes(2);
+    expect(storageServiceMock.uploadImageFromUrl).toHaveBeenNthCalledWith(
+      1,
+      'https://example.com/cover.png',
+      { userId: 'user-1' }
+    );
+    expect(storageServiceMock.uploadImageFromUrl).toHaveBeenNthCalledWith(
+      2,
+      'https://example.com/body.png',
+      { userId: 'user-1' }
+    );
+    expect(storageServiceMock.uploadImageFromUrl).not.toHaveBeenCalledWith(
+      'https://example.com/bookmark-icon.png',
+      expect.anything()
+    );
+    expect(storageServiceMock.uploadImageFromUrl).not.toHaveBeenCalledWith(
+      'https://example.com/bookmark-thumbnail.png',
+      expect.anything()
+    );
   });
 
   it('resumes stale processing jobs instead of skipping them', async () => {

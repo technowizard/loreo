@@ -73,25 +73,31 @@ function FeedsPage() {
     selectedSubscriptionId === 'all' ? undefined : selectedSubscriptionId;
 
   const subscriptionsQuery = useFeedSubscriptions();
+  const subscriptions = subscriptionsQuery.data?.result ?? [];
+  const hasSubscriptions = subscriptions.length > 0;
   const itemsQuery = useFeedItems({
     filters: {
       sort,
       state: activeState,
       ...(selectedSubscriptionFilter ? { subscriptionId: selectedSubscriptionFilter } : {})
-    }
+    },
+    queryConfig: { enabled: hasSubscriptions }
   });
-  const pendingItemsQuery = useFeedItems({ filters: { state: 'new' } });
+  const pendingItemsQuery = useFeedItems({
+    filters: { state: 'new' },
+    queryConfig: { enabled: hasSubscriptions }
+  });
 
-  const subscriptions = subscriptionsQuery.data?.result ?? [];
   const items = itemsQuery.data ?? [];
   const activeFeeds = subscriptions.filter((subscription) => subscription.status === 'active');
   const sourceTitleBySubscriptionId = useMemo(
     () => new Map(subscriptions.map((subscription) => [subscription.id, subscription.title])),
     [subscriptions]
   );
-  const isLoading = subscriptionsQuery.isLoading || itemsQuery.isLoading;
-  const isError = subscriptionsQuery.isError || itemsQuery.isError;
-  const isOverviewLoading = subscriptionsQuery.isLoading || pendingItemsQuery.isLoading;
+  const isLoading = subscriptionsQuery.isLoading || (hasSubscriptions && itemsQuery.isLoading);
+  const isError = subscriptionsQuery.isError || (hasSubscriptions && itemsQuery.isError);
+  const isOverviewLoading =
+    subscriptionsQuery.isLoading || (hasSubscriptions && pendingItemsQuery.isLoading);
   const isManageOpen = search.manage === true || search.tab === 'feeds';
   const managerStatus = search.manageStatus ?? 'all';
 
@@ -117,6 +123,11 @@ function FeedsPage() {
   };
 
   const retryFeeds = () => {
+    if (!hasSubscriptions) {
+      void subscriptionsQuery.refetch();
+      return;
+    }
+
     void Promise.all([
       subscriptionsQuery.refetch(),
       itemsQuery.refetch(),
@@ -259,13 +270,9 @@ function FeedsPage() {
     <>
       <main className="w-full space-y-6">
         <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(420px,0.72fr)] lg:items-start">
-          <header className="space-y-2">
-            <h1 className="text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              {t('feeds.title')}
-            </h1>
-            <p className="max-w-2xl text-pretty text-sm leading-6 text-muted-foreground">
-              {t('feeds.description')}
-            </p>
+          <header>
+            <h1 className="text-foreground text-2xl font-bold">{t('feeds.title')}</h1>
+            <p className="text-muted-foreground mt-1 max-w-2xl">{t('feeds.description')}</p>
           </header>
 
           <div className="space-y-3 lg:pt-1">

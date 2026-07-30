@@ -17,6 +17,8 @@ import { useTranslation } from 'react-i18next';
 import { useGetUser } from '@/features/auth/api/get-user';
 import { useLogout } from '@/features/auth/api/logout';
 
+import { useThemeConfig } from '@/hooks/use-theme-config';
+
 import { cn } from '@/lib/utils';
 
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
@@ -60,6 +62,7 @@ export function UserMenu({ align = 'end', contentClassName, trigger }: UserMenuP
   const { t } = useTranslation();
   const { data: user } = useGetUser();
   const { setTheme, theme } = useTheme();
+  const toggleTheme = useThemeConfig((state) => state.toggleTheme);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -110,7 +113,10 @@ export function UserMenu({ align = 'end', contentClassName, trigger }: UserMenuP
                 <DropdownMenuItem
                   className="h-11 sm:h-8"
                   key={value}
-                  onClick={() => setTheme(value)}
+                  onClick={() => {
+                    setTheme(value);
+                    toggleTheme(value);
+                  }}
                 >
                   <Icon className="mr-2 size-4" weight="bold" />
                   {t(labelKey)}
