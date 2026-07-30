@@ -1,4 +1,10 @@
+import { parseHTML } from 'linkedom';
 import TurndownService from 'turndown';
+
+export interface MarkdownConversionContext {
+  baseUrl: string;
+  title: string;
+}
 
 interface GenericElement {
   classList?: {
@@ -29,6 +35,44 @@ interface GenericElement {
 
 function isGenericElement(node: unknown): node is GenericElement {
   return node !== null && typeof node === 'object' && 'getAttribute' in node;
+}
+
+function resolveArticleHref(href: string, baseUrl: string) {
+  try {
+    const resolved = new URL(href, baseUrl);
+    if (resolved.protocol === 'http:' || resolved.protocol === 'https:') {
+      return resolved.href;
+    }
+
+    return resolved.protocol === 'mailto:' || resolved.protocol === 'tel:' ? href : null;
+  } catch {
+    return null;
+  }
+}
+
+function normalizeTitle(value: string) {
+  return value.normalize('NFKC').replaceAll(/\s+/g, ' ').trim().toLocaleLowerCase();
+}
+
+function prepareHtmlForConversion(htmlContent: string, context: MarkdownConversionContext) {
+  const { document } = parseHTML(htmlContent);
+  const leadingH1Text = document.querySelector('h1')?.textContent?.trim() ?? null;
+
+  for (const anchor of document.querySelectorAll('a[href]')) {
+    const href = anchor.getAttribute('href');
+    if (!href) {
+      continue;
+    }
+
+    const resolvedHref = resolveArticleHref(href, context.baseUrl);
+    if (resolvedHref) {
+      anchor.setAttribute('href', resolvedHref);
+    } else {
+      anchor.removeAttribute('href');
+    }
+  }
+
+  return { html: document.toString(), leadingH1Text };
 }
 
 // generic element detection, highlight, strikethrough, list
@@ -102,11 +146,6 @@ turndownService.addRule('figure', {
       // Combine tag and processed caption
       caption = tagText ? `${tagText} ${captionMarkdown}`.trim() : captionMarkdown;
     }
-
-    // Handle references in the caption
-    caption = caption.replaceAll(/\[([^\]]+)]\(([^)]+)\)/g, (_match, text, href) => {
-      return `[${text}](${href})`;
-    });
 
     return `![${alt}](${src})\n\n${caption}\n\n`;
   }
@@ -250,17 +289,25 @@ turndownService.addRule('complexLinkStructure', {
     if (!isGenericElement(node)) {
       return content;
     }
-    const href = node.getAttribute('href') || '';
+
     const headingEl = node.querySelector('h1, h2, h3, h4, h5, h6');
     if (!headingEl || !isGenericElement(headingEl)) {
       return content;
     }
 
-    const headingMd = turndownService.turndown(headingEl.innerHTML || '');
-    // Remove heading text from content to get the remaining link text
-    const remaining = content.replace(headingMd, '').trim();
-    const linkPart = href ? `[${remaining || 'View'}](${href})` : remaining;
-    return `\n\n${headingMd}\n\n${linkPart}\n\n`;
+    const headingLevel = Number(headingEl.nodeName.slice(1));
+    const headingContent = turndownService.turndown(headingEl.innerHTML || '').trim();
+    const href = node.getAttribute('href') || '';
+    const clonedLink = node.cloneNode(true);
+    const remaining = isGenericElement(clonedLink)
+      ? (() => {
+          const clonedHeading = clonedLink.querySelector('h1, h2, h3, h4, h5, h6');
+          clonedHeading?.remove();
+          return turndownService.turndown(clonedLink.innerHTML || '').trim();
+        })()
+      : '';
+    const heading = `${'#'.repeat(headingLevel)} ${href ? `[${headingContent}](${href})` : headingContent}`;
+    return `\n\n${heading}${remaining ? `\n\n${remaining}` : ''}\n\n`;
   }
 });
 
@@ -346,67 +393,20 @@ turndownService.addRule('removeMediumSubscription', {
   replacement: () => ''
 });
 
-turndownService.addRule('removeButtons', {
+turndownService.addRule('removeControls', {
   filter(node: HTMLElement): boolean {
-    // Remove actual button tags
     if (node.nodeName === 'BUTTON') {
       return true;
     }
 
-    // Remove anchor tags that behave like buttons
-    if (node.nodeName === 'A') {
-      const className = node.getAttribute('class') || '';
-      const role = node.getAttribute('role') || '';
-      const ariaLabel = node.getAttribute('aria-label') || '';
-      const href = node.getAttribute('href') || '';
-
-      // Check for common button-like indicators
-      const isButtonLike =
-        className.includes('btn') ||
-        className.includes('button') ||
-        role === 'button' ||
-        ariaLabel.toLowerCase().includes('button') ||
-        href === '#' ||
-        href === 'javascript:void(0)' ||
-        href === 'javascript:;';
-
-      // Also check if it has minimal content (typical for buttons)
-      const hasMinimalContent =
-        node.textContent?.trim().length === 0 ||
-        (node.textContent.trim().length < 20 &&
-          (className.includes('icon') || className.includes('button')));
-
-      // Check for comment links (specific pattern)
-      const isCommentLink =
-        className.includes('comments') ||
-        href.includes('#comments') ||
-        node.textContent?.toLowerCase().includes('comment');
-
-      // Check for social interaction links
-      const isSocialInteraction =
-        className.includes('share') ||
-        className.includes('like') ||
-        className.includes('follow') ||
-        className.includes('subscribe') ||
-        (node.textContent && /(?:share|like|follow|subscribe|comment)s?/i.test(node.textContent));
-
-      // Also remove if it points to the same page with a hash
-      const isSamePageLink = href.startsWith('#') && href.length > 1;
-
-      return (
-        isButtonLike ||
-        isCommentLink ||
-        isSocialInteraction ||
-        isSamePageLink ||
-        (hasMinimalContent && (!href || href === '#' || href.startsWith('javascript')))
-      );
+    if (node.nodeName !== 'A') {
+      return false;
     }
 
-    return false;
+    const href = node.getAttribute('href')?.trim().toLowerCase() ?? '';
+    return href === 'javascript:void(0)' || href === 'javascript:;';
   },
-  replacement() {
-    return '';
-  }
+  replacement: () => ''
 });
 
 turndownService.remove(['style', 'script']);
@@ -520,37 +520,17 @@ turndownService.addRule('embedToMarkdown', {
   }
 });
 
-turndownService.addRule('removeAuthor', {
-  filter: (node) => {
-    if (node.nodeName === 'DIV') {
-      const className = node.getAttribute('class') || '';
-      return className.includes('author');
-    }
-
-    return false;
-  },
-  replacement: () => ''
-});
-
-turndownService.addRule('removeMostRead', {
-  filter: (node) => {
-    if (node.nodeName === 'DIV') {
-      const className = node.getAttribute('class') || '';
-      return className.includes('most-read');
-    }
-
-    return false;
-  },
-  replacement: () => ''
-});
-
 class MarkdownService {
-  convertToMarkdown(htmlContent: string) {
-    let markdown = turndownService.turndown(htmlContent);
+  convertToMarkdown(htmlContent: string, context: MarkdownConversionContext) {
+    const prepared = prepareHtmlForConversion(htmlContent, context);
+    let markdown = turndownService.turndown(prepared.html);
 
-    // remove the title from the beginning of the content if it exists
-    const titleMatch = markdown.match(/^# .+\n+/);
-    if (titleMatch) {
+    const titleMatch = markdown.match(/^# .+(?:\n+|$)/);
+    if (
+      titleMatch &&
+      prepared.leadingH1Text &&
+      normalizeTitle(prepared.leadingH1Text) === normalizeTitle(context.title)
+    ) {
       markdown = markdown.slice(titleMatch[0].length);
     }
 
@@ -560,10 +540,6 @@ class MarkdownService {
 
     // remove any consecutive newlines more than two
     markdown = markdown.replaceAll(/\n{3,}/g, '\n\n');
-
-    // clean up any remaining lines that are just punctuation or empty
-    // exclude lines containing code block markers (backticks)
-    markdown = markdown.replaceAll(/^\s*(?![^\s\w]*`[^\s\w]*)(?:[^\s\w]+\s*)?$/gm, '');
 
     return markdown.trim();
   }

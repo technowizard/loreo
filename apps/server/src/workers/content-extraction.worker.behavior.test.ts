@@ -206,6 +206,10 @@ describe('content extraction worker behavior', () => {
       'https://example.com/body.png',
       { userId: 'user-1' }
     );
+    expect(markdownServiceMock.convertToMarkdown).toHaveBeenCalledWith(expect.any(String), {
+      baseUrl: 'https://example.com/article',
+      title: 'Readable Title'
+    });
     expect(setTimeoutSpy.mock.calls.some(([, delay]) => delay === 500)).toBe(false);
   });
 

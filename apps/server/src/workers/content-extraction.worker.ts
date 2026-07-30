@@ -255,7 +255,10 @@ async function contentExtractionJob(job: Job<ContentExtractionJobData>): Promise
 
       htmlContent = document.toString();
 
-      const content = markdownService.convertToMarkdown(htmlContent);
+      const content = markdownService.convertToMarkdown(htmlContent, {
+        baseUrl: articleUrl,
+        title: readableContent.title
+      });
 
       const readingTime = estimateReadingTime(readableContent.textContent as string);
 
