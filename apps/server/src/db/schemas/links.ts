@@ -135,9 +135,11 @@ const linkHighlightSchema = z.object({
 export const selectLinksListSchema = createSelectSchema(linksTable)
   .omit({
     content: true,
+    textContent: true,
     userId: true,
     processingStartedAt: true,
-    importSessionId: true
+    importSessionId: true,
+    searchVector: true
   })
   .extend({
     createdAt: z.string().optional(),
@@ -193,7 +195,6 @@ export const createLinkSchema = z.object({
   tags: z
     .array(
       z.object({
-        id: z.string(),
         groupId: z.string(),
         name: z.string()
       })

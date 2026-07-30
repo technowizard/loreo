@@ -35,7 +35,10 @@ type LinkHighlight = {
 };
 
 // Omit 'highlights'/'tags' from LinkData to avoid conflict with the enriched shapes below
-export type LinkListItem = Omit<LinkData, 'content' | 'userId' | 'highlights' | 'tags'> & {
+export type LinkListItem = Omit<
+  LinkData,
+  'content' | 'textContent' | 'userId' | 'highlights' | 'tags'
+> & {
   tags: TagWithGroupColor[];
   highlights: LinkHighlight[];
 };
@@ -154,7 +157,6 @@ export function createDrizzleLinksAdapter(db: DrizzleClient): LinksRepository {
           publishedAt: linksTable.publishedAt,
           readingProgress: linksTable.readingProgress,
           readingTime: linksTable.readingTime,
-          textContent: linksTable.textContent,
           timeSpentReading: linksTable.timeSpentReading,
           title: linksTable.title,
           updatedAt: linksTable.updatedAt,
@@ -730,7 +732,6 @@ export function createDrizzleLinksAdapter(db: DrizzleClient): LinksRepository {
             publishedAt: linksTable.publishedAt,
             readingProgress: linksTable.readingProgress,
             readingTime: linksTable.readingTime,
-            textContent: linksTable.textContent,
             timeSpentReading: linksTable.timeSpentReading,
             title: linksTable.title,
             updatedAt: linksTable.updatedAt,
