@@ -17,7 +17,11 @@ import { createDrizzleLinksAdapter } from '@/repositories/links.repository.js';
 
 import { browserService } from '@/services/browser.service.js';
 import { contentExtractionService } from '@/services/content-extraction.service.js';
-import { markdownService } from '@/services/markdown.service.js';
+import {
+  isGhostBookmarkCard,
+  markdownService,
+  resolveArticleHref
+} from '@/services/markdown.service.js';
 import { storageService } from '@/services/storage.service.js';
 
 const links = createDrizzleLinksAdapter(db);
@@ -27,6 +31,20 @@ const workerName = 'content-extraction-worker';
 const jobTimeoutMs = 5 * 60 * 1000;
 
 const isDataURI = (uri: string): boolean => uri.startsWith('data:');
+
+function isBookmarkCardImage(image: Element, baseUrl: string): boolean {
+  const figure = image.closest('figure');
+  const anchor = figure?.querySelector('a[href]');
+  const href = anchor?.getAttribute('href');
+
+  return Boolean(
+    figure &&
+    isGhostBookmarkCard(figure) &&
+    href &&
+    resolveArticleHref(href, baseUrl) &&
+    image.closest('a[href]') === anchor
+  );
+}
 
 function abortPromise(signal: AbortSignal): Promise<never> {
   if (signal.aborted) {
@@ -180,7 +198,9 @@ async function contentExtractionJob(job: Job<ContentExtractionJobData>): Promise
 
       const { document } = parseHTML(htmlContent);
 
-      const images = Array.from(document.querySelectorAll('img'));
+      const allImages = Array.from(document.querySelectorAll('img'));
+      const images = allImages.filter((image) => !isBookmarkCardImage(image, articleUrl));
+      const skippedBookmarkImages = allImages.length - images.length;
 
       let coverImage = null;
 
@@ -203,7 +223,11 @@ async function contentExtractionJob(job: Job<ContentExtractionJobData>): Promise
         }
       }
 
-      logger.info(`Found ${images.length} images in the article`);
+      logger.info(
+        `Found ${images.length} images in the article${
+          skippedBookmarkImages > 0 ? `; skipped ${skippedBookmarkImages} bookmark images` : ''
+        }`
+      );
 
       let currentImageProgress = 0;
 

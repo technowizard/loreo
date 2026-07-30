@@ -53,6 +53,83 @@ describe('markdownService.convertToMarkdown', () => {
       );
     });
 
+    it('preserves Ghost bookmark title, description, and destination', () => {
+      const html = `
+        <figure class="kg-card kg-bookmark-card">
+          <a href="https://github.com/example/bookmark-target?ref=publisher.example">
+            <img src="https://cdn.example.com/icon.png" alt="" />
+            <p>GitHub - example/bookmark-target</p>
+            <p>Contribute to example/bookmark-target development by creating an account on GitHub.</p>
+          </a>
+        </figure>
+      `;
+
+      expect(convertToMarkdown(html)).toBe(
+        '[**GitHub - example/bookmark-target**](https://github.com/example/bookmark-target?ref=publisher.example)\n\nContribute to example/bookmark-target development by creating an account on GitHub.'
+      );
+    });
+
+    it('supports Ghost bookmark title and description elements', () => {
+      const html = `
+        <figure class="kg-card kg-bookmark-card">
+          <a href="/bookmark-target">
+            <div class="kg-bookmark-content">
+              <div class="kg-bookmark-title">Example bookmark</div>
+              <div class="kg-bookmark-description"><em>Bookmark description.</em></div>
+            </div>
+            <div class="kg-bookmark-thumbnail"><img src="/thumbnail.png" alt="" /></div>
+          </a>
+        </figure>
+      `;
+
+      expect(convertToMarkdown(html)).toBe(
+        '[**Example bookmark**](https://publisher.example/bookmark-target)\n\n*Bookmark description.*'
+      );
+    });
+
+    it('does not treat ordinary linked figures as Ghost bookmarks', () => {
+      const html = `
+        <figure class="article-figure">
+          <a href="/story">
+            <img src="/figure.png" alt="Figure" />
+            <p>Figure title</p>
+          </a>
+        </figure>
+      `;
+
+      expect(convertToMarkdown(html)).toBe('![Figure](/figure.png)');
+    });
+
+    it('does not emit an active link for an unsafe bookmark destination', () => {
+      const html = `
+        <figure class="kg-card kg-bookmark-card">
+          <a href="javascript:alert('unsafe')">
+            <img src="/icon.png" alt="Bookmark icon" />
+            <p>Unsafe bookmark</p>
+            <p>Bookmark description.</p>
+          </a>
+        </figure>
+      `;
+
+      expect(convertToMarkdown(html)).toBe('![Bookmark icon](/icon.png)');
+    });
+
+    it('escapes bookmark link delimiters in metadata', () => {
+      const html = `
+        <figure class="kg-card kg-bookmark-card">
+          <a href="https://example.com/bookmark-(target)">
+            <img src="/icon.png" alt="" />
+            <p>Example [*bookmark*_] &#96;code&#96;~</p>
+            <p>First line<br />Second line.</p>
+          </a>
+        </figure>
+      `;
+
+      expect(convertToMarkdown(html)).toBe(
+        '[**Example \\[\\*bookmark\\*\\_\\] \\`code\\`\\~**](https://example.com/bookmark-\\(target\\))\n\nFirst line  \nSecond line.'
+      );
+    });
+
     it('continues removing executable and styling elements', () => {
       const html = `
         <style>.hidden { display: none; }</style>

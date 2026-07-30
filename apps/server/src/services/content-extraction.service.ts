@@ -3,6 +3,14 @@ import { parseHTML } from 'linkedom';
 
 import { logger } from '@/lib/logger.js';
 
+const GHOST_BOOKMARK_CLASSES = [
+  'kg-bookmark-card',
+  'kg-bookmark-content',
+  'kg-bookmark-title',
+  'kg-bookmark-description',
+  'kg-bookmark-thumbnail'
+];
+
 class ContentExtraction {
   async extractReadableContent(htmlContent: string, url: string) {
     const { document } = parseHTML(htmlContent);
@@ -21,6 +29,7 @@ class ContentExtraction {
 
     try {
       const article = new Readability(document, {
+        classesToPreserve: GHOST_BOOKMARK_CLASSES,
         // @ts-expect-error: missing type definition
         linkDensityModifier: 0.1
       }).parse();

@@ -37,7 +37,7 @@ function isGenericElement(node: unknown): node is GenericElement {
   return node !== null && typeof node === 'object' && 'getAttribute' in node;
 }
 
-function resolveArticleHref(href: string, baseUrl: string) {
+export function resolveArticleHref(href: string, baseUrl: string) {
   try {
     const resolved = new URL(href, baseUrl);
     if (resolved.protocol === 'http:' || resolved.protocol === 'https:') {
@@ -48,6 +48,24 @@ function resolveArticleHref(href: string, baseUrl: string) {
   } catch {
     return null;
   }
+}
+
+export interface BookmarkCardElement {
+  classList?: {
+    contains: (className: string) => boolean;
+  };
+  getAttribute: (name: string) => string | null;
+  nodeName: string;
+  querySelector: (selector: string) => Element | null;
+}
+
+export function isGhostBookmarkCard(node: BookmarkCardElement): boolean {
+  if (node.nodeName !== 'FIGURE' || !node.classList?.contains('kg-bookmark-card')) {
+    return false;
+  }
+
+  const anchor = node.querySelector('a[href]');
+  return Boolean(anchor?.textContent?.trim() && anchor.querySelector('img'));
 }
 
 function normalizeTitle(value: string) {
@@ -148,6 +166,52 @@ turndownService.addRule('figure', {
     }
 
     return `![${alt}](${src})\n\n${caption}\n\n`;
+  }
+});
+
+turndownService.addRule('bookmarkCard', {
+  filter(node) {
+    return isGenericElement(node) && isGhostBookmarkCard(node);
+  },
+  replacement(content, node) {
+    if (!isGenericElement(node)) {
+      return content;
+    }
+
+    const anchor = node.querySelector('a[href]');
+    if (!anchor || !isGenericElement(anchor)) {
+      return content;
+    }
+
+    const href = anchor.getAttribute('href');
+    const paragraphs = Array.from(anchor.querySelectorAll('p'));
+    const titleElement = anchor.querySelector('.kg-bookmark-title') ?? paragraphs[0];
+    const descriptionElement = anchor.querySelector('.kg-bookmark-description') ?? paragraphs[1];
+    const title = titleElement?.textContent?.trim() ?? '';
+    const description =
+      descriptionElement && isGenericElement(descriptionElement)
+        ? turndownService.turndown(descriptionElement.innerHTML || '').trim()
+        : '';
+
+    if (!href || !title) {
+      return content;
+    }
+
+    const safeTitle = title
+      .replaceAll('\\', '\\\\')
+      .replaceAll('[', '\\[')
+      .replaceAll(']', '\\]')
+      .replaceAll('*', '\\*')
+      .replaceAll('_', '\\_')
+      .replaceAll('`', '\\`')
+      .replaceAll('~', '\\~');
+    const safeHref = href.replaceAll('\\', '\\\\').replaceAll('(', '\\(').replaceAll(')', '\\)');
+    const bookmarkLines = [`[**${safeTitle}**](${safeHref})`];
+    if (description) {
+      bookmarkLines.push('', description);
+    }
+
+    return `\n\n${bookmarkLines.join('\n')}\n\n`;
   }
 });
 
