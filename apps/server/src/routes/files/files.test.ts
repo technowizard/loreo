@@ -18,6 +18,7 @@ import { storageService } from '@/services/storage.service.js';
 
 import type { UserWithoutPassword } from '@/types/auth.js';
 
+import { isFileAccessForbidden } from './files.handlers.js';
 import router from './files.index.js';
 
 const STORAGE_ROOT = path.resolve(process.cwd(), 'data/storage');
@@ -262,7 +263,7 @@ describe('GET /files/:key', () => {
       expect(response.status).toBe(HttpStatus.OK);
     });
 
-    it('returns 403 for legacy shared article files', async () => {
+    it('returns 403 for legacy shared article files by default (flag off)', async () => {
       const response = await client.files[':key{.*}'].$get(
         { param: { key: legacySharedArticleKey } },
         { headers: { Cookie: authCookie } }
@@ -321,5 +322,62 @@ describe('GET /files/:key', () => {
       const text = await response.text();
       expect(text).toBe(FILE_CONTENT);
     });
+  });
+});
+
+describe('isFileAccessForbidden', () => {
+  it('denies legacy shared article keys by default (flag off)', () => {
+    expect(
+      isFileAccessForbidden({
+        isShared: true,
+        isUserOwned: false,
+        isLegacySharedArticle: true,
+        legacyArticlesAllowed: false
+      })
+    ).toBe(true);
+  });
+
+  it('allows legacy shared article keys when the migration flag is on', () => {
+    expect(
+      isFileAccessForbidden({
+        isShared: true,
+        isUserOwned: false,
+        isLegacySharedArticle: true,
+        legacyArticlesAllowed: true
+      })
+    ).toBe(false);
+  });
+
+  it('denies keys that are neither shared nor user-owned', () => {
+    expect(
+      isFileAccessForbidden({
+        isShared: false,
+        isUserOwned: false,
+        isLegacySharedArticle: false,
+        legacyArticlesAllowed: false
+      })
+    ).toBe(true);
+  });
+
+  it('allows user-owned keys regardless of the flag', () => {
+    expect(
+      isFileAccessForbidden({
+        isShared: false,
+        isUserOwned: true,
+        isLegacySharedArticle: false,
+        legacyArticlesAllowed: false
+      })
+    ).toBe(false);
+  });
+
+  it('allows non-article shared keys regardless of the flag', () => {
+    expect(
+      isFileAccessForbidden({
+        isShared: true,
+        isUserOwned: false,
+        isLegacySharedArticle: false,
+        legacyArticlesAllowed: false
+      })
+    ).toBe(false);
   });
 });

@@ -126,6 +126,8 @@ The API server handles authentication, article management, RSS feed subscription
 
 The server uses `STORAGE_PROVIDER: local-docker` by default, storing uploaded files in the `storage_data` volume. See the Storage section for S3 configuration.
 
+Article body images extracted before per-user storage are served from the `shared/articles/*` prefix. New installations deny that prefix by default; **existing deployments** that still reference those images should set `ALLOW_LEGACY_SHARED_ARTICLES=true` so older articles keep rendering (new images always use the ownership-checked per-user path). Backfill the legacy assets and unset the flag when ready.
+
 ### Web
 
 The web container is portable: it does not require rebuilding when your deployment URL or server port changes. The browser calls the API on the same origin (through nginx's reverse proxy), and the nginx template resolves `${API_UPSTREAM}` at container startup.

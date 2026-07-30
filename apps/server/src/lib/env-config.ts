@@ -63,6 +63,14 @@ const envSchema = z
 
     STORAGE_PROVIDER: z.enum(['local', 'local-docker', 's3']).default('local'),
 
+    // Serve pre-user-scoping article body images (shared/articles/*) extracted before the
+    // ownership-checked storage scheme. Leave off for fresh deployments; enable for existing
+    // installations until their legacy assets are backfilled, then turn off again.
+    ALLOW_LEGACY_SHARED_ARTICLES: z
+      .enum(['true', 'false'])
+      .default('false')
+      .transform((value) => value === 'true'),
+
     // S3-compatible storage (AWS S3, Cloudflare R2, MinIO, etc.)
     // S3_ENDPOINT: omit for AWS S3, set to custom URL for R2/MinIO
     S3_ENDPOINT: z.string().default(''),
