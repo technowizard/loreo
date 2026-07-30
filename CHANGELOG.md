@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 - Trim full text content from list and search responses.
 - Parallelize home-suggestion reads and collapse short/long reading counts into a single query.
 - Declare the generated search index column and indexes in the schema so schema sync cannot drop them.
+- Keep Tailwind CSS core aligned with the Vite plugin at version 4.3.3.
 - Add a production dependency audit step to CI.
 
 ## [v0.2.0] - 2026-07-29
