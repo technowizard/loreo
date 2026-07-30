@@ -96,19 +96,32 @@ class BrowserService {
 
       logger.info(`[Crawler] Navigating to ${url}...`);
 
-      await page.goto(url, {
+      const response = await page.goto(url, {
         timeout: 30_000,
         waitUntil: 'domcontentloaded'
       });
 
-      logger.info(`[Crawler] Successfully navigated to ${url}. Waiting for page to load...`);
+      const wafAction = response?.headers()['x-amzn-waf-action'];
 
-      await Promise.race([
-        page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {}),
-        new Promise((resolve) => setTimeout(resolve, 5000))
-      ]);
+      if (wafAction === 'challenge') {
+        await page.waitForFunction(
+          () => {
+            const articleText = document.querySelector('article')?.textContent?.trim() ?? '';
+            const bodyText = document.body?.innerText.trim() ?? '';
 
-      logger.info(`[Crawler] Successfully loaded ${url}. Extracting content...`);
+            return (
+              document.title.length > 0 && Math.max(articleText.length, bodyText.length) >= 500
+            );
+          },
+          undefined,
+          {
+            polling: 250,
+            timeout: 15_000
+          }
+        );
+      } else {
+        await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+      }
 
       const html = await page.content();
 
