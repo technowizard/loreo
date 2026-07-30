@@ -75,6 +75,32 @@ describe('isValidUrl', () => {
     expect(lookupMock).not.toHaveBeenCalled();
   });
 
+  it.each([
+    ['loopback', 'https://127.0.0.1/article'],
+    ['CGNAT', 'https://100.64.0.1/article'],
+    ['multicast', 'https://224.0.0.1/article'],
+    ['link-local', 'https://169.254.10.10/article'],
+    ['this-network', 'https://0.0.0.0/article']
+  ])('rejects IPv4 SSRF literal (%s): %s', async (_label, url) => {
+    expect(await isValidUrl(url)).toBe(false);
+    expect(lookupMock).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['loopback', 'https://[::1]/article'],
+    ['link-local', 'https://[fe80::1]/article'],
+    ['unique-local', 'https://[fd12:3456:789a::1]/article'],
+    ['multicast', 'https://[ff02::1]/article']
+  ])('rejects IPv6 SSRF literal (%s): %s', async (_label, url) => {
+    expect(await isValidUrl(url)).toBe(false);
+    expect(lookupMock).not.toHaveBeenCalled();
+  });
+
+  it('accepts a public IPv4 literal', async () => {
+    expect(await isValidUrl('https://93.184.216.34/article')).toBe(true);
+    expect(lookupMock).not.toHaveBeenCalled();
+  });
+
   it.each(['https://[::ffff:7f00:1]/feed.xml', 'https://[::ffff:a9fe:a9fe]/feed.xml'])(
     'rejects hexadecimal IPv4-mapped IPv6 literals: %s',
     async (url) => {

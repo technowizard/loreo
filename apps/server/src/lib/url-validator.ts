@@ -1,9 +1,20 @@
 import { lookup } from 'node:dns/promises';
 import { isIP } from 'node:net';
 
-import isPrivateIP from 'private-ip';
+import ipaddr from 'ipaddr.js';
 
 const DNS_LOOKUP_TIMEOUT_MS = 2000;
+
+// Maintained-library backstop (replaces the unmaintained `private-ip`). Treats any address that
+// is not a global unicast as blocked, matching the SSRF posture of the explicit range checks
+// below and keeping defense-in-depth intact.
+function isNonPublicAddress(address: string): boolean {
+  try {
+    return ipaddr.parse(address).range() !== 'unicast';
+  } catch {
+    return false;
+  }
+}
 
 function isBlockedIpv4Address(address: string): boolean {
   const [firstOctet = Number.NaN, secondOctet = Number.NaN] = address
@@ -34,7 +45,7 @@ function isBlockedIpv4Address(address: string): boolean {
     return true;
   }
 
-  return Boolean(isPrivateIP(address));
+  return isNonPublicAddress(address);
 }
 
 function isBlockedIpv6Address(address: string): boolean {
@@ -64,7 +75,7 @@ function isBlockedIpv6Address(address: string): boolean {
     return true;
   }
 
-  return Boolean(isPrivateIP(address));
+  return isNonPublicAddress(address);
 }
 
 function isBlockedAddress(address: string): boolean {
