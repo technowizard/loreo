@@ -44,9 +44,12 @@ const envSchema = z
 
     REDIS_PORT: z.coerce.number().int().positive().default(6379),
 
-    RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(60_000),
+    BEHIND_PROXY: z
+      .enum(['true', 'false'])
+      .default('false')
+      .transform((value) => value === 'true'),
 
-    RATE_LIMIT_MAX: z.coerce.number().int().positive().default(50),
+    TRUSTED_PROXIES: z.string().default(''),
 
     BODY_SIZE_LIMIT: z.coerce.number().int().positive().default(4_194_304),
 

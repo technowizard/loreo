@@ -69,7 +69,38 @@ export function createInMemoryAuthAdapter(): AuthRepository {
       return publicUser;
     },
 
-    countUsers: async () => usersByEmail.size,
+    createWithInitialRole: async (data) => {
+      const now = new Date(Date.now() + createdOffset++).toISOString();
+      const activeUserCount = Array.from(usersById.values()).filter(
+        (user) => !user.deletedAt
+      ).length;
+      const role = data.role ?? (activeUserCount === 0 ? 'admin' : 'user');
+      const user: User = {
+        ...data,
+        passwordHash: data.passwordHash,
+        id: crypto.randomUUID(),
+        role,
+        name: data.name ?? null,
+        avatar: data.avatar ?? null,
+        settings: {},
+        deletedAt: null,
+        createdAt: now,
+        updatedAt: now
+      };
+      usersByEmail.set(user.email, user);
+      usersById.set(user.id, user);
+      const {
+        passwordHash: _,
+        role: __,
+        deletedAt: ___,
+        createdAt: ____,
+        updatedAt: _____,
+        ...publicUser
+      } = user;
+      return { ...publicUser, role: user.role };
+    },
+
+    countUsers: async () => Array.from(usersById.values()).filter((user) => !user.deletedAt).length,
 
     countActiveAdmins: async () =>
       Array.from(usersById.values()).filter((user) => user.role === 'admin' && !user.deletedAt)

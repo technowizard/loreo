@@ -32,6 +32,36 @@ const publicUserColumns = {
   settings: usersTable.settings
 };
 
+const serializableRetryableCodes = new Set(['40001', '40P01']);
+
+function isRetryableTransactionError(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    serializableRetryableCodes.has(String((error as { code?: string }).code))
+  );
+}
+
+async function runSerializableTransaction<T>(
+  db: DrizzleClient,
+  operation: (tx: DrizzleClient) => Promise<T>
+): Promise<T> {
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      return await db.transaction(async (tx) => operation(tx as DrizzleClient), {
+        isolationLevel: 'serializable'
+      });
+    } catch (error) {
+      if (!isRetryableTransactionError(error) || attempt === 3) {
+        throw error;
+      }
+    }
+  }
+
+  throw new Error('Failed to complete serializable transaction');
+}
+
 const userWithoutPasswordColumns = {
   id: usersTable.id,
   email: usersTable.email,
@@ -46,6 +76,7 @@ const userWithoutPasswordColumns = {
 
 export interface AuthRepository {
   create(userData: CreateUser): Promise<PublicUser>;
+  createWithInitialRole(userData: CreateUser): Promise<PublicUserWithRole>;
   findByEmail(email: string): Promise<User | null>;
   findById(id: string): Promise<UserWithoutPassword | null>;
   // Returns full User including passwordHash — only for auth verification
@@ -87,6 +118,30 @@ export function createDrizzleAuthAdapter(db: DrizzleClient): AuthRepository {
       }
 
       return createdUser;
+    },
+
+    async createWithInitialRole(userData) {
+      return runSerializableTransaction(db, async (tx) => {
+        const [users] = await tx
+          .select({ count: count() })
+          .from(usersTable)
+          .where(isNull(usersTable.deletedAt));
+
+        const role = Number(users?.count ?? 0) === 0 ? 'admin' : 'user';
+        const [createdUser] = await tx
+          .insert(usersTable)
+          .values({ ...userData, role })
+          .returning({
+            ...publicUserColumns,
+            role: usersTable.role
+          });
+
+        if (!createdUser) {
+          throw new Error('Failed to create user');
+        }
+
+        return createdUser;
+      });
     },
 
     async findByEmail(email) {

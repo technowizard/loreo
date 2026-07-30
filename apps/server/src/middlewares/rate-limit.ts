@@ -1,3 +1,4 @@
+import { getConnInfo } from '@hono/node-server/conninfo';
 import type { Context } from 'hono';
 import type { RedisClient } from 'hono-rate-limiter';
 import { RedisStore, rateLimiter } from 'hono-rate-limiter';
@@ -5,6 +6,7 @@ import { Redis } from 'ioredis';
 
 import redisConfig from '@/config/redis.config.js';
 
+import { env } from '@/lib/env-config.js';
 import type { AppBindings } from '@/lib/types.js';
 
 const redisClient = new Redis(redisConfig);
@@ -19,6 +21,29 @@ const redisAdapter: RedisClient = {
 };
 
 const ONE_HOUR_WINDOW = 60 * 60 * 1000;
+const trustedProxies = new Set(
+  env.TRUSTED_PROXIES.split(',')
+    .map((value) => value.trim())
+    .filter(Boolean)
+);
+
+export interface RateLimitIpKeyInput {
+  peerIp: string;
+  forwardedFor?: string | null;
+  realIp?: string | null;
+  trustForwardedHeaders: boolean;
+}
+
+export function resolveRateLimitIpKey({
+  peerIp,
+  forwardedFor,
+  realIp,
+  trustForwardedHeaders
+}: RateLimitIpKeyInput): string {
+  if (!trustForwardedHeaders) return peerIp;
+
+  return forwardedFor?.split(',')[0]?.trim() || realIp?.trim() || peerIp;
+}
 
 function makeStore(prefix: string) {
   return new RedisStore<AppBindings>({
@@ -27,10 +52,27 @@ function makeStore(prefix: string) {
   });
 }
 
+function getPeerIp(c: Context<AppBindings>): string {
+  return getConnInfo(c).remote.address ?? 'unknown';
+}
+
+function isTrustedForwardedHeaders(c: Context<AppBindings>): boolean {
+  if (env.BEHIND_PROXY) return true;
+
+  const peerIp = getPeerIp(c);
+  return trustedProxies.has(peerIp);
+}
+
 function keyByIp(c: Context<AppBindings>): string {
-  return (
-    c.req.header('x-forwarded-for')?.split(',')[0]?.trim() || c.req.header('x-real-ip') || 'unknown'
-  );
+  const peerIp = getPeerIp(c);
+  const trustForwardedHeaders = isTrustedForwardedHeaders(c);
+
+  return resolveRateLimitIpKey({
+    peerIp,
+    forwardedFor: c.req.header('x-forwarded-for'),
+    realIp: c.req.header('x-real-ip'),
+    trustForwardedHeaders
+  });
 }
 
 function keyByUser(c: Context<AppBindings>): string {

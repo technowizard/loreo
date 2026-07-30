@@ -55,16 +55,11 @@ export const create: AppRouteHandler<CreateRoute> = async (c) => {
 
   const hashedPassword = await passwordManager.hash(password);
 
-  const userCount = await auth.countUsers();
-  const isFirstUser = userCount === 0;
-  const role = isFirstUser ? 'admin' : 'user';
-
-  const createdUser = await auth.create({
+  const createdUser = await auth.createWithInitialRole({
     email,
     passwordHash: hashedPassword,
     name: name || null,
-    settings: defaultUserSettings,
-    ...(isFirstUser && { role: 'admin' as const })
+    settings: defaultUserSettings
   });
 
   const { tags } = c.get('repos');
@@ -84,7 +79,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c) => {
       email: createdUser.email,
       name: createdUser.name,
       avatar: createdUser.avatar,
-      role,
+      role: createdUser.role,
       settings: createdUser.settings
     },
     'User created successfully',

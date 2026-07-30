@@ -102,6 +102,8 @@ CORS_ORIGINS=https://loreo.example.com
 JWT_SECRET=<generated-secret>  # minimum 32 characters
 
 PUBLIC_URL=https://loreo.example.com
+BEHIND_PROXY=true
+TRUSTED_PROXIES=127.0.0.1
 ```
 
 ## Service Details
@@ -182,7 +184,8 @@ When using a reverse proxy:
 1. Set `WEB_PUBLIC_PORT` to match the port your proxy forwards to
 2. Set `PUBLIC_URL` to your HTTPS domain (e.g. `https://loreo.example.com`)
 3. Set `CORS_ORIGINS` to the same HTTPS domain
-4. The server port (`SERVER_PUBLIC_PORT`) does not need to be exposed through the proxy — nginx inside the web container handles API routing
+4. Set `BEHIND_PROXY=true` or list the proxy's peer IP in `TRUSTED_PROXIES` so rate-limit headers are only trusted from your proxy
+5. The server port (`SERVER_PUBLIC_PORT`) does not need to be exposed through the proxy — nginx inside the web container handles API routing
 
 ## Storage
 

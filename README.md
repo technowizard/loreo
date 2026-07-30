@@ -377,4 +377,5 @@ STORAGE_SECRET_ACCESS_KEY=<your-cloudflare-r2-secret-access-key>
 ## Operational Notes
 
 - Article extraction uses a Playwright-compatible Camoufox websocket configured by `BROWSER_URL`.
+- Rate-limit IP trust stays on the socket peer by default; set `BEHIND_PROXY=true` or `TRUSTED_PROXIES` before trusting forwarded headers.
 - Local storage is available by default; S3-compatible storage is supported through server env vars.
