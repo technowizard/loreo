@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.2.1] - 2026-08-03
+
 - Store extracted article body images under per-user, ownership-checked paths so users cannot read each other's images; add `ALLOW_LEGACY_SHARED_ARTICLES` to keep older articles rendering during migration.
 - Scope highlight and tag enrichment to the requesting user across home, upcoming, and search.
 - Validate image uploads by sniffing file content instead of trusting filename or Content-Type.
