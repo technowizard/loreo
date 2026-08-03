@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.2.2] - 2026-08-03
+
 - Fix production nginx routing for RSS feed API requests so adding a feed no longer returns 405.
 
 ## [v0.2.1] - 2026-08-03
