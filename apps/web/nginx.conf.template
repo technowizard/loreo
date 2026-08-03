@@ -7,7 +7,7 @@ server {
 
     gzip_static on;
 
-    location ~ ^/(health|auth|home|links|highlights|tags|files|imports|doc|reference|openapi\.json) {
+    location ~ ^/(health|auth|home|links|highlights|tags|files|imports|feeds|doc|reference|openapi\.json) {
         proxy_pass ${API_UPSTREAM};
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
